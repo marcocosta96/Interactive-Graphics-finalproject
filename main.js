@@ -1,3 +1,4 @@
+"use strict";
 
 // Vars
 const maps = {
@@ -15,7 +16,8 @@ const maps = {
     earth: {
         color: 'img/earthColorMap.jpg',
         bump: 'img/earthBumpMap.jpg',
-        specular: 'img/earthSpecularMap.jpg'
+        specular: 'img/earthSpecularMap.jpg',
+        cloud: 'img/earthCloudMap.jpg'
     },
     moon: {
         color: 'img/moonColorMap.jpg',
@@ -43,5 +45,48 @@ const maps = {
     pluto: {
         color: 'img/plutoColorMap.jpg',
         bump: 'img/plutoBumpMap.jpg'
-    },
+    }
 };
+
+var camera, scene, renderer;
+
+function init() {
+
+    camera = new THREE.PerspectiveCamera(
+            45, // field of view
+            window.innerWidth / window.innerHeight, // aspect ratio
+            1, // near clipping plane
+            1000 // far clipping plane
+            );
+    camera.position.z = 30;
+    camera.position.x = -30;
+    camera.position.y = 30;
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+	scene = new THREE.Scene();
+
+	geometry = new THREE.SphereGeometry( 0.2, 0.2, 0.2 );
+	material = new THREE.MeshNormalMaterial();
+
+	mesh = new THREE.Mesh( geometry, material );
+    mesh.castShadow = true;
+	scene.add( mesh );
+
+	renderer = new THREE.WebGLRenderer( { antialias: true } );
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	document.getElementById("container").appendChild( renderer.domElement );
+}
+
+function animate() {
+
+	requestAnimationFrame( animate );
+
+	mesh.rotation.x += 0.01;
+	mesh.rotation.y += 0.02;
+
+	renderer.render( scene, camera );
+
+}
+
+init();
+animate();
