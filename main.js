@@ -47,46 +47,40 @@ const maps = {
         bump: 'img/plutoBumpMap.jpg'
     }
 };
-
-var camera, scene, renderer;
+var scene, camera, renderer, controls;
+var geometry, material, sphere;
+var solarSystem;
 
 function init() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    camera.position.z = 50;
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.getElementById("container").appendChild( renderer.domElement );
+    controls = new THREE.OrbitControls( camera );
 
-    camera = new THREE.PerspectiveCamera(
-            45, // field of view
-            window.innerWidth / window.innerHeight, // aspect ratio
-            1, // near clipping plane
-            1000 // far clipping plane
-            );
-    camera.position.z = 30;
-    camera.position.x = -30;
-    camera.position.y = 30;
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    solarSystem = new THREE.Group();
+    scene.add(solarSystem);
 
-	scene = new THREE.Scene();
+    geometry = new THREE.SphereGeometry( 10, 48, 48 );
+    var textureloader = new THREE.TextureLoader();
+	var texture = textureloader.load('./img/sunColorMap.jpg');
+    material = new THREE.MeshBasicMaterial({
+    	        map: texture
+    });
+    sphere = new THREE.Mesh( geometry, material );
+    solarSystem.add( sphere );
 
-	geometry = new THREE.SphereGeometry( 0.2, 0.2, 0.2 );
-	material = new THREE.MeshNormalMaterial();
-
-	mesh = new THREE.Mesh( geometry, material );
-    mesh.castShadow = true;
-	scene.add( mesh );
-
-	renderer = new THREE.WebGLRenderer( { antialias: true } );
-	renderer.setSize( window.innerWidth, window.innerHeight );
-	document.getElementById("container").appendChild( renderer.domElement );
+    var stars = textureloader.load('./img/stars.jpg');
+    scene.background = stars;
 }
 
-function animate() {
-
-	requestAnimationFrame( animate );
-
-	mesh.rotation.x += 0.01;
-	mesh.rotation.y += 0.02;
-
-	renderer.render( scene, camera );
-
+function render () {
+    requestAnimationFrame( render );
+    controls.update();
+    renderer.render( scene, camera );
 }
 
 init();
-animate();
+render();
