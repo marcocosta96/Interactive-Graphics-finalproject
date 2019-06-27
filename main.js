@@ -8,18 +8,23 @@ const data = {
         color: 'img/sunColorMap.jpg'
     },
     mercury: {
+        size: 1/2.54,
+        distanceFromSun: 10,
+        period: 0.24,
         color: 'img/mercuryColorMap.jpg',
         bump: 'img/mercuryBumpMap.jpg'
     },
     venus: {
+        size: 1/1.05,
+        distanceFromSun: 17.5,
+        period: 0.62,
         color: 'img/venusColorMap.jpg',
         bump: 'img/venusBumpMap.jpg'
     },
     earth: {
-        orbitRate: 365.2564,
-        rotationRate: 0.015,
-        distanceFromSun: 25,
         size: 1,
+        distanceFromSun: 25,
+        period: 1,
         color: 'img/earthColorMap.jpg',
         bump: 'img/earthBumpMap.jpg',
         specular: 'img/earthSpecularMap.jpg',
@@ -28,31 +33,49 @@ const data = {
     moon: {
         orbitRate: 29.5,
         rotationRate: 0.01,
-        distanceFromSun: 2.8,
+        distance: 2.8,
         size: 0.5,
         color: 'img/moonColorMap.jpg',
         bump: 'img/moonBumpMap.jpg'
     },
     mars: {
+        size: 1/1.88,
+        distanceFromSun: 40,
+        period: 1.88,
         color: 'img/marsColorMap.jpg',
         bump: 'img/marsBumpMap.jpg',
         normal: 'img/marsNormalMap.jpg'
     },
     jupiter: {
+        size: 2.7,
+        distanceFromSun: 65,
+        period: 2,
         color: 'img/jupiterColorMap.jpg'
     },
     saturn: {
+        size: 2.14,
+        distanceFromSun: 125,
+        period: 3,
         color: 'img/saturnColorMap.jpg',
         ring: 'img/saturnRingColor'
     },
     uranus: {
+        size: 1,
+        distanceFromSun: 245,
+        period: 4,
         color: 'img/uranusColorMap.jpg',
         ring: 'img/uranusRingColor'
     },
     neptune: {
+        size: 1.94,
+        distanceFromSun: 485,
+        period: 5,
         color: 'img/neptuneColorMap.jpg'
     },
     pluto: {
+        size: 1/0.555,
+        distanceFromSun: 965,
+        period: 6,
         color: 'img/plutoColorMap.jpg',
         bump: 'img/plutoBumpMap.jpg'
     }
@@ -89,7 +112,7 @@ function init() {
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.getElementById("container").appendChild( renderer.domElement );
-    controls = new THREE.OrbitControls( camera );
+    controls = new THREE.OrbitControls(camera);
 
     solarSystem = new THREE.Group();
     scene.add(solarSystem);
@@ -113,8 +136,32 @@ function init() {
     var sun = new THREE.Mesh( geometry, material );
     solarSystem.add(sun);
 
+    var mercury = createPlanet(data.mercury);
+    solarSystem.add(mercury);
+
+    var venus = createPlanet(data.venus);
+    solarSystem.add(venus);
+
     var earth = createPlanet(data.earth);
     solarSystem.add(earth);
+
+    var mars = createPlanet(data.mars);
+    solarSystem.add(mars);
+
+    var jupiter = createPlanet(data.jupiter);
+    solarSystem.add(jupiter);
+
+    var saturn = createPlanet(data.saturn);
+    solarSystem.add(saturn);
+
+    var uranus = createPlanet(data.uranus);
+    solarSystem.add(uranus);
+
+    var neptune = createPlanet(data.neptune);
+    solarSystem.add(neptune);
+
+    var pluto = createPlanet(data.pluto);
+    solarSystem.add(pluto);
 
     var stars = textureloader.load('./img/stars.jpg');
     scene.background = stars;
