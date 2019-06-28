@@ -12,6 +12,7 @@ const uranusId = 7;
 const neptuneId = 8;
 const plutoId = 9;
 const moonId = 10;
+const saturnRingId = 11;
 const planetSegments = 48;
 const data = [
     {
@@ -59,6 +60,7 @@ const data = [
         size: 2.14,
         distanceFromSun: 125,
         period: 3,
+        ringInnerDiameter: 2.5,
         color: 'img/saturnColorMap.jpg',
         ring: 'img/saturnRingColor'
     },
@@ -67,7 +69,7 @@ const data = [
         distanceFromSun: 245,
         period: 4,
         color: 'img/uranusColorMap.jpg',
-        ring: 'img/uranusRingColor'
+        ring: 'img/uranusRingColor.jpg'
     },
     {
         size: 1.94,
@@ -93,6 +95,10 @@ data[moonId] =
     bump: 'img/moonBumpMap.jpg'
 };
 
+var scene, camera, renderer, controls;
+var solarSystem, earthSystem;
+var planets = [];
+
 var textureloader = new THREE.TextureLoader();
 
 function createPlanet(Id) {
@@ -108,14 +114,12 @@ function createPlanet(Id) {
         bumpMap: planetBump,
         specularMap: specMap
     });
-    var planet = new THREE.Mesh(geometry, material);
-    planet.position.set(data[Id].distanceFromSun, data[Id].distanceFromSun, 0);
-    return planet;
-}
+    planets[Id] = new THREE.Mesh(geometry, material);
+    planets[Id].position.set(data[Id].distanceFromSun, data[Id].distanceFromSun, 0);
+    solarSystem.add(planets[Id]);
+    if(Id == earthId) planets[moonId] = createPlanet(moonId);
 
-var scene, camera, renderer, controls;
-var solarSystem, earthSystem;
-var planets = [];
+}
 
 function init() {
     scene = new THREE.Scene();
@@ -147,18 +151,16 @@ function init() {
         map: texture
     });
     planets[sunId] = new THREE.Mesh(geometry, material);
-    planets[mercuryId] = createPlanet(mercuryId);
-    planets[venusId] = createPlanet(venusId);
-    planets[earthId] = createPlanet(earthId);
-    planets[marsId] = createPlanet(marsId);
-    planets[jupiterId] = createPlanet(jupiterId);
-    planets[saturnId] = createPlanet(saturnId);
-    planets[uranusId] = createPlanet(uranusId);
-    planets[neptuneId] = createPlanet(neptuneId);
-    planets[plutoId] = createPlanet(plutoId);
-    planets[moonId] = createPlanet(moonId);
-
-    for(var i = 0; i < planets.length; i++) solarSystem.add(planets[i]);
+    solarSystem.add(planets[sunId]);
+    createPlanet(mercuryId);
+    createPlanet(venusId);
+    createPlanet(earthId);
+    createPlanet(marsId);
+    createPlanet(jupiterId);
+    createPlanet(saturnId);
+    createPlanet(uranusId);
+    createPlanet(neptuneId);
+    createPlanet(plutoId);
 
     var stars = textureloader.load('./img/stars.jpg');
     scene.background = stars;
