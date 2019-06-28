@@ -22,21 +22,24 @@ const data = [
     {
         size: 1/2.54,
         distanceFromSun: 10,
-        period: 0.24,
+        orbitRate: 0.24,
+        rotationRate: 0.015,
         color: 'img/mercuryColorMap.jpg',
         bump: 'img/mercuryBumpMap.jpg'
     },
     {
         size: 1/1.05,
         distanceFromSun: 17.5,
-        period: 0.62,
+        orbitRate: 0.62,
+        rotationRate: 0.015,
         color: 'img/venusColorMap.jpg',
         bump: 'img/venusBumpMap.jpg'
     },
     {
         size: 1,
         distanceFromSun: 25,
-        period: 1,
+        orbitRate: 365.2564,
+        rotationRate: 0.015,
         color: 'img/earthColorMap.jpg',
         bump: 'img/earthBumpMap.jpg',
         specular: 'img/earthSpecularMap.jpg',
@@ -45,7 +48,8 @@ const data = [
     {
         size: 1/1.88,
         distanceFromSun: 40,
-        period: 1.88,
+        orbitRate: 1.88,
+        rotationRate: 0.015,
         color: 'img/marsColorMap.jpg',
         bump: 'img/marsBumpMap.jpg',
         normal: 'img/marsNormalMap.jpg'
@@ -53,13 +57,15 @@ const data = [
     {
         size: 2.7,
         distanceFromSun: 65,
-        period: 2,
+        orbitRate: 2,
+        rotationRate: 0.015,
         color: 'img/jupiterColorMap.jpg'
     },
     {
         size: 2.14,
         distanceFromSun: 125,
-        period: 3,
+        orbitRate: 3,
+        rotationRate: 0.015,
         ringInnerDiameter: 2.5,
         ringOuterDiameter: 3.5,
         ringSegments: 500,
@@ -69,20 +75,23 @@ const data = [
     {
         size: 1,
         distanceFromSun: 245,
-        period: 4,
+        orbitRate: 4,
+        rotationRate: 0.015,
         color: 'img/uranusColorMap.jpg',
         ring: 'img/uranusRingColor.jpg'
     },
     {
         size: 1.94,
         distanceFromSun: 485,
-        period: 5,
+        orbitRate: 5,
+        rotationRate: 0.015,
         color: 'img/neptuneColorMap.jpg'
     },
     {
         size: 1/0.555,
         distanceFromSun: 965,
-        period: 6,
+        orbitRate: 6,
+        rotationRate: 0.015,
         color: 'img/plutoColorMap.jpg',
         bump: 'img/plutoBumpMap.jpg'
     }
@@ -96,6 +105,8 @@ data[moonId] =
     color: 'img/moonColorMap.jpg',
     bump: 'img/moonBumpMap.jpg'
 };
+
+var clock = new THREE.Clock();
 
 var scene, camera, renderer, controls;
 var solarSystem, earthSystem;
@@ -122,7 +133,7 @@ function createPlanet(Id) {
     planets[Id] = new THREE.Mesh(geometry, material);
     planets[Id].position.set(data[Id].distanceFromSun, 0, 0);
     solarSystem.add(planets[Id]);
-    if(Id == earthId) planets[moonId] = createPlanet(moonId);
+    if(Id == earthId) createPlanet(moonId);
     else if(Id == saturnId) {
         var ringGeometry = new THREE.RingGeometry(data[saturnId].ringInnerDiameter, data[saturnId].ringOuterDiameter, data[saturnId].ringSegments);
         var ringTexture = textureloader.load(data[saturnId].saturnRingColor);
@@ -134,6 +145,20 @@ function createPlanet(Id) {
         planets[saturnRingId].position.set(data[saturnId].distanceFromSun, 0, 0);
         planets[saturnRingId].rotation.x = Math.PI/2;
         solarSystem.add(planets[saturnRingId]);
+    }
+}
+
+function rotationPlanet(Id, time) {
+    planets[Id].rotation.y += data[Id].rotationRate;
+    planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * 200)) + 10.0) * data[Id].distanceFromSun;
+    planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * 200)) + 10.0) * data[Id].distanceFromSun;
+    if(Id == moonId) {
+        planets[Id].position.x += planets[earthId].position.x;
+        planets[Id].position.z += planets[earthId].position.z;
+    }
+    else if(Id == saturnId) {
+        planets[saturnRingId].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * 200)) + 10.0) * data[Id].distanceFromSun;
+        planets[saturnRingId].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * 200)) + 10.0) * data[Id].distanceFromSun;
     }
 }
 
@@ -182,17 +207,10 @@ function init() {
     scene.background = stars;
 }
 
-var t = 0.0;    // time variable
-
-function rotationPlanet() {
-    planets[earthId].position.x = planets[earthId].distanceFromSun * Math.cos(t);
-    planets[earthId].position.z = planets[earthId].distanceFromSun * Math.sin(t);
-    //t += 0.98630137;            //degrees
-    t += 0.01721420632339;        //radians
-}
-
 function render () {
     requestAnimationFrame(render);
+    var time = Date.now();
+    for(let i = mercuryId; i <= moonId; i++) rotationPlanet(i, time);
     controls.update();
     renderer.render(scene, camera);
 }
