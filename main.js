@@ -120,7 +120,7 @@ function createPlanet(Id) {
         normalMap: norMap
     });
     planets[Id] = new THREE.Mesh(geometry, material);
-    planets[Id].position.set(data[Id].distanceFromSun, data[Id].distanceFromSun, 0);
+    planets[Id].position.set(data[Id].distanceFromSun, 0, 0);
     solarSystem.add(planets[Id]);
     if(Id == earthId) planets[moonId] = createPlanet(moonId);
     else if(Id == saturnId) {
@@ -182,8 +182,18 @@ function init() {
     scene.background = stars;
 }
 
+var t = 0.0;    // time variable
+
+function rotationPlanet() {
+    earth.position.x = earth.distanceFromSun * Math.cos(t);
+    earth.position.y = earth.distanceFromSun * Math.sin(t);
+    //t += 0.98630137;            //degrees
+    t += 0.01721420632339;        //radians
+}
+
 function render () {
     requestAnimationFrame(render);
+    rotationPlanet();
     controls.update();
     renderer.render(scene, camera);
 }
