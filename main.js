@@ -140,6 +140,7 @@ function createPlanet(Id) {
     planets[Id] = new THREE.Mesh(geometry, material);
     if(Id == moonId) planets[Id].position.set(data[Id].distanceFromEarth + data[earthId].distanceFromSun, 0, 0);
     else planets[Id].position.set(data[Id].distanceFromSun, 0, 0);
+    planets[Id].castShadow = true;
     solarSystem.add(planets[Id]);
     if(Id == earthId) createPlanet(moonId);
     else if(Id == saturnId) {
