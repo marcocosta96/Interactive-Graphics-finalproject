@@ -23,6 +23,16 @@ data[sunId] = {
         size: 5,
         color: 'img/sunColorMap.jpg'
     };
+data[earthId] = {
+        size: 1,
+        distanceFromSun: 25,
+        orbitRate: 365.2564,
+        rotationRate: 0.015,
+        color: 'img/earthColorMap.jpg',
+        bump: 'img/earthBumpMap.jpg',
+        specular: 'img/earthSpecularMap.jpg',
+        cloud: 'img/earthCloudMap.jpg'
+    };
 data[mercuryId] = {
         size: 1/2.54,
         distanceFromSun: 10,
@@ -38,16 +48,6 @@ data[venusId] = {
         rotationRate: 0.015,
         color: 'img/venusColorMap.jpg',
         bump: 'img/venusBumpMap.jpg'
-    };
-data[earthId] = {
-        size: 1,
-        distanceFromSun: 25,
-        orbitRate: 365.2564,
-        rotationRate: 0.015,
-        color: 'img/earthColorMap.jpg',
-        bump: 'img/earthBumpMap.jpg',
-        specular: 'img/earthSpecularMap.jpg',
-        cloud: 'img/earthCloudMap.jpg'
     };
 data[marsId] = {
         size: 1/1.88,
@@ -120,6 +120,36 @@ var planets = [];
 // Texture Loader
 var textureloader = new THREE.TextureLoader();
 
+// Store moon orbit to move it
+var orbitMoon = null;
+
+// Create orbit trajectory for the planets
+function createOrbitTrajectory(Id) {
+
+    var geometry = null;
+    if (Id == moonId) geometry = new THREE.CircleGeometry( data[Id].distanceFromEarth, 128 );
+    else geometry = new THREE.CircleGeometry( data[Id].distanceFromSun, 128 );
+
+    var material = new THREE.LineBasicMaterial({color: 0xffff00});
+
+    // Remove center vertex
+    geometry.vertices.shift();
+
+    if (Id == moonId) {
+        orbitMoon = new THREE.LineLoop( geometry, material );
+        orbitMoon.position.set(data[earthId].distanceFromSun, 0, 0);
+        orbitMoon.rotation.x = Math.PI * 0.5;
+        solarSystem.add(orbitMoon);
+    }
+    else {
+        var orbit = new THREE.LineLoop(geometry, material);
+        orbit.rotation.x = Math.PI * 0.5;
+        orbit.position.set(0, 0, 0);
+        solarSystem.add(orbit);
+    }
+
+}
+
 // Create planet
 function createPlanet(Id) {
 
@@ -145,6 +175,9 @@ function createPlanet(Id) {
     planets[Id].castShadow = true;
     solarSystem.add(planets[Id]);
 
+    // Draws its orbit trajectory
+    createOrbitTrajectory(Id);
+
     if(Id == earthId) createPlanet(moonId);
 
     else if(Id == saturnId) {
@@ -163,6 +196,7 @@ function createPlanet(Id) {
 
 // Move planet
 function rotationPlanet(Id, time) {
+
     // Rotation motion
     if (Id == venusId || Id == neptuneId) planets[Id].rotation.y -= data[Id].rotationRate;      // Retrograde motion
     else planets[Id].rotation.y += data[Id].rotationRate;
@@ -182,6 +216,13 @@ function rotationPlanet(Id, time) {
             planets[saturnRingId].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * 200))) * data[Id].distanceFromSun;
         }
     }
+
+    // Moon's orbit trajectory motion
+    orbitMoon.position.x = Math.cos(time * (1.0/(data[earthId].orbitRate * 200))) * data[Id].distanceFromEarth;
+    orbitMoon.position.z = Math.sin(time * (1.0/(data[earthId].orbitRate * 200))) * data[Id].distanceFromEarth;
+    orbitMoon.position.x += planets[earthId].position.x + data[moonId].distanceFromEarth;
+    orbitMoon.position.z += planets[earthId].position.z;
+
 }
 
 // Initialize
