@@ -124,8 +124,8 @@ var textureloader = new THREE.TextureLoader();
 function createOrbitTrajectory(Id) {
 
     var geometry = null;
-    if (Id == moonId) geometry = new THREE.CircleGeometry( data[Id].distanceFromEarth, 128 );
-    else geometry = new THREE.CircleGeometry( data[Id].distanceFromSun, 128 );
+    if (Id == moonId) geometry = new THREE.CircleGeometry(data[Id].distanceFromEarth, 128);
+    else geometry = new THREE.CircleGeometry(data[Id].distanceFromSun, 128);
 
     var material = new THREE.LineBasicMaterial({color: 0xffffff});
 
@@ -257,8 +257,12 @@ function init() {
     createPlanet(plutoId);
 
     // Stars background
-    var stars = textureloader.load('./img/stars.jpg');
-    scene.background = stars;
+    //var stars = textureloader.load('./img/stars.jpg');
+    var stars = './img/stars.jpg';
+    var starsArray = [stars, stars, stars, stars, stars, stars];
+    var cubeStars = new THREE.CubeTextureLoader().load(starsArray);
+    cubeStars.format = THREE.RGBFormat;
+    scene.background = cubeStars;
 }
 
 // Update animation
