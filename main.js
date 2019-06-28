@@ -97,12 +97,13 @@ function createPlanet(name) {
         specularMap: specMap
     });
     var planet = new THREE.Mesh(geometry, material);
-    planet.position.set(name.distanceFromSun, name.distanceFromSun, 0);
+    planet.position.set(name.distanceFromSun, 0, 0);
     return planet;
 }
 
 var scene, camera, renderer, controls;
 var solarSystem;
+var sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, pluto;
 
 function init() {
     scene = new THREE.Scene();
@@ -133,42 +134,52 @@ function init() {
     var material = new THREE.MeshBasicMaterial({
         map: texture
     });
-    var sun = new THREE.Mesh( geometry, material );
+    sun = new THREE.Mesh( geometry, material );
     solarSystem.add(sun);
 
-    var mercury = createPlanet(data.mercury);
+    mercury = createPlanet(data.mercury);
     solarSystem.add(mercury);
 
-    var venus = createPlanet(data.venus);
+    venus = createPlanet(data.venus);
     solarSystem.add(venus);
 
-    var earth = createPlanet(data.earth);
+    earth = createPlanet(data.earth);
     solarSystem.add(earth);
 
-    var mars = createPlanet(data.mars);
+    mars = createPlanet(data.mars);
     solarSystem.add(mars);
 
-    var jupiter = createPlanet(data.jupiter);
+    jupiter = createPlanet(data.jupiter);
     solarSystem.add(jupiter);
 
-    var saturn = createPlanet(data.saturn);
+    saturn = createPlanet(data.saturn);
     solarSystem.add(saturn);
 
-    var uranus = createPlanet(data.uranus);
+    uranus = createPlanet(data.uranus);
     solarSystem.add(uranus);
 
-    var neptune = createPlanet(data.neptune);
+    neptune = createPlanet(data.neptune);
     solarSystem.add(neptune);
 
-    var pluto = createPlanet(data.pluto);
+    pluto = createPlanet(data.pluto);
     solarSystem.add(pluto);
 
     var stars = textureloader.load('./img/stars.jpg');
     scene.background = stars;
 }
 
+var t = 0.0;    // time variable
+
+function rotationPlanet() {
+    earth.position.x = earth.distanceFromSun * Math.cos(t);
+    earth.position.y = earth.distanceFromSun * Math.sin(t);
+    //t += 0.98630137;            //degrees
+    t += 0.01721420632339;        //radians
+}
+
 function render () {
     requestAnimationFrame( render );
+    rotationPlanet();
     controls.update();
     renderer.render( scene, camera );
 }
