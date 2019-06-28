@@ -131,7 +131,7 @@ function createPlanet(Id) {
             side: THREE.DoubleSide
         });
         planets[saturnRingId] = new THREE.Mesh(ringGeometry, ringMaterial);
-        planets[saturnRingId].position.set(data[saturnId].distanceFromSun, data[saturnId].distanceFromSun, 0);
+        planets[saturnRingId].position.set(data[saturnId].distanceFromSun, 0, 0);
         planets[saturnRingId].rotation.x = Math.PI/2;
         solarSystem.add(planets[saturnRingId]);
     }
@@ -193,7 +193,6 @@ function rotationPlanet() {
 
 function render () {
     requestAnimationFrame(render);
-    rotationPlanet();
     controls.update();
     renderer.render(scene, camera);
 }
