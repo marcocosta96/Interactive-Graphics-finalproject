@@ -169,8 +169,8 @@ function init() {
 var t = 0.0;    // time variable
 
 function rotationPlanet() {
-    earth.position.x = earth.distanceFromSun * Math.cos(t);
-    earth.position.y = earth.distanceFromSun * Math.sin(t);
+    planets[earthId].position.x = planets[earthId].distanceFromSun * Math.cos(t);
+    planets[earthId].position.z = planets[earthId].distanceFromSun * Math.sin(t);
     //t += 0.98630137;            //degrees
     t += 0.01721420632339;        //radians
 }
