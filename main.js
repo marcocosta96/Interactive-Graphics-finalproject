@@ -1,27 +1,39 @@
 "use strict";
 
 // Vars
-const planetSegments = 24;
-const data = {
-    sun: {
-        size: 10,
+const sunId = 0;
+const mercuryId = 1;
+const venusId = 2;
+const earthId = 3;
+const marsId = 4;
+const jupiterId = 5;
+const saturnId = 6;
+const uranusId = 7;
+const neptuneId = 8;
+const plutoId = 9;
+const moonId = 10;
+const saturnRingId = 11;
+const planetSegments = 48;
+const data = [
+    {
+        size: 5,
         color: 'img/sunColorMap.jpg'
     },
-    mercury: {
+    {
         size: 1/2.54,
         distanceFromSun: 10,
         period: 0.24,
         color: 'img/mercuryColorMap.jpg',
         bump: 'img/mercuryBumpMap.jpg'
     },
-    venus: {
+    {
         size: 1/1.05,
         distanceFromSun: 17.5,
         period: 0.62,
         color: 'img/venusColorMap.jpg',
         bump: 'img/venusBumpMap.jpg'
     },
-    earth: {
+    {
         size: 1,
         distanceFromSun: 25,
         period: 1,
@@ -30,15 +42,7 @@ const data = {
         specular: 'img/earthSpecularMap.jpg',
         cloud: 'img/earthCloudMap.jpg'
     },
-    moon: {
-        orbitRate: 29.5,
-        rotationRate: 0.01,
-        distance: 2.8,
-        size: 0.5,
-        color: 'img/moonColorMap.jpg',
-        bump: 'img/moonBumpMap.jpg'
-    },
-    mars: {
+    {
         size: 1/1.88,
         distanceFromSun: 40,
         period: 1.88,
@@ -46,64 +50,76 @@ const data = {
         bump: 'img/marsBumpMap.jpg',
         normal: 'img/marsNormalMap.jpg'
     },
-    jupiter: {
+    {
         size: 2.7,
         distanceFromSun: 65,
         period: 2,
         color: 'img/jupiterColorMap.jpg'
     },
-    saturn: {
+    {
         size: 2.14,
         distanceFromSun: 125,
         period: 3,
+        ringInnerDiameter: 2.5,
         color: 'img/saturnColorMap.jpg',
         ring: 'img/saturnRingColor'
     },
-    uranus: {
+    {
         size: 1,
         distanceFromSun: 245,
         period: 4,
         color: 'img/uranusColorMap.jpg',
-        ring: 'img/uranusRingColor'
+        ring: 'img/uranusRingColor.jpg'
     },
-    neptune: {
+    {
         size: 1.94,
         distanceFromSun: 485,
         period: 5,
         color: 'img/neptuneColorMap.jpg'
     },
-    pluto: {
+    {
         size: 1/0.555,
         distanceFromSun: 965,
         period: 6,
         color: 'img/plutoColorMap.jpg',
         bump: 'img/plutoBumpMap.jpg'
     }
+];
+data[moonId] =
+{
+    orbitRate: 29.5,
+    rotationRate: 0.01,
+    distanceFromSun: data[earthId].distanceFromSun + 1.5,
+    size: 0.2728,
+    color: 'img/moonColorMap.jpg',
+    bump: 'img/moonBumpMap.jpg'
 };
+
+var scene, camera, renderer, controls;
+var solarSystem, earthSystem;
+var planets = [];
 
 var textureloader = new THREE.TextureLoader();
 
-function createPlanet(name) {
-    var geometry = new THREE.SphereGeometry(name.size, planetSegments, planetSegments);
-    var texture = textureloader.load(name.color);
+function createPlanet(Id) {
+    var geometry = new THREE.SphereGeometry(data[Id].size, planetSegments, planetSegments);
+    var texture = textureloader.load(data[Id].color);
     var planetBump = null;
-    if(name.bump) planetBump = textureloader.load(name.bump);
+    if(data[Id].bump) planetBump = textureloader.load(data[Id].bump);
     var specMap = null;
-    if(name.specular) specMap = textureloader.load(name.specular);
+    if(data[Id].specular) specMap = textureloader.load(data[Id].specular);
     var material = new THREE.MeshPhongMaterial({
         shininess  :  20,
         map: texture,
         bumpMap: planetBump,
         specularMap: specMap
     });
-    var planet = new THREE.Mesh(geometry, material);
-    planet.position.set(name.distanceFromSun, 0, 0);
-    return planet;
-}
+    planets[Id] = new THREE.Mesh(geometry, material);
+    planets[Id].position.set(data[Id].distanceFromSun, 0, 0);
+    solarSystem.add(planets[Id]);
+    if(Id == earthId) planets[moonId] = createPlanet(moonId);
 
-var scene, camera, renderer, controls;
-var solarSystem;
-var sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, pluto;
+}
 
 function init() {
     scene = new THREE.Scene();
@@ -129,40 +145,22 @@ function init() {
     var ambientLight = new THREE.AmbientLight(0xaaaaaa);
     scene.add(ambientLight);
 
-    var geometry = new THREE.SphereGeometry(data.sun.size, 48, 48 );
-	var texture = textureloader.load(data.sun.color);
+    var geometry = new THREE.SphereGeometry(data[sunId].size, 48, 48 );
+	var texture = textureloader.load(data[sunId].color);
     var material = new THREE.MeshBasicMaterial({
         map: texture
     });
-    sun = new THREE.Mesh( geometry, material );
-    solarSystem.add(sun);
-
-    mercury = createPlanet(data.mercury);
-    solarSystem.add(mercury);
-
-    venus = createPlanet(data.venus);
-    solarSystem.add(venus);
-
-    earth = createPlanet(data.earth);
-    solarSystem.add(earth);
-
-    mars = createPlanet(data.mars);
-    solarSystem.add(mars);
-
-    jupiter = createPlanet(data.jupiter);
-    solarSystem.add(jupiter);
-
-    saturn = createPlanet(data.saturn);
-    solarSystem.add(saturn);
-
-    uranus = createPlanet(data.uranus);
-    solarSystem.add(uranus);
-
-    neptune = createPlanet(data.neptune);
-    solarSystem.add(neptune);
-
-    pluto = createPlanet(data.pluto);
-    solarSystem.add(pluto);
+    planets[sunId] = new THREE.Mesh(geometry, material);
+    solarSystem.add(planets[sunId]);
+    createPlanet(mercuryId);
+    createPlanet(venusId);
+    createPlanet(earthId);
+    createPlanet(marsId);
+    createPlanet(jupiterId);
+    createPlanet(saturnId);
+    createPlanet(uranusId);
+    createPlanet(neptuneId);
+    createPlanet(plutoId);
 
     var stars = textureloader.load('./img/stars.jpg');
     scene.background = stars;
@@ -178,10 +176,10 @@ function rotationPlanet() {
 }
 
 function render () {
-    requestAnimationFrame( render );
+    requestAnimationFrame(render);
     rotationPlanet();
     controls.update();
-    renderer.render( scene, camera );
+    renderer.render(scene, camera);
 }
 
 init();
