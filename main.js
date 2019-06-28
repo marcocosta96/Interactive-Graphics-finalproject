@@ -61,8 +61,10 @@ const data = [
         distanceFromSun: 125,
         period: 3,
         ringInnerDiameter: 2.5,
+        ringOuterDiameter: 3.5,
+        ringSegments: 500,
         color: 'img/saturnColorMap.jpg',
-        ring: 'img/saturnRingColor'
+        ring: 'img/saturnRingColor.jpg'
     },
     {
         size: 1,
@@ -108,17 +110,31 @@ function createPlanet(Id) {
     if(data[Id].bump) planetBump = textureloader.load(data[Id].bump);
     var specMap = null;
     if(data[Id].specular) specMap = textureloader.load(data[Id].specular);
+    var norMap = null;
+    if(data[Id].normal) norMap = textureloader.load(data[Id].normal);
     var material = new THREE.MeshPhongMaterial({
-        shininess  :  20,
+        shininess: 20,
         map: texture,
         bumpMap: planetBump,
-        specularMap: specMap
+        specularMap: specMap,
+        normalMap: norMap
     });
     planets[Id] = new THREE.Mesh(geometry, material);
     planets[Id].position.set(data[Id].distanceFromSun, 0, 0);
     solarSystem.add(planets[Id]);
     if(Id == earthId) planets[moonId] = createPlanet(moonId);
-
+    else if(Id == saturnId) {
+        var ringGeometry = new THREE.RingGeometry(data[saturnId].ringInnerDiameter, data[saturnId].ringOuterDiameter, data[saturnId].ringSegments);
+        var ringTexture = textureloader.load(data[saturnId].saturnRingColor);
+        var ringMaterial = new THREE.MeshBasicMaterial({
+            color: 0x757064,
+            side: THREE.DoubleSide
+        });
+        planets[saturnRingId] = new THREE.Mesh(ringGeometry, ringMaterial);
+        planets[saturnRingId].position.set(data[saturnId].distanceFromSun, 0, 0);
+        planets[saturnRingId].rotation.x = Math.PI/2;
+        solarSystem.add(planets[saturnRingId]);
+    }
 }
 
 function init() {
@@ -127,7 +143,7 @@ function init() {
     camera.position.z = 100;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById("container").appendChild( renderer.domElement );
     controls = new THREE.OrbitControls(camera);
 
@@ -177,7 +193,6 @@ function rotationPlanet() {
 
 function render () {
     requestAnimationFrame(render);
-    rotationPlanet();
     controls.update();
     renderer.render(scene, camera);
 }
