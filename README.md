@@ -10,4 +10,4 @@ Final project for the course of Interactive Graphics AY 2018/2019.
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/SapienzaInteractiveGraphicsCourse/finalproject-er-clab/LICENSE) file for details
 
 ## Documentation
-Please see the [DOCUMENTATION](https://github.com/SapienzaInteractiveGraphicsCourse/finalproject-er-clab/documentation/documentation.pdf) PDF file for details.
+Please see the [DOCUMENTATION](./documentation/documentation.pdf) PDF file for details.
