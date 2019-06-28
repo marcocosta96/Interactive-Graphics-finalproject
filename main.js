@@ -15,11 +15,11 @@ const moonId = 10;
 const saturnRingId = 11;
 const planetSegments = 48;
 const data = [
-    {
+    {   // Sun
         size: 5,
         color: 'img/sunColorMap.jpg'
     },
-    {
+    {   // Mercury
         size: 1/2.54,
         distanceFromSun: 10,
         orbitRate: 0.24,
@@ -27,7 +27,7 @@ const data = [
         color: 'img/mercuryColorMap.jpg',
         bump: 'img/mercuryBumpMap.jpg'
     },
-    {
+    {   // Venus
         size: 1/1.05,
         distanceFromSun: 17.5,
         orbitRate: 0.62,
@@ -35,7 +35,7 @@ const data = [
         color: 'img/venusColorMap.jpg',
         bump: 'img/venusBumpMap.jpg'
     },
-    {
+    {   // Earth
         size: 1,
         distanceFromSun: 25,
         orbitRate: 365.2564,
@@ -45,7 +45,7 @@ const data = [
         specular: 'img/earthSpecularMap.jpg',
         cloud: 'img/earthCloudMap.jpg'
     },
-    {
+    {   // Mars
         size: 1/1.88,
         distanceFromSun: 40,
         orbitRate: 1.88,
@@ -54,14 +54,14 @@ const data = [
         bump: 'img/marsBumpMap.jpg',
         normal: 'img/marsNormalMap.jpg'
     },
-    {
+    {   // Jupiter
         size: 2.7,
         distanceFromSun: 65,
         orbitRate: 2,
         rotationRate: 0.015,
         color: 'img/jupiterColorMap.jpg'
     },
-    {
+    {   // Saturn
         size: 2.14,
         distanceFromSun: 125,
         orbitRate: 3,
@@ -72,7 +72,7 @@ const data = [
         color: 'img/saturnColorMap.jpg',
         ring: 'img/saturnRingColor.jpg'
     },
-    {
+    {   // Uranus
         size: 1,
         distanceFromSun: 245,
         orbitRate: 4,
@@ -80,14 +80,14 @@ const data = [
         color: 'img/uranusColorMap.jpg',
         ring: 'img/uranusRingColor.jpg'
     },
-    {
+    {   // Neptune
         size: 1.94,
         distanceFromSun: 485,
         orbitRate: 5,
         rotationRate: 0.015,
         color: 'img/neptuneColorMap.jpg'
     },
-    {
+    {   // Pluto
         size: 1/0.555,
         distanceFromSun: 965,
         orbitRate: 6,
@@ -100,7 +100,7 @@ data[moonId] =
 {
     orbitRate: 29.5,
     rotationRate: 0.01,
-    distanceFromSun: data[earthId].distanceFromSun + 1.5,
+    distanceFromSun: data[earthId].distanceFromSun * 0.2569519/2,       // naturally is from the Earth
     size: 0.2728,
     color: 'img/moonColorMap.jpg',
     bump: 'img/moonBumpMap.jpg'
@@ -115,6 +115,7 @@ var planets = [];
 var textureloader = new THREE.TextureLoader();
 
 function createPlanet(Id) {
+
     var geometry = new THREE.SphereGeometry(data[Id].size, planetSegments, planetSegments);
     var texture = textureloader.load(data[Id].color);
     var planetBump = null;
@@ -130,10 +131,13 @@ function createPlanet(Id) {
         specularMap: specMap,
         normalMap: norMap
     });
+
     planets[Id] = new THREE.Mesh(geometry, material);
     planets[Id].position.set(data[Id].distanceFromSun, 0, 0);
     solarSystem.add(planets[Id]);
+
     if(Id == earthId) createPlanet(moonId);
+
     else if(Id == saturnId) {
         var ringGeometry = new THREE.RingGeometry(data[saturnId].ringInnerDiameter, data[saturnId].ringOuterDiameter, data[saturnId].ringSegments);
         var ringTexture = textureloader.load(data[saturnId].saturnRingColor);
@@ -149,13 +153,19 @@ function createPlanet(Id) {
 }
 
 function rotationPlanet(Id, time) {
-    planets[Id].rotation.y += data[Id].rotationRate;
+    // Rotation motion
+    if (Id == venusId || Id == neptuneId) planets[Id].rotation.y -= data[Id].rotationRate;      // Retrograde motion
+    else planets[Id].rotation.y += data[Id].rotationRate;
+
+    // Orbit motion
     planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * 200)) + 10.0) * data[Id].distanceFromSun;
     planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * 200)) + 10.0) * data[Id].distanceFromSun;
+
     if(Id == moonId) {
         planets[Id].position.x += planets[earthId].position.x;
         planets[Id].position.z += planets[earthId].position.z;
     }
+
     else if(Id == saturnId) {
         planets[saturnRingId].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * 200)) + 10.0) * data[Id].distanceFromSun;
         planets[saturnRingId].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * 200)) + 10.0) * data[Id].distanceFromSun;
