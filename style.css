@@ -41,6 +41,10 @@ ul li a {
     border-bottom: 1px solid rgba(0,0,0,0.2);
 }
 
+.trajCheckboxText {
+    color: #fff;
+}
+
 .sidebarButton {
     position: absolute;
     top: 0;

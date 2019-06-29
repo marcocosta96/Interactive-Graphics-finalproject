@@ -21,6 +21,7 @@ const planetSegments = 48;
 const data = [];
 data[sunId] = {
         size: 5,
+        rotationRate: 0.015/25.38,
         color: 'img/sunColorMap.jpg'
     };
 data[earthId] = {
@@ -117,6 +118,9 @@ var solarSystem;
 // Planets array
 var planets = [];
 
+// Trajectories array
+var trajectories = [];
+
 // Texture Loader
 var textureloader = new THREE.TextureLoader();
 
@@ -129,16 +133,12 @@ function createOrbitTrajectory(Id) {
 
     var material = new THREE.LineBasicMaterial({color: 0xffffff});
 
-    // Remove center vertex
-    geometry.vertices.shift();
+    geometry.vertices.shift();  // Remove center vertex
 
-    var orbit = new THREE.LineLoop(geometry, material);
-    orbit.rotation.x = Math.PI * 0.5;
-    if (Id == moonId) planets[earthId].add(orbit);
-    else {
-        orbit.position.set(0, 0, 0);
-        solarSystem.add(orbit);
-    }
+    trajectories[Id] = new THREE.LineLoop(geometry, material);
+    trajectories[Id].rotation.x = Math.PI * 0.5;
+    if (Id == moonId) planets[earthId].add(trajectories[Id]);
+    else solarSystem.add(trajectories[Id]);
 
 }
 
@@ -203,8 +203,10 @@ function rotationPlanet(Id, time) {
         planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * 200))) * data[Id].distanceFromEarth;
     }
     else {
-        planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * 200))) * data[Id].distanceFromSun;
-        planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * 200))) * data[Id].distanceFromSun;
+        if (Id != sunId) {
+            planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * 200))) * data[Id].distanceFromSun;
+            planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * 200))) * data[Id].distanceFromSun;
+        }
     }
 
 }
@@ -263,13 +265,25 @@ function init() {
     var cubeStars = new THREE.CubeTextureLoader().load(starsArray);
     cubeStars.format = THREE.RGBFormat;
     scene.background = cubeStars;
+
+    // listener over sidebar menu
+    document.getElementById("trajCheckbox").onchange = function(event) {
+        if (event.target.checked)
+            for (let i = mercuryId; i <= moonId; i++)
+                trajectories[i].visible = true;
+
+        else
+            for (let i = mercuryId; i <= moonId; i++)
+                trajectories[i].visible = false;
+    }
+
 }
 
 // Update animation
 function render () {
     requestAnimationFrame(render);
     var time = Date.now();
-    for(let i = mercuryId; i <= moonId; i++) rotationPlanet(i, time);
+    for(let i = sunId; i <= moonId; i++) rotationPlanet(i, time);
     controls.update();
     renderer.render(scene, camera);
 }
