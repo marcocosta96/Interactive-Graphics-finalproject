@@ -124,6 +124,9 @@ var trajectories = [];
 // Texture Loader
 var textureloader = new THREE.TextureLoader();
 
+// Play or pause the animation
+var play = true;
+
 // Create orbit trajectory for the planets
 function createOrbitTrajectory(Id) {
 
@@ -266,7 +269,7 @@ function init() {
     cubeStars.format = THREE.RGBFormat;
     scene.background = cubeStars;
 
-    // listener over sidebar menu
+    // listeners over sidebar menu
     document.getElementById("trajCheckbox").onchange = function(event) {
         if (event.target.checked)
             for (let i = mercuryId; i <= moonId; i++)
@@ -277,13 +280,24 @@ function init() {
                 trajectories[i].visible = false;
     }
 
+    document.getElementById("playButton").onclick = function(event) {
+        if (play) {
+            play = false;
+            event.target.innerHTML = "Pause Animation";
+        }
+        else {
+            play = true;
+            event.target.innerHTML = "Play Animation";
+        }
+    }
+
 }
 
 // Update animation
 function render () {
     requestAnimationFrame(render);
     var time = Date.now();
-    for(let i = sunId; i <= moonId; i++) rotationPlanet(i, time);
+    if (play) for(let i = sunId; i <= moonId; i++) rotationPlanet(i, time);
     controls.update();
     renderer.render(scene, camera);
 }
