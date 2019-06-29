@@ -212,7 +212,7 @@ function rotationPlanet(Id, time) {
 // Initialize
 function init() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 10000 );
     camera.position.z = 100;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     renderer = new THREE.WebGLRenderer();
@@ -258,7 +258,7 @@ function init() {
 
     // Stars background
     //var stars = textureloader.load('./img/stars.jpg');
-    var stars = './img/stars.jpg';
+    var stars = './img/stars2.jpg';
     var starsArray = [stars, stars, stars, stars, stars, stars];
     var cubeStars = new THREE.CubeTextureLoader().load(starsArray);
     cubeStars.format = THREE.RGBFormat;
