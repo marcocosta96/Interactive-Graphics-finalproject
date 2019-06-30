@@ -217,6 +217,28 @@ function rotationPlanet(Id, time) {
 
 }
 
+// Focus camera over a selected planet
+function dblclickPlanet(event) {
+    // normalize mouse coordinates
+    var mouse = new THREE.Vector2();
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // capture the clicked object
+    var raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera( mouse, camera );
+    var intersects = raycaster.intersectObjects( scene.children );
+    var targetElement = null;
+    if (intersects.length > 0) targetElement = intersects[ 0 ].object;
+
+    // focus camera on it
+    if (targetElement) {
+        controls.target.set(targetElement.position.x, targetElement.position.y, targetElement.position.z);
+        controls.update();
+    }
+
+}
+
 // Initialize
 function init() {
     scene = new THREE.Scene();
@@ -271,6 +293,9 @@ function init() {
     var cubeStars = new THREE.CubeTextureLoader().load(starsArray);
     cubeStars.format = THREE.RGBFormat;
     scene.background = cubeStars;
+
+    // listener for double click over a planet
+    document.addEventListener('dblclick', dblclickPlanet, false);
 
     // listeners for sidebar menu
     document.getElementById("trajCheckbox").onchange = function(event) {
