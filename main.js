@@ -112,6 +112,9 @@ data[moonId] = {
 
 var scene, camera, renderer, controls;
 
+// Far camera parameter
+var far = 10000;
+
 // Solar System Group (Hierarchical Model)
 var solarSystem;
 
@@ -242,7 +245,7 @@ function dblclickPlanet(event) {
 // Initialize
 function init() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 10000 );
+    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, far );
     camera.position.z = 100;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     renderer = new THREE.WebGLRenderer();
@@ -294,6 +297,13 @@ function init() {
     cubeStars.format = THREE.RGBFormat;
     scene.background = cubeStars;
 
+    // listener for window resizing
+    window.addEventListener('resize', function(){
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+    }, false);
+
     // listener for double click over a planet
     document.addEventListener('dblclick', dblclickPlanet, false);
 
@@ -322,6 +332,13 @@ function init() {
     document.getElementById("speedSlider").oninput = function(event) {
         speedFactor = event.target.value;
         document.getElementById("speedText").innerHTML = "Speed = "+speedFactor+"x";
+    }
+
+    document.getElementById("farSlider").oninput = function(event) {
+        far = parseFloat(event.target.value);
+        camera.far = far;
+        camera.updateProjectionMatrix();
+        document.getElementById("farText").innerHTML = "Far = "+far;
     }
 
 }
