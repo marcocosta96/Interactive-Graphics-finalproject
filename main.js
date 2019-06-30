@@ -223,7 +223,7 @@ function init() {
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById("container").appendChild( renderer.domElement );
-    controls = new THREE.OrbitControls(camera);
+    controls = new THREE.OrbitControls(camera, document.getElementById("container"));
 
     // Create Solar System group
     solarSystem = new THREE.Group();
