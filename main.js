@@ -127,6 +127,9 @@ var textureloader = new THREE.TextureLoader();
 // Play or pause the animation
 var play = true;
 
+// Speed factor
+var speedFactor = 1.0;
+
 // Create orbit trajectory for the planets
 function createOrbitTrajectory(Id) {
 
@@ -197,18 +200,18 @@ function createPlanet(Id) {
 function rotationPlanet(Id, time) {
 
     // Rotation motion
-    if (Id == venusId || Id == neptuneId) planets[Id].rotation.y -= data[Id].rotationRate;      // Retrograde motion
-    else planets[Id].rotation.y += data[Id].rotationRate;
+    if (Id == venusId || Id == neptuneId) planets[Id].rotation.y -= data[Id].rotationRate * speedFactor;      // Retrograde motion
+    else planets[Id].rotation.y += data[Id].rotationRate * speedFactor;
 
     // Orbit motion
     if(Id == moonId) {
-        planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * 200))) * data[Id].distanceFromEarth;
-        planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * 200))) * data[Id].distanceFromEarth;
+        planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / speedFactor)))) * data[Id].distanceFromEarth;
+        planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / speedFactor)))) * data[Id].distanceFromEarth;
     }
     else {
         if (Id != sunId) {
-            planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * 200))) * data[Id].distanceFromSun;
-            planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * 200))) * data[Id].distanceFromSun;
+            planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / speedFactor)))) * data[Id].distanceFromSun;
+            planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / speedFactor)))) * data[Id].distanceFromSun;
         }
     }
 
@@ -269,7 +272,7 @@ function init() {
     cubeStars.format = THREE.RGBFormat;
     scene.background = cubeStars;
 
-    // listeners over sidebar menu
+    // listeners for sidebar menu
     document.getElementById("trajCheckbox").onchange = function(event) {
         if (event.target.checked)
             for (let i = mercuryId; i <= moonId; i++)
@@ -289,6 +292,11 @@ function init() {
             play = true;
             event.target.innerHTML = "Play Animation";
         }
+    }
+
+    document.getElementById("speedSlider").oninput = function(event) {
+        speedFactor = event.target.value;
+        document.getElementById("speedText").innerHTML = "Speed = "+speedFactor+"x";
     }
 
 }
