@@ -41,7 +41,7 @@ data[mercuryId] = {
     size: 1/2.54,
     distanceFromSun: 10,
     orbitRate: 87.969,
-    rotationRate: 0.015/58.65,
+    rotationRate: data[earthId]/58.65,
     color: 'img/mercuryColorMap.jpg',
     bump: 'img/mercuryBumpMap.jpg'
 };
@@ -50,7 +50,7 @@ data[venusId] = {
     size: 1/1.05,
     distanceFromSun: 17.5,
     orbitRate: 224.701,
-    rotationRate: 0.015/243.69,
+    rotationRate: data[earthId]/243.69,
     color: 'img/venusColorMap.jpg',
     bump: 'img/venusBumpMap.jpg'
 };
@@ -59,7 +59,7 @@ data[marsId] = {
     size: 1/1.88,
     distanceFromSun: 40,
     orbitRate: 686.96,
-    rotationRate: 0.015/1.025957,
+    rotationRate: data[earthId]/1.025957,
     color: 'img/marsColorMap.jpg',
     bump: 'img/marsBumpMap.jpg',
     normal: 'img/marsNormalMap.jpg'
@@ -69,7 +69,7 @@ data[jupiterId] = {
     size: 2.7,
     distanceFromSun: 65,
     orbitRate: 4333.2867,
-    rotationRate: 0.015*0.413538021,
+    rotationRate: data[earthId]*0.413538021,
     color: 'img/jupiterColorMap.jpg'
 };
 data[saturnId] = {
@@ -77,7 +77,7 @@ data[saturnId] = {
     size: 2.14,
     distanceFromSun: 125,
     orbitRate: 10749.25,
-    rotationRate: 0.015/0.445,
+    rotationRate: data[earthId]/0.445,
     ringInnerDiameter: 2.5,
     ringOuterDiameter: 3.5,
     ringSegments: 500,
@@ -89,7 +89,7 @@ data[uranusId] = {
     size: 1,
     distanceFromSun: 245,
     orbitRate: 30664.015,
-    rotationRate: 0.015/0.71833,
+    rotationRate: data[earthId]/0.71833,
     color: 'img/uranusColorMap.jpg',
     ring: 'img/uranusRingColor.jpg'
 };
@@ -98,7 +98,7 @@ data[neptuneId] = {
     size: 1.94,
     distanceFromSun: 485,
     orbitRate: 60223.3528,
-    rotationRate: 0.015/0.67125,
+    rotationRate: data[earthId]/0.67125,
     color: 'img/neptuneColorMap.jpg'
 };
 data[plutoId] = {
@@ -106,7 +106,7 @@ data[plutoId] = {
     size: 1/0.555,
     distanceFromSun: 965,
     orbitRate: 91201.35,
-    rotationRate: 0.015*6.387230,
+    rotationRate: data[earthId]*6.387230,
     color: 'img/plutoColorMap.jpg',
     bump: 'img/plutoBumpMap.jpg'
 };
@@ -119,7 +119,6 @@ data[moonId] = {
     color: 'img/moonColorMap.jpg',
     bump: 'img/moonBumpMap.jpg'
 };
-
 
 var scene, camera, renderer, controls, raycaster;
 
@@ -135,6 +134,12 @@ var planets = [];
 // Trajectories array
 var trajectories = [];
 
+// Light of the sunId
+var pointLight;
+
+// Ambient light
+var ambientLight;
+
 // Texture Loader
 var textureloader = new THREE.TextureLoader();
 
@@ -143,9 +148,6 @@ var play = true;
 
 // Speed factor
 var speedFactor = 1.0;
-
-// Planet selector for camera
-var selector = document.getElementById("cameraSelect");
 
 // mouse
 var mouse;
@@ -329,7 +331,7 @@ function init() {
     scene.add(solarSystem);
 
     // The sun is a light source
-    var pointLight = new THREE.PointLight("rgb(255, 220, 180)", 1.5);
+    pointLight = new THREE.PointLight("rgb(255, 220, 180)", 1.5);
     pointLight.castShadow = true;
     pointLight.shadow.bias = 0.001;
     pointLight.shadow.mapSize.width = 2048;
@@ -337,8 +339,7 @@ function init() {
     scene.add(pointLight);
 
     // Create light viewable from all directions.
-    var ambientLight = new THREE.AmbientLight(0xaaaaaa);
-    scene.add(ambientLight);
+    ambientLight = new THREE.AmbientLight(0xaaaaaa);
 
     // Create Sun
     var geometry = new THREE.SphereGeometry(data[sunId].size, 48, 48 );
@@ -373,27 +374,26 @@ function init() {
     window.addEventListener('resize', function(){
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
-        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setSize(window.innerWidth, window.innerHeight);
     }, false);
 
     // listener for double click over a planet
     window.addEventListener('dblclick', dblclickPlanet, false);
 
-    // listener for double click over a planet
+    // listener for hover on a planet
     window.addEventListener('mousemove', showInfoPlanet, false);
 
     // listeners for sidebar menu
-    document.getElementById("trajCheckbox").onchange = function(event) {
+    $("#trajCheckbox").on("change", function(event) {
         if (event.target.checked)
             for (let i = mercuryId; i <= moonId; i++)
                 trajectories[i].visible = true;
-
         else
             for (let i = mercuryId; i <= moonId; i++)
                 trajectories[i].visible = false;
-    }
+    });
 
-    document.getElementById("playButton").onclick = function(event) {
+    $("#playButton").on("click", function(event) {
         if (play) {
             play = false;
             event.target.innerHTML = "Play Animation";
@@ -402,25 +402,42 @@ function init() {
             play = true;
             event.target.innerHTML = "Pause Animation";
         }
-    }
+    });
 
-    document.getElementById("speedSlider").oninput = function(event) {
+    $("#speedSlider").on("input", function(event) {
         speedFactor = event.target.value;
-        document.getElementById("speedText").innerHTML = "Speed = "+speedFactor+"x";
-    }
+        document.getElementById("speedText").innerHTML = "Speed: "+speedFactor+"x";
+    });
 
-    document.getElementById("farSlider").oninput = function(event) {
+    $("#farSlider").on("input", function(event) {
         far = parseFloat(event.target.value);
         camera.far = far;
         camera.updateProjectionMatrix();
-        document.getElementById("farText").innerHTML = "Far = "+far;
-    }
+        document.getElementById("farText").innerHTML = "Far: "+far;
+    });
 
-    selector.onchange = function(event) {
-        let planetId = selector.options[selector.selectedIndex].value;
+    $("#lightSlider").on("input", function(event) {
+        let intensity = parseFloat(event.target.value);
+        pointLight.intensity = intensity;
+        document.getElementById("lightText").innerHTML = "Light intensity: "+intensity;
+    });
+
+    $("#cameraSelect").on("change", function(event) {
+        let planetId = $("#cameraSelect").val();
         controls.target.set(planets[planetId].position.x, planets[planetId].position.y, planets[planetId].position.z);
         controls.update();
-    }
+    });
+
+    $("#ambientLightCheckbox").on("change", function(event) {
+        if (event.target.checked)
+            scene.add(ambientLight);
+        else
+            scene.remove(ambientLight);
+    });
+
+    $(document).ready(function() {
+        $('select').formSelect();
+    });
 }
 
 // Update animation
