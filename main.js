@@ -110,7 +110,7 @@ data[moonId] = {
 };
 
 
-var scene, camera, renderer, controls;
+var scene, camera, renderer, controls, raycaster;
 
 // Far camera parameter
 var far = 10000;
@@ -228,9 +228,8 @@ function dblclickPlanet(event) {
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     // capture the clicked object
-    var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera( mouse, camera );
-    var intersects = raycaster.intersectObjects( scene.children );
+    var intersects = raycaster.intersectObjects( scene.children, true );
     var targetElement = null;
     if (intersects.length > 0) targetElement = intersects[ 0 ].object;
 
@@ -248,6 +247,7 @@ function init() {
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, far );
     camera.position.z = 100;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
+    raycaster = new THREE.Raycaster();
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById("container").appendChild( renderer.domElement );
@@ -297,6 +297,7 @@ function init() {
     cubeStars.format = THREE.RGBFormat;
     scene.background = cubeStars;
 
+
     // listener for window resizing
     window.addEventListener('resize', function(){
         camera.aspect = window.innerWidth / window.innerHeight;
@@ -305,7 +306,7 @@ function init() {
     }, false);
 
     // listener for double click over a planet
-    document.addEventListener('dblclick', dblclickPlanet, false);
+    window.addEventListener('dblclick', dblclickPlanet, false);
 
     // listeners for sidebar menu
     document.getElementById("trajCheckbox").onchange = function(event) {
