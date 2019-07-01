@@ -20,87 +20,98 @@ const planetSegments = 48;
 // Planet data
 const data = [];
 data[sunId] = {
-        size: 5,
-        rotationRate: 0.015/25.38,
-        color: 'img/sunColorMap.jpg'
-    };
+    name: "Sun",
+    size: 5,
+    rotationRate: 0.015/25.38,
+    color: 'img/sunColorMap.jpg'
+};
 data[earthId] = {
-        size: 1,
-        distanceFromSun: 25,
-        orbitRate: 365.2564,
-        rotationRate: 0.015,
-        color: 'img/earthColorMap.jpg',
-        bump: 'img/earthBumpMap.jpg',
-        specular: 'img/earthSpecularMap.jpg',
-        cloud: 'img/earthCloudMap.jpg'
-    };
+    name: "Earth",
+    size: 1,
+    distanceFromSun: 25,
+    orbitRate: 365.2564,
+    rotationRate: 0.015,
+    color: 'img/earthColorMap.jpg',
+    bump: 'img/earthBumpMap.jpg',
+    specular: 'img/earthSpecularMap.jpg',
+    cloud: 'img/earthCloudMap.jpg'
+};
 data[mercuryId] = {
-        size: 1/2.54,
-        distanceFromSun: 10,
-        orbitRate: 87.969,
-        rotationRate: 0.015/58.65,
-        color: 'img/mercuryColorMap.jpg',
-        bump: 'img/mercuryBumpMap.jpg'
-    };
+    name: "Mercury",
+    size: 1/2.54,
+    distanceFromSun: 10,
+    orbitRate: 87.969,
+    rotationRate: 0.015/58.65,
+    color: 'img/mercuryColorMap.jpg',
+    bump: 'img/mercuryBumpMap.jpg'
+};
 data[venusId] = {
-        size: 1/1.05,
-        distanceFromSun: 17.5,
-        orbitRate: 224.701,
-        rotationRate: 0.015/243.69,
-        color: 'img/venusColorMap.jpg',
-        bump: 'img/venusBumpMap.jpg'
-    };
+    name: "Venus",
+    size: 1/1.05,
+    distanceFromSun: 17.5,
+    orbitRate: 224.701,
+    rotationRate: 0.015/243.69,
+    color: 'img/venusColorMap.jpg',
+    bump: 'img/venusBumpMap.jpg'
+};
 data[marsId] = {
-        size: 1/1.88,
-        distanceFromSun: 40,
-        orbitRate: 686.96,
-        rotationRate: 0.015/1.025957,
-        color: 'img/marsColorMap.jpg',
-        bump: 'img/marsBumpMap.jpg',
-        normal: 'img/marsNormalMap.jpg'
-    };
+    name: "Mars",
+    size: 1/1.88,
+    distanceFromSun: 40,
+    orbitRate: 686.96,
+    rotationRate: 0.015/1.025957,
+    color: 'img/marsColorMap.jpg',
+    bump: 'img/marsBumpMap.jpg',
+    normal: 'img/marsNormalMap.jpg'
+};
 data[jupiterId] = {
-        size: 2.7,
-        distanceFromSun: 65,
-        orbitRate: 4333.2867,
-        rotationRate: 0.015*0.413538021,
-        color: 'img/jupiterColorMap.jpg'
-    };
+    name: "Jupiter",
+    size: 2.7,
+    distanceFromSun: 65,
+    orbitRate: 4333.2867,
+    rotationRate: 0.015*0.413538021,
+    color: 'img/jupiterColorMap.jpg'
+};
 data[saturnId] = {
-        size: 2.14,
-        distanceFromSun: 125,
-        orbitRate: 10749.25,
-        rotationRate: 0.015/0.445,
-        ringInnerDiameter: 2.5,
-        ringOuterDiameter: 3.5,
-        ringSegments: 500,
-        color: 'img/saturnColorMap.jpg',
-        ring: 'img/saturnRingColor.jpg'
-    };
+    name: "Saturn",
+    size: 2.14,
+    distanceFromSun: 125,
+    orbitRate: 10749.25,
+    rotationRate: 0.015/0.445,
+    ringInnerDiameter: 2.5,
+    ringOuterDiameter: 3.5,
+    ringSegments: 500,
+    color: 'img/saturnColorMap.jpg',
+    ring: 'img/saturnRingColor.jpg'
+};
 data[uranusId] = {
-        size: 1,
-        distanceFromSun: 245,
-        orbitRate: 30664.015,
-        rotationRate: 0.015/0.71833,
-        color: 'img/uranusColorMap.jpg',
-        ring: 'img/uranusRingColor.jpg'
-    };
+    name: "Uranus",
+    size: 1,
+    distanceFromSun: 245,
+    orbitRate: 30664.015,
+    rotationRate: 0.015/0.71833,
+    color: 'img/uranusColorMap.jpg',
+    ring: 'img/uranusRingColor.jpg'
+};
 data[neptuneId] = {
-        size: 1.94,
-        distanceFromSun: 485,
-        orbitRate: 60223.3528,
-        rotationRate: 0.015/0.67125,
-        color: 'img/neptuneColorMap.jpg'
-    };
+    name: "Neptune",
+    size: 1.94,
+    distanceFromSun: 485,
+    orbitRate: 60223.3528,
+    rotationRate: 0.015/0.67125,
+    color: 'img/neptuneColorMap.jpg'
+};
 data[plutoId] = {
-        size: 1/0.555,
-        distanceFromSun: 965,
-        orbitRate: 91201.35,
-        rotationRate: 0.015*6.387230,
-        color: 'img/plutoColorMap.jpg',
-        bump: 'img/plutoBumpMap.jpg'
-    };
+    name: "Pluto",
+    size: 1/0.555,
+    distanceFromSun: 965,
+    orbitRate: 91201.35,
+    rotationRate: 0.015*6.387230,
+    color: 'img/plutoColorMap.jpg',
+    bump: 'img/plutoBumpMap.jpg'
+};
 data[moonId] = {
+    name: "Moon",
     orbitRate: 29.5,
     rotationRate: 0.01,
     distanceFromEarth: 2.0,
@@ -133,6 +144,15 @@ var play = true;
 // Speed factor
 var speedFactor = 1.0;
 
+// Planet selector for camera
+var selector = document.getElementById("cameraSelect");
+
+// mouse
+var mouse;
+
+// tooltip
+var tooltipDiv = $("#tooltip");
+
 // Create orbit trajectory for the planets
 function createOrbitTrajectory(Id) {
 
@@ -153,7 +173,6 @@ function createOrbitTrajectory(Id) {
 
 // Create planet
 function createPlanet(Id) {
-
     var geometry = new THREE.SphereGeometry(data[Id].size, planetSegments, planetSegments);
     var texture = textureloader.load(data[Id].color);
     var planetBump = null;
@@ -173,8 +192,8 @@ function createPlanet(Id) {
     planets[Id] = new THREE.Mesh(geometry, material);
     planets[Id].castShadow = true;
     if(Id == moonId) {
-        planets[earthId].add(planets[Id]);
         planets[Id].position.set(data[Id].distanceFromEarth, 0, 0);
+        planets[earthId].add(planets[Id]);
     }
     else {
         planets[Id].position.set(data[Id].distanceFromSun, 0, 0);
@@ -217,28 +236,80 @@ function rotationPlanet(Id, time) {
             planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / speedFactor)))) * data[Id].distanceFromSun;
         }
     }
-
 }
 
 // Focus camera over a selected planet
 function dblclickPlanet(event) {
     // normalize mouse coordinates
-    var mouse = new THREE.Vector2();
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     // capture the clicked object
-    raycaster.setFromCamera( mouse, camera );
-    var intersects = raycaster.intersectObjects( scene.children, true );
+    raycaster.setFromCamera(mouse, camera);
+    var intersects = raycaster.intersectObjects(scene.children, true);
     var targetElement = null;
-    if (intersects.length > 0) targetElement = intersects[ 0 ].object;
+    if (intersects.length > 0) targetElement = intersects[0].object;
 
     // focus camera on it
     if (targetElement) {
         controls.target.set(targetElement.position.x, targetElement.position.y, targetElement.position.z);
         controls.update();
+        let id = 0;
+        for(let i = 0; i <= moonId; i++) if(planets[i] == targetElement) id = i;
+        selector.selectedIndex = id;
     }
+}
 
+function showInfoPlanet(event) {
+
+    // normalize mouse coordinates
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // capture the clicked object
+    raycaster.setFromCamera(mouse, camera);
+    var intersects = raycaster.intersectObjects(scene.children, true);
+    var targetElement = null;
+    if (intersects.length > 0) targetElement = intersects[0].object;
+
+    // show tooltip
+    if (targetElement) {
+        let id = 0;
+        for(let i = 0; i <= moonId; i++) if(planets[i] == targetElement) id = i;
+
+        tooltipDiv.css({
+            display: "block",
+            opacity: 0.0
+        });
+
+        var canvasHalfWidth = renderer.domElement.offsetWidth / 2;
+        var canvasHalfHeight = renderer.domElement.offsetHeight / 2;
+
+        var tooltipPosition = intersects[0].point.clone().project(camera);
+        tooltipPosition.x = (tooltipPosition.x * canvasHalfWidth) + canvasHalfWidth + renderer.domElement.offsetLeft;
+        tooltipPosition.y = -(tooltipPosition.y * canvasHalfHeight) + canvasHalfHeight + renderer.domElement.offsetTop;
+
+        var tootipWidth = tooltipDiv[0].offsetWidth;
+        var tootipHeight = tooltipDiv[0].offsetHeight;
+
+        tooltipDiv.css({
+            left: `${tooltipPosition.x - tootipWidth/2}px`,
+            top: `${tooltipPosition.y - tootipHeight - 5}px`
+        });
+
+        tooltipDiv.text(data[id].name);
+
+        setTimeout(function() {
+            tooltipDiv.css({
+                opacity: 1.0
+            });
+        }, 25);
+    }
+    else {
+        tooltipDiv.css({
+            display: "none"
+        });
+    }
 }
 
 // Initialize
@@ -250,7 +321,7 @@ function init() {
     raycaster = new THREE.Raycaster();
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById("container").appendChild( renderer.domElement );
+    document.getElementById("container").appendChild(renderer.domElement);
     controls = new THREE.OrbitControls(camera, document.getElementById("container"));
 
     // Create Solar System group
@@ -290,13 +361,13 @@ function init() {
     createPlanet(plutoId);
 
     // Stars background
-    //var stars = textureloader.load('./img/stars.jpg');
-    var stars = './img/stars2.jpg';
+    var stars = './img/stars.jpg';
     var starsArray = [stars, stars, stars, stars, stars, stars];
     var cubeStars = new THREE.CubeTextureLoader().load(starsArray);
     cubeStars.format = THREE.RGBFormat;
     scene.background = cubeStars;
 
+    mouse = new THREE.Vector2();
 
     // listener for window resizing
     window.addEventListener('resize', function(){
@@ -307,6 +378,9 @@ function init() {
 
     // listener for double click over a planet
     window.addEventListener('dblclick', dblclickPlanet, false);
+
+    // listener for double click over a planet
+    window.addEventListener('mousemove', showInfoPlanet, false);
 
     // listeners for sidebar menu
     document.getElementById("trajCheckbox").onchange = function(event) {
@@ -322,11 +396,11 @@ function init() {
     document.getElementById("playButton").onclick = function(event) {
         if (play) {
             play = false;
-            event.target.innerHTML = "Pause Animation";
+            event.target.innerHTML = "Play Animation";
         }
         else {
             play = true;
-            event.target.innerHTML = "Play Animation";
+            event.target.innerHTML = "Pause Animation";
         }
     }
 
@@ -342,6 +416,11 @@ function init() {
         document.getElementById("farText").innerHTML = "Far = "+far;
     }
 
+    selector.onchange = function(event) {
+        let planetId = selector.options[selector.selectedIndex].value;
+        controls.target.set(planets[planetId].position.x, planets[planetId].position.y, planets[planetId].position.z);
+        controls.update();
+    }
 }
 
 // Update animation

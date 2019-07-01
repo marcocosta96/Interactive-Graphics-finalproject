@@ -8,30 +8,46 @@
         <script src="libraries/three.min.js"></script>
         <script src="libraries/OrbitControls.js"></script>
         <script src="libraries/jquery-3.4.1.js"></script>
+        <script src="libraries/sidebar.js"></script>
     </head>
     <body>
         <div class="sidebar">
             <ul>
-                <li><a href="#">Home</a></li>
                 <li><a id="menuText"><input type="checkbox" id="trajCheckbox" checked> Show / Hide the trajectories</a></li>
-                <li><a><button type="button" id="playButton">Play Animation</button><a></li>
+                <li><a><button type="button" id="playButton">Pause Animation</button></a></li>
                 <li><a>
                     0.02x <input type="range" min="0.02" max="20.0" step="0.02" value="1.0" id="speedSlider"> 20x
                     <br>
                     <p id = "speedText">Speed = 1.0x</p>
-                <a></li>
+                </a></li>
                 <li><a>
                     1000 <input type="range" min="1000" max="100000" step="1000" value="10000" id="farSlider"> 100000
                     <br>
                     <p id = "farText">Far = 10000</p>
-                <a></li>
+                </a></li>
+                <li><a>
+                    <label>Camera:</label>
+                    <select id="cameraSelect">
+                         <option value=0>Sun</option>
+                         <option value=1>Mercury</option>
+                         <option value=2>Venus</option>
+                         <option value=3>Earth</option>
+                         <option value=10>Moon</option>
+                         <option value=4>Mars</option>
+                         <option value=5>Jupiter</option>
+                         <option value=6>Saturn</option>
+                         <option value=7>Uranus</option>
+                         <option value=8>Neptune</option>
+                         <option value=9>Pluto</option>
+                    </select>
+                </a></li>
             </ul>
             <button class="sidebarButton">
                 <span></span>
             </button>
         </div>
+        <div id="tooltip"></div>
         <div id="container"></div>
         <script src="main.js"></script>
-        <script src="sidebar.js"></script>
     </body>
 </html>
