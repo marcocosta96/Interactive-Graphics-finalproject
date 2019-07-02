@@ -12,8 +12,9 @@ const uranusId = 7;
 const neptuneId = 8;
 const plutoId = 9;
 const moonId = 10;
-const saturnRingId = 11;
-const solarSystemId = 12;
+const earthCloudId = 11;
+const saturnRingId = 12;
+const solarSystemId = 13;
 
 // Planet (Sphere) segments
 const planetSegments = 48;
@@ -214,7 +215,7 @@ function createOrbitTrajectory(Id) {
 
     trajectories[Id] = new THREE.LineLoop(geometry, material);
     trajectories[Id].rotation.x = Math.PI * 0.5;
-    trajectories[Id].name = data[Id].name + "trajectory";        // used for ignoring if focus on it
+    trajectories[Id].name = "trajectory";        // used for ignoring if focus on it
     planets[data[Id].orbitCenter].add(trajectories[Id]);
 }
 
@@ -287,6 +288,20 @@ function createStars(image) {
     scene.background = cubeStars;
 }
 
+// Create Earth cloud
+function createEarthCloud() {
+    var cloudTexture = textureloader.load(data[earthId].cloud);
+    var material = new THREE.MeshPhongMaterial({
+        map: cloudTexture,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.8
+    });
+    planets[earthCloudId] = new THREE.Mesh(new THREE.SphereGeometry(data[earthId].size, planetSegments, planetSegments), material);
+    planets[earthCloudId].scale.set(1.02, 1.02, 1.02);
+    planets[earthCloudId].name = data[earthId].name;
+}
+
 // Move planet
 function rotationPlanet(Id, time) {
     // Rotation motion
@@ -323,12 +338,13 @@ function dblclickPlanet(event) {
     // capture the object
     var targetElement = captureObject(null);       // null if it's not object or it's trajectory
 
+    let id = -1;
+    for(let i = sunId; i <= saturnRingId; i++) if(planets[i] == targetElement) id = i;
+
     // focus camera on it
-    if (targetElement) {
+    if (targetElement && id != -1) {
         controls.target.set(targetElement.position.x, targetElement.position.y, targetElement.position.z);
         controls.update();
-        let id = 0;
-        for(let i = 0; i <= moonId; i++) if(planets[i] == targetElement) id = i;
         $("#cameraSelect").val(id);
         $("#cameraSelect").formSelect();
     }
@@ -394,6 +410,9 @@ function init() {
 
     // Create planets
     for(let i = mercuryId; i <= moonId; i++) createPlanet(i);
+
+    // Create Earth clouds
+    createEarthCloud();
 
     // Stars background
     createStars('./img/stars.jpg');
@@ -476,6 +495,15 @@ function init() {
         let planetId = $("#cameraSelect").val();
         controls.target.set(planets[planetId].position.x, planets[planetId].position.y, planets[planetId].position.z);
         controls.update();
+    });
+
+    $("#earthCloudCheckbox").on("change", function(event) {
+        if (event.target.checked) {
+            planets[earthId].add(planets[earthCloudId]);
+        }
+        else {
+            planets[earthId].remove(planets[earthCloudId]);
+        }
     });
 
     $("#ambientLightCheckbox").on("change", function(event) {
