@@ -200,13 +200,13 @@ function createOrbitTrajectory(Id) {
     var geometry = null;
     if (Id == moonId) geometry = new THREE.CircleGeometry(data[Id].distanceFromEarth, 128);
     else geometry = new THREE.CircleGeometry(data[Id].distanceFromSun, 128);
-
     var material = new THREE.LineBasicMaterial({color: 0xffffff});
 
     geometry.vertices.shift();  // Remove center vertex
 
     trajectories[Id] = new THREE.LineLoop(geometry, material);
     trajectories[Id].rotation.x = Math.PI * 0.5;
+    trajectories[Id].name = "trajectory";        // used for ignoring if focus on it
     if (Id == moonId) planets[earthId].add(trajectories[Id]);
     else solarSystem.add(trajectories[Id]);
 }
@@ -231,6 +231,7 @@ function createPlanet(Id) {
 
     planets[Id] = new THREE.Mesh(geometry, material);
     planets[Id].castShadow = true;
+    planets[Id].name = data[Id].name;       // used for not ignoring if focus on it
     if(Id == moonId) {
         planets[Id].position.set(data[Id].distanceFromEarth, 0, 0);
         planets[earthId].add(planets[Id]);
@@ -254,6 +255,7 @@ function createPlanet(Id) {
         });
         planets[saturnRingId] = new THREE.Mesh(ringGeometry, ringMaterial);
         planets[saturnRingId].rotation.x = Math.PI/2;
+        planets[saturnRingId].name = "Rings of Saturn";       // used for not ignoring if focus on it
         planets[saturnId].add(planets[saturnRingId]);
     }
 }
@@ -278,8 +280,8 @@ function rotationPlanet(Id, time) {
     }
 }
 
-// Focus camera over a selected planet
-function dblclickPlanet(event) {
+// Capture the object selected with mouse
+function captureObject(point) {
     // normalize mouse coordinates
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -287,8 +289,22 @@ function dblclickPlanet(event) {
     // capture the clicked object
     raycaster.setFromCamera(mouse, camera);
     var intersects = raycaster.intersectObjects(scene.children, true);
-    var targetElement = null;
-    if (intersects.length > 0) targetElement = intersects[0].object;
+
+    // Analize the result
+    for (let i = 0; i < intersects.length; i++)
+        if (intersects[i].object.name != "trajectory") {
+            if (point) point.coord = intersects[i].point;   // funct called by showInfoPlanet
+            return intersects[i].object;    // found object that is not a trajectory
+        }
+
+
+    return null;    // there are no element or only trajectories
+}
+
+// Focus camera over a selected planet
+function dblclickPlanet(event) {
+    // capture the object
+    var targetElement = captureObject(null);       // null if it's not object or it's trajectory
 
     // focus camera on it
     if (targetElement) {
@@ -302,21 +318,12 @@ function dblclickPlanet(event) {
 }
 
 function showInfoPlanet(event) {
-    // normalize mouse coordinates
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    // capture the clicked object
-    raycaster.setFromCamera(mouse, camera);
-    var intersects = raycaster.intersectObjects(scene.children, true);
-    var targetElement = null;
-    if (intersects.length > 0) targetElement = intersects[0].object;
+    // capture the object
+    var point = {coord:null};
+    var targetElement = captureObject(point);       // null if it's not object or it's trajectory
 
     // show tooltip
     if (targetElement) {
-        let id = 0;
-        for(let i = 0; i <= moonId; i++) if(planets[i] == targetElement) id = i;
-
         tooltipDiv.css({
             display: "block",
             opacity: 0.0
@@ -325,7 +332,7 @@ function showInfoPlanet(event) {
         var canvasHalfWidth = renderer.domElement.offsetWidth / 2;
         var canvasHalfHeight = renderer.domElement.offsetHeight / 2;
 
-        var tooltipPosition = intersects[0].point.clone().project(camera);
+        var tooltipPosition = point.coord.clone().project(camera);
         tooltipPosition.x = (tooltipPosition.x * canvasHalfWidth) + canvasHalfWidth + renderer.domElement.offsetLeft;
         tooltipPosition.y = -(tooltipPosition.y * canvasHalfHeight) + canvasHalfHeight + renderer.domElement.offsetTop;
 
@@ -334,10 +341,10 @@ function showInfoPlanet(event) {
 
         tooltipDiv.css({
             left: `${tooltipPosition.x - tootipWidth/2}px`,
-            top: `${tooltipPosition.y - tootipHeight - 5}px`
+            top: `${tooltipPosition.y - tootipHeight - 70}px`
         });
 
-        tooltipDiv.text(data[id].name);
+        tooltipDiv.text(targetElement.name);
 
         setTimeout(function() {
             tooltipDiv.css({
@@ -387,6 +394,7 @@ function init() {
         map: texture
     });
     planets[sunId] = new THREE.Mesh(geometry, material);
+    planets[sunId].name = data[sunId].name;
     solarSystem.add(planets[sunId]);
 
     // Create planets
@@ -421,7 +429,7 @@ function init() {
     }, false);
 
     // listener for double click over a planet
-    window.addEventListener('dblclick', dblclickPlanet, false);
+    document.getElementById("container").addEventListener('dblclick', dblclickPlanet, false);
 
     // listener for hover on a planet
     window.addEventListener('mousemove', showInfoPlanet, false);
@@ -440,10 +448,18 @@ function init() {
         if (play) {
             play = false;
             event.target.innerHTML = "Play Animation";
+            rotatingAroundEquator = false;
+            rotatingAroundSun = false;
+            $("rotationCheckbox").prop('checked', false);
+            $("revolutionCheckbox").prop('checked', false);
         }
         else {
             play = true;
             event.target.innerHTML = "Pause Animation";
+            rotatingAroundEquator = true;
+            rotatingAroundSun = true;
+            $("rotationCheckbox").prop('checked', true);
+            $("revolutionCheckbox").prop('checked', true);
         }
     });
 
