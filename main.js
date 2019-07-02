@@ -430,8 +430,8 @@ function init() {
         if (play) {
             play = false;
             event.target.innerHTML = "Play Animation";
-            $("#rotationCheckbox").click();
-            $("#revolutionCheckbox").click();
+            if($("#rotationCheckbox").is(':checked')) $("#rotationCheckbox").click();
+            if($("#revolutionCheckbox").is(':checked')) $("#revolutionCheckbox").click();
             $("#rotationCheckbox").attr("disabled", "true");
             $("#revolutionCheckbox").attr("disabled", "true");
         }
