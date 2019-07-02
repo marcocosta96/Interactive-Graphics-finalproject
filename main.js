@@ -338,15 +338,10 @@ function dblclickPlanet(event) {
     // capture the object
     var targetElement = captureObject(null);       // null if it's not object or it's trajectory
 
-    let id = -1;
-    for(let i = sunId; i <= saturnRingId; i++) if(planets[i] == targetElement) id = i;
-
     // focus camera on it
-    if (targetElement && id != -1) {
+    if (targetElement) {
         controls.target.set(targetElement.position.x, targetElement.position.y, targetElement.position.z);
         controls.update();
-        $("#cameraSelect").val(id);
-        $("#cameraSelect").formSelect();
     }
 }
 
