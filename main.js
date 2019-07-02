@@ -13,6 +13,7 @@ const neptuneId = 8;
 const plutoId = 9;
 const moonId = 10;
 const saturnRingId = 11;
+const solarSystemId = 12;
 
 // Planet (Sphere) segments
 const planetSegments = 48;
@@ -22,11 +23,12 @@ const data = [];
 data[earthId] = {
     name: "Earth",
     size: 1,
-    distanceFromSun: 50,
+    distance: 50,
     orbitRate: 365.2564,
     rotationRate: 0.015,
     equatorInclination: 23.45,
     orbitalInclination: 0,
+    orbitCenter: solarSystemId,
     color: 'img/earthColorMap.jpg',
     bump: 'img/earthBumpMap.jpg',
     specular: 'img/earthSpecularMap.jpg',
@@ -43,11 +45,12 @@ data[sunId] = {
 data[mercuryId] = {
     name: "Mercury",
     size: data[earthId].size * 0.382,
-    distanceFromSun: data[earthId].distanceFromSun * 0.387,
+    distance: data[earthId].distance * 0.387,
     orbitRate: data[earthId].orbitRate * 0.0219,
     rotationRate: data[earthId].rotationRate * 0.017,
     equatorInclination: 0,
     orbitalInclination: 7,
+    orbitCenter: solarSystemId,
     color: 'img/mercuryColorMap.jpg',
     bump: 'img/mercuryBumpMap.jpg',
     icon: 'img/mercury.png'
@@ -55,11 +58,12 @@ data[mercuryId] = {
 data[venusId] = {
     name: "Venus",
     size: data[earthId].size * 0.949,
-    distanceFromSun: data[earthId].distanceFromSun * 0.723,
+    distance: data[earthId].distance * 0.723,
     orbitRate: data[earthId].orbitRate * 0.6152,
     rotationRate: -data[earthId].rotationRate * 0.0041,
     equatorInclination: 178,
     orbitalInclination: 3.4,
+    orbitCenter: solarSystemId,
     color: 'img/venusColorMap.jpg',
     bump: 'img/venusBumpMap.jpg',
     icon: 'img/venus.png'
@@ -67,11 +71,12 @@ data[venusId] = {
 data[marsId] = {
     name: "Mars",
     size: data[earthId].size * 0.532,
-    distanceFromSun: data[earthId].distanceFromSun * 1.524,
+    distance: data[earthId].distance * 1.524,
     orbitRate: data[earthId].orbitRate * 1.881,
     rotationRate: data[earthId].rotationRate * 0.949,
     equatorInclination: 23.9833,
     orbitalInclination: 1.85,
+    orbitCenter: solarSystemId,
     color: 'img/marsColorMap.jpg',
     bump: 'img/marsBumpMap.jpg',
     normal: 'img/marsNormalMap.jpg',
@@ -80,18 +85,19 @@ data[marsId] = {
 data[jupiterId] = {
     name: "Jupiter",
     size: data[earthId].size * 11.19,
-    distanceFromSun: data[earthId].distanceFromSun * 5.203,
+    distance: data[earthId].distance * 5.203,
     orbitRate: data[earthId].orbitRate * 11.86,
     rotationRate: data[earthId].rotationRate * 2.434,
     equatorInclination: 3.0833,
     orbitalInclination: 1.3,
+    orbitCenter: solarSystemId,
     color: 'img/jupiterColorMap.jpg',
     icon: 'img/jupiter.png'
 };
 data[saturnId] = {
     name: "Saturn",
     size: data[earthId].size * 9.26,
-    distanceFromSun: data[earthId].distanceFromSun * 9.537,
+    distance: data[earthId].distance * 9.537,
     orbitRate: data[earthId].orbitRate * 29.45,
     rotationRate: data[earthId].rotationRate * 2.3388,
     equatorInclination: 26.7333,
@@ -99,18 +105,21 @@ data[saturnId] = {
     ringInnerDiameter: data[earthId].size * 10,
     ringOuterDiameter: data[earthId].size * 13,
     ringSegments: 500,
+    orbitCenter: solarSystemId,
     color: 'img/saturnColorMap.jpg',
-    ring: 'img/saturnRingColor.jpg',
+    ringColor: 'img/saturnRingColor.jpg',
+    ringPattern: 'img/saturnRingPattern.gif',
     icon: 'img/saturn.png'
 };
 data[uranusId] = {
     name: "Uranus",
     size: data[earthId].size * 4.01,
-    distanceFromSun: data[earthId].distanceFromSun * 19.191,
+    distance: data[earthId].distance * 19.191,
     orbitRate: data[earthId].orbitRate * 84.02,
     rotationRate: -data[earthId].rotationRate * 1.3888,
     equatorInclination: 98,
     orbitalInclination: 0.7666,
+    orbitCenter: solarSystemId,
     color: 'img/uranusColorMap.jpg',
     ring: 'img/uranusRingColor.jpg',
     icon: 'img/uranus.png'
@@ -118,22 +127,24 @@ data[uranusId] = {
 data[neptuneId] = {
     name: "Neptune",
     size: data[earthId].size * 3.88,
-    distanceFromSun: data[earthId].distanceFromSun * 30.069,
+    distance: data[earthId].distance * 30.069,
     orbitRate: data[earthId].orbitRate * 164.79,
     rotationRate: data[earthId].rotationRate * 1.4912,
     equatorInclination: 28.8,
     orbitalInclination: 1.7666,
+    orbitCenter: solarSystemId,
     color: 'img/neptuneColorMap.jpg',
     icon: 'img/neptune.png'
 };
 data[plutoId] = {
     name: "Pluto",
     size: data[earthId].size * 0.18,
-    distanceFromSun: data[earthId].distanceFromSun * 39.44,
+    distance: data[earthId].distance * 39.44,
     orbitRate: data[earthId].orbitRate * 249.6913,
     rotationRate: -data[earthId].rotationRate * 0.0065,
     equatorInclination: 0,
     orbitalInclination: 17.1666,
+    orbitCenter: solarSystemId,
     color: 'img/plutoColorMap.jpg',
     bump: 'img/plutoBumpMap.jpg',
     icon: 'img/pluto.png'
@@ -142,10 +153,11 @@ data[moonId] = {
     name: "Moon",
     orbitRate: 27.3,
     rotationRate: data[earthId].rotationRate * 0.0366,
-    distanceFromEarth: 2.0,
+    distance: 2.0,
     size: data[earthId].size * 0.2725,
     equatorInclination: 0,
     orbitalInclination: 5.25,
+    orbitCenter: earthId,
     color: 'img/moonColorMap.jpg',
     bump: 'img/moonBumpMap.jpg',
     icon: 'img/moon.png'
@@ -156,9 +168,6 @@ var scene, camera, renderer, controls, raycaster;
 // Far camera parameter
 var far = 10000;
 
-// Solar System Group (Hierarchical Model)
-var solarSystem;
-
 // Planets array
 var planets = [];
 
@@ -166,7 +175,7 @@ var planets = [];
 var trajectories = [];
 
 // Light of the sunId
-var pointLight;
+var sunLight;
 
 // Ambient light
 var ambientLight;
@@ -184,10 +193,10 @@ var rotationSpeedFactor = 1.0;
 var revolutionSpeedFactor = 1.0;
 
 // Rotation
-var rotatingAroundEquator;
+var rotatingAroundEquator = true;
 
 // Revolution
-var rotatingAroundSun;
+var rotatingAroundSun = true;
 
 // mouse
 var mouse;
@@ -198,59 +207,68 @@ var tooltipDiv = $("#tooltip");
 // Create orbit trajectory for the planets
 function createOrbitTrajectory(Id) {
     var geometry = null;
-    if (Id == moonId) geometry = new THREE.CircleGeometry(data[Id].distanceFromEarth, 128);
-    else geometry = new THREE.CircleGeometry(data[Id].distanceFromSun, 128);
+    geometry = new THREE.CircleGeometry(data[Id].distance, 128);
     var material = new THREE.LineBasicMaterial({color: 0xffffff});
 
     geometry.vertices.shift();  // Remove center vertex
 
     trajectories[Id] = new THREE.LineLoop(geometry, material);
     trajectories[Id].rotation.x = Math.PI * 0.5;
-    trajectories[Id].name = "trajectory";        // used for ignoring if focus on it
-    if (Id == moonId) planets[earthId].add(trajectories[Id]);
-    else solarSystem.add(trajectories[Id]);
+    trajectories[Id].name = data[Id].name + "trajectory";        // used for ignoring if focus on it
+    planets[data[Id].orbitCenter].add(trajectories[Id]);
+}
+
+function createSun() {
+    planets[solarSystemId] = new THREE.Group();
+    scene.add(planets[solarSystemId]);
+
+    // The sun is a light source
+    sunLight = new THREE.PointLight("rgb(255, 220, 180)", 1.5);
+    sunLight.castShadow = true;
+    sunLight.shadow.bias = 0.001;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    scene.add(sunLight);
+
+    // Create Sun
+    var geometry = new THREE.SphereGeometry(data[sunId].size, 48, 48 );
+	var texture = textureloader.load(data[sunId].color);
+    var material = new THREE.MeshBasicMaterial({
+        map: texture
+    });
+    planets[sunId] = new THREE.Mesh(geometry, material);
+    planets[sunId].name = data[sunId].name;
+    planets[solarSystemId].add(planets[sunId]);
 }
 
 // Create planet
 function createPlanet(Id) {
     var geometry = new THREE.SphereGeometry(data[Id].size, planetSegments, planetSegments);
     var texture = textureloader.load(data[Id].color);
-    var planetBump = null;
-    if(data[Id].bump) planetBump = textureloader.load(data[Id].bump);
-    var specMap = null;
-    if(data[Id].specular) specMap = textureloader.load(data[Id].specular);
-    var norMap = null;
-    if(data[Id].normal) norMap = textureloader.load(data[Id].normal);
     var material = new THREE.MeshPhongMaterial({
         shininess: 20,
-        map: texture,
-        bumpMap: planetBump,
-        specularMap: specMap,
-        normalMap: norMap
+        map: texture
     });
+    if(data[Id].hasOwnProperty('bump')) material.bumpMap = textureloader.load(data[Id].bump);
+    if(data[Id].hasOwnProperty('specular')) material.specularMap = textureloader.load(data[Id].specular);
+    if(data[Id].hasOwnProperty('normal')) material.normalMap = textureloader.load(data[Id].normal);
 
     planets[Id] = new THREE.Mesh(geometry, material);
     planets[Id].castShadow = true;
     planets[Id].name = data[Id].name;       // used for not ignoring if focus on it
-    if(Id == moonId) {
-        planets[Id].position.set(data[Id].distanceFromEarth, 0, 0);
-        planets[earthId].add(planets[Id]);
-    }
-    else {
-        planets[Id].position.set(data[Id].distanceFromSun, 0, 0);
-        solarSystem.add(planets[Id]);
-    }
+    planets[Id].position.set(data[Id].distance, 0, 0);
+    planets[data[Id].orbitCenter].add(planets[Id]);
 
     // Draws its orbit trajectory
     createOrbitTrajectory(Id);
 
-    if(Id == earthId) createPlanet(moonId);
-
-    else if(Id == saturnId) {
+    if(Id == saturnId) {
         var ringGeometry = new THREE.RingGeometry(data[saturnId].ringInnerDiameter, data[saturnId].ringOuterDiameter, data[saturnId].ringSegments);
-        var ringTexture = textureloader.load(data[saturnId].saturnRingColor);
+        var ringTexture = textureloader.load(data[saturnId].ringColor);
+        var ringPattern = textureloader.load(data[saturnId].ringPattern);
         var ringMaterial = new THREE.MeshBasicMaterial({
-            color: 0x757064,
+            map: ringTexture,
+            alphaMap: ringPattern,
             side: THREE.DoubleSide
         });
         planets[saturnRingId] = new THREE.Mesh(ringGeometry, ringMaterial);
@@ -260,23 +278,24 @@ function createPlanet(Id) {
     }
 }
 
+//Create stars
+function createStars(image) {
+    var starsArray = [];
+    for(let i = 0; i < 6; i++) starsArray[i] = image;
+    var cubeStars = new THREE.CubeTextureLoader().load(starsArray);
+    cubeStars.format = THREE.RGBFormat;
+    scene.background = cubeStars;
+}
+
 // Move planet
 function rotationPlanet(Id, time) {
     // Rotation motion
     if(rotatingAroundEquator) planets[Id].rotation.y += data[Id].rotationRate * rotationSpeedFactor;
 
     // Orbit motion
-    if(rotatingAroundSun) {
-        if(Id == moonId) {
-            planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distanceFromEarth;
-            planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distanceFromEarth;
-        }
-        else {
-            if (Id != sunId) {
-                planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distanceFromSun;
-                planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distanceFromSun;
-            }
-        }
+    if(rotatingAroundSun && Id != sunId) {
+        planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
+        planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
     }
 }
 
@@ -296,8 +315,6 @@ function captureObject(point) {
             if (point) point.coord = intersects[i].point;   // funct called by showInfoPlanet
             return intersects[i].object;    // found object that is not a trajectory
         }
-
-
     return null;    // there are no element or only trajectories
 }
 
@@ -373,51 +390,16 @@ function init() {
     controls = new THREE.OrbitControls(camera, document.getElementById("container"));
 
     // Create Solar System group
-    solarSystem = new THREE.Group();
-    scene.add(solarSystem);
+    createSun();
 
-    // The sun is a light source
-    pointLight = new THREE.PointLight("rgb(255, 220, 180)", 1.5);
-    pointLight.castShadow = true;
-    pointLight.shadow.bias = 0.001;
-    pointLight.shadow.mapSize.width = 2048;
-    pointLight.shadow.mapSize.height = 2048;
-    scene.add(pointLight);
+    // Create planets
+    for(let i = mercuryId; i <= moonId; i++) createPlanet(i);
+
+    // Stars background
+    createStars('./img/stars.jpg');
 
     // Create light viewable from all directions.
     ambientLight = new THREE.AmbientLight(0xaaaaaa);
-
-    // Create Sun
-    var geometry = new THREE.SphereGeometry(data[sunId].size, 48, 48 );
-	var texture = textureloader.load(data[sunId].color);
-    var material = new THREE.MeshBasicMaterial({
-        map: texture
-    });
-    planets[sunId] = new THREE.Mesh(geometry, material);
-    planets[sunId].name = data[sunId].name;
-    solarSystem.add(planets[sunId]);
-
-    // Create planets
-    createPlanet(mercuryId);
-    createPlanet(venusId);
-    createPlanet(earthId);
-    createPlanet(marsId);
-    createPlanet(jupiterId);
-    createPlanet(saturnId);
-    createPlanet(uranusId);
-    createPlanet(neptuneId);
-    createPlanet(plutoId);
-
-    //Rotation and revolution
-    rotatingAroundEquator = true;
-    rotatingAroundSun = true;
-
-    // Stars background
-    var stars = './img/stars.jpg';
-    var starsArray = [stars, stars, stars, stars, stars, stars];
-    var cubeStars = new THREE.CubeTextureLoader().load(starsArray);
-    cubeStars.format = THREE.RGBFormat;
-    scene.background = cubeStars;
 
     mouse = new THREE.Vector2();
 
@@ -448,18 +430,18 @@ function init() {
         if (play) {
             play = false;
             event.target.innerHTML = "Play Animation";
-            rotatingAroundEquator = false;
-            rotatingAroundSun = false;
-            $("rotationCheckbox").prop('checked', false);
-            $("revolutionCheckbox").prop('checked', false);
+            $("#rotationCheckbox").click();
+            $("#revolutionCheckbox").click();
+            $("#rotationCheckbox").attr("disabled", "true");
+            $("#revolutionCheckbox").attr("disabled", "true");
         }
         else {
             play = true;
             event.target.innerHTML = "Pause Animation";
-            rotatingAroundEquator = true;
-            rotatingAroundSun = true;
-            $("rotationCheckbox").prop('checked', true);
-            $("revolutionCheckbox").prop('checked', true);
+            $("#rotationCheckbox").removeAttr("disabled");
+            $("#revolutionCheckbox").removeAttr("disabled");
+            $("#rotationCheckbox").click();
+            $("#revolutionCheckbox").click();
         }
     });
 
@@ -490,12 +472,6 @@ function init() {
         document.getElementById("farText").innerHTML = "Far: "+far;
     });
 
-    $("#lightSlider").on("input", function(event) {
-        let intensity = parseFloat(event.target.value);
-        pointLight.intensity = intensity;
-        document.getElementById("lightText").innerHTML = "Sun light intensity: "+intensity;
-    });
-
     $("#cameraSelect").on("change", function(event) {
         let planetId = $("#cameraSelect").val();
         controls.target.set(planets[planetId].position.x, planets[planetId].position.y, planets[planetId].position.z);
@@ -505,6 +481,17 @@ function init() {
     $("#ambientLightCheckbox").on("change", function(event) {
         if (event.target.checked) scene.add(ambientLight);
         else scene.remove(ambientLight);
+    });
+
+    $("#sunLightCheckbox").on("change", function(event) {
+        if (event.target.checked) scene.add(sunLight);
+        else scene.remove(sunLight);
+    });
+
+    $("#sunLightSlider").on("input", function(event) {
+        let intensity = parseFloat(event.target.value);
+        sunLight.intensity = intensity;
+        document.getElementById("sunLightText").innerHTML = "Sun light intensity: "+intensity;
     });
 
     $(document).ready(function() {
@@ -517,7 +504,7 @@ function init() {
 function render () {
     requestAnimationFrame(render);
     var time = Date.now();
-    if (play) for(let i = sunId; i <= moonId; i++) rotationPlanet(i, time);
+    for(let i = sunId; i <= moonId; i++) rotationPlanet(i, time);
     controls.update();
     renderer.render(scene, camera);
 }
