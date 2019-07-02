@@ -14,7 +14,8 @@ const plutoId = 9;
 const moonId = 10;
 const earthCloudId = 11;
 const saturnRingId = 12;
-const solarSystemId = 13;
+const sunGlowId = 13;
+const solarSystemId = 14;
 
 // Planet (Sphere) segments
 const planetSegments = 48;
@@ -41,7 +42,8 @@ data[sunId] = {
     size: data[earthId].size * 15,
     rotationRate: data[earthId].rotationRate * 0.037,
     equatorInclination: 7.4166,
-    color: 'img/sunColorMap.jpg'
+    color: 'img/sunColorMap.jpg',
+    glow: 'img/glow.png'
 };
 data[mercuryId] = {
     name: "Mercury",
@@ -182,7 +184,7 @@ var sunLight;
 var ambientLight;
 
 // Texture Loader
-var textureloader = new THREE.TextureLoader();
+var textureLoader = new THREE.TextureLoader();
 
 // Play or pause the animation
 var play = true;
@@ -233,27 +235,42 @@ function createSun() {
 
     // Create Sun
     var geometry = new THREE.SphereGeometry(data[sunId].size, 48, 48 );
-	var texture = textureloader.load(data[sunId].color);
+	var texture = textureLoader.load(data[sunId].color);
     var material = new THREE.MeshBasicMaterial({
         map: texture
     });
     planets[sunId] = new THREE.Mesh(geometry, material);
     planets[sunId].name = data[sunId].name;
     planets[sunId].myId = sunId;
+    planets[sunId].receiveShadow = false;
+    planets[sunId].castShadow = false;
     planets[solarSystemId].add(planets[sunId]);
+
+    // Create the glow of the sun.
+    var spriteMaterial = new THREE.SpriteMaterial({
+        map: textureLoader.load(data[sunId].glow),
+        useScreenCoordinates: false,
+        color: 0xffffee,
+        transparent: true,
+        blending: THREE.AdditiveBlending
+    });
+    planets[sunGlowId] = new THREE.Sprite(spriteMaterial);
+    planets[sunGlowId].name = "trajectory";
+    planets[sunGlowId].scale.set(70, 70, 1.0);
+    planets[sunId].add(planets[sunGlowId]); // This centers the glow at the sun.
 }
 
 // Create planet
 function createPlanet(Id) {
     var geometry = new THREE.SphereGeometry(data[Id].size, planetSegments, planetSegments);
-    var texture = textureloader.load(data[Id].color);
+    var texture = textureLoader.load(data[Id].color);
     var material = new THREE.MeshPhongMaterial({
         shininess: 20,
         map: texture
     });
-    if(data[Id].hasOwnProperty('bump')) material.bumpMap = textureloader.load(data[Id].bump);
-    if(data[Id].hasOwnProperty('specular')) material.specularMap = textureloader.load(data[Id].specular);
-    if(data[Id].hasOwnProperty('normal')) material.normalMap = textureloader.load(data[Id].normal);
+    if(data[Id].hasOwnProperty('bump')) material.bumpMap = textureLoader.load(data[Id].bump);
+    if(data[Id].hasOwnProperty('specular')) material.specularMap = textureLoader.load(data[Id].specular);
+    if(data[Id].hasOwnProperty('normal')) material.normalMap = textureLoader.load(data[Id].normal);
 
     planets[Id] = new THREE.Mesh(geometry, material);
     planets[Id].castShadow = true;
@@ -267,8 +284,8 @@ function createPlanet(Id) {
 
     if(Id == saturnId) {
         var ringGeometry = new THREE.RingGeometry(data[saturnId].ringInnerDiameter, data[saturnId].ringOuterDiameter, data[saturnId].ringSegments);
-        var ringTexture = textureloader.load(data[saturnId].ringColor);
-        var ringPattern = textureloader.load(data[saturnId].ringPattern);
+        var ringTexture = textureLoader.load(data[saturnId].ringColor);
+        var ringPattern = textureLoader.load(data[saturnId].ringPattern);
         var ringMaterial = new THREE.MeshBasicMaterial({
             map: ringTexture,
             alphaMap: ringPattern,
@@ -293,7 +310,7 @@ function createStars(image) {
 
 // Create Earth cloud
 function createEarthCloud() {
-    var cloudTexture = textureloader.load(data[earthId].cloud);
+    var cloudTexture = textureLoader.load(data[earthId].cloud);
     var material = new THREE.MeshPhongMaterial({
         map: cloudTexture,
         side: THREE.DoubleSide,
@@ -515,6 +532,11 @@ function init() {
     $("#sunLightCheckbox").on("change", function(event) {
         if (event.target.checked) scene.add(sunLight);
         else scene.remove(sunLight);
+    });
+
+    $("#sunGlowCheckbox").on("change", function(event) {
+        if (event.target.checked) planets[sunId].add(planets[sunGlowId]);
+        else planets[sunId].remove(planets[sunGlowId]);
     });
 
     $("#sunLightSlider").on("input", function(event) {
