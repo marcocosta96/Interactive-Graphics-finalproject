@@ -449,7 +449,7 @@ function init() {
     $("#playButton").on("click", function(event) {
         if (play) {
             play = false;
-            event.target.innerHTML = "Play Animation";
+            event.target.innerHTML = "<i class='material-icons left'>play_circle_filled</i>Play Animation";
             if($("#rotationCheckbox").is(':checked')) $("#rotationCheckbox").click();
             if($("#revolutionCheckbox").is(':checked')) $("#revolutionCheckbox").click();
             $("#rotationCheckbox").attr("disabled", "true");
@@ -457,7 +457,7 @@ function init() {
         }
         else {
             play = true;
-            event.target.innerHTML = "Pause Animation";
+            event.target.innerHTML = "<i class='material-icons left'>pause_circle_filled</i>Pause Animation";
             $("#rotationCheckbox").removeAttr("disabled");
             $("#revolutionCheckbox").removeAttr("disabled");
             $("#rotationCheckbox").click();
