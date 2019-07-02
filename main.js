@@ -239,6 +239,7 @@ function createSun() {
     });
     planets[sunId] = new THREE.Mesh(geometry, material);
     planets[sunId].name = data[sunId].name;
+    planets[sunId].myId = sunId;
     planets[solarSystemId].add(planets[sunId]);
 }
 
@@ -257,6 +258,7 @@ function createPlanet(Id) {
     planets[Id] = new THREE.Mesh(geometry, material);
     planets[Id].castShadow = true;
     planets[Id].name = data[Id].name;       // used for not ignoring if focus on it
+    planets[Id].myId = Id;
     planets[Id].position.set(data[Id].distance, 0, 0);
     planets[data[Id].orbitCenter].add(planets[Id]);
 
@@ -275,6 +277,7 @@ function createPlanet(Id) {
         planets[saturnRingId] = new THREE.Mesh(ringGeometry, ringMaterial);
         planets[saturnRingId].rotation.x = Math.PI/2;
         planets[saturnRingId].name = "Rings of Saturn";       // used for not ignoring if focus on it
+        planets[saturnRingId].myId = saturnRingId;
         planets[saturnId].add(planets[saturnRingId]);
     }
 }
@@ -299,7 +302,8 @@ function createEarthCloud() {
     });
     planets[earthCloudId] = new THREE.Mesh(new THREE.SphereGeometry(data[earthId].size, planetSegments, planetSegments), material);
     planets[earthCloudId].scale.set(1.02, 1.02, 1.02);
-    planets[earthCloudId].name = data[earthId].name;
+    planets[earthCloudId].name = "Earth clouds";
+    planets[earthCloudId].myId = earthCloudId;
 }
 
 // Move planet
@@ -342,6 +346,8 @@ function dblclickPlanet(event) {
     if (targetElement) {
         controls.target.set(targetElement.position.x, targetElement.position.y, targetElement.position.z);
         controls.update();
+        $("#cameraSelect").val(targetElement.myId);
+        $("#cameraSelect").formSelect();
     }
 }
 
