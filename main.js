@@ -19,105 +19,136 @@ const planetSegments = 48;
 
 // Planet data
 const data = [];
-data[sunId] = {
-    name: "Sun",
-    size: 5,
-    rotationRate: 0.015/25.38,
-    color: 'img/sunColorMap.jpg'
-};
 data[earthId] = {
     name: "Earth",
     size: 1,
-    distanceFromSun: 25,
+    distanceFromSun: 50,
     orbitRate: 365.2564,
     rotationRate: 0.015,
+    equatorInclination: 23.45,
+    orbitalInclination: 0,
     color: 'img/earthColorMap.jpg',
     bump: 'img/earthBumpMap.jpg',
     specular: 'img/earthSpecularMap.jpg',
-    cloud: 'img/earthCloudMap.jpg'
+    cloud: 'img/earthCloudMap.jpg',
+    icon: 'img/earth.png'
+};
+data[sunId] = {
+    name: "Sun",
+    size: data[earthId].size * 15,
+    rotationRate: data[earthId].rotationRate * 0.037,
+    equatorInclination: 7.4166,
+    color: 'img/sunColorMap.jpg'
 };
 data[mercuryId] = {
     name: "Mercury",
-    size: 1/2.54,
-    distanceFromSun: 10,
-    orbitRate: 87.969,
-    rotationRate: data[earthId]/58.65,
+    size: data[earthId].size * 0.382,
+    distanceFromSun: data[earthId].distanceFromSun * 0.387,
+    orbitRate: data[earthId].orbitRate * 0.0219,
+    rotationRate: data[earthId].rotationRate * 0.017,
+    equatorInclination: 0,
+    orbitalInclination: 7,
     color: 'img/mercuryColorMap.jpg',
-    bump: 'img/mercuryBumpMap.jpg'
+    bump: 'img/mercuryBumpMap.jpg',
+    icon: 'img/mercury.png'
 };
 data[venusId] = {
     name: "Venus",
-    size: 1/1.05,
-    distanceFromSun: 17.5,
-    orbitRate: 224.701,
-    rotationRate: data[earthId]/243.69,
+    size: data[earthId].size * 0.949,
+    distanceFromSun: data[earthId].distanceFromSun * 0.723,
+    orbitRate: data[earthId].orbitRate * 0.6152,
+    rotationRate: -data[earthId].rotationRate * 0.0041,
+    equatorInclination: 178,
+    orbitalInclination: 3.4,
     color: 'img/venusColorMap.jpg',
-    bump: 'img/venusBumpMap.jpg'
+    bump: 'img/venusBumpMap.jpg',
+    icon: 'img/venus.png'
 };
 data[marsId] = {
     name: "Mars",
-    size: 1/1.88,
-    distanceFromSun: 40,
-    orbitRate: 686.96,
-    rotationRate: data[earthId]/1.025957,
+    size: data[earthId].size * 0.532,
+    distanceFromSun: data[earthId].distanceFromSun * 1.524,
+    orbitRate: data[earthId].orbitRate * 1.881,
+    rotationRate: data[earthId].rotationRate * 0.949,
+    equatorInclination: 23.9833,
+    orbitalInclination: 1.85,
     color: 'img/marsColorMap.jpg',
     bump: 'img/marsBumpMap.jpg',
-    normal: 'img/marsNormalMap.jpg'
+    normal: 'img/marsNormalMap.jpg',
+    icon: 'img/mars.png'
 };
 data[jupiterId] = {
     name: "Jupiter",
-    size: 2.7,
-    distanceFromSun: 65,
-    orbitRate: 4333.2867,
-    rotationRate: data[earthId]*0.413538021,
-    color: 'img/jupiterColorMap.jpg'
+    size: data[earthId].size * 11.19,
+    distanceFromSun: data[earthId].distanceFromSun * 5.203,
+    orbitRate: data[earthId].orbitRate * 11.86,
+    rotationRate: data[earthId].rotationRate * 2.434,
+    equatorInclination: 3.0833,
+    orbitalInclination: 1.3,
+    color: 'img/jupiterColorMap.jpg',
+    icon: 'img/jupiter.png'
 };
 data[saturnId] = {
     name: "Saturn",
-    size: 2.14,
-    distanceFromSun: 125,
-    orbitRate: 10749.25,
-    rotationRate: data[earthId]/0.445,
-    ringInnerDiameter: 2.5,
-    ringOuterDiameter: 3.5,
+    size: data[earthId].size * 9.26,
+    distanceFromSun: data[earthId].distanceFromSun * 9.537,
+    orbitRate: data[earthId].orbitRate * 29.45,
+    rotationRate: data[earthId].rotationRate * 2.3388,
+    equatorInclination: 26.7333,
+    orbitalInclination: 2.4833,
+    ringInnerDiameter: data[earthId].size * 10,
+    ringOuterDiameter: data[earthId].size * 13,
     ringSegments: 500,
     color: 'img/saturnColorMap.jpg',
-    ring: 'img/saturnRingColor.jpg'
+    ring: 'img/saturnRingColor.jpg',
+    icon: 'img/saturn.png'
 };
 data[uranusId] = {
     name: "Uranus",
-    size: 1,
-    distanceFromSun: 245,
-    orbitRate: 30664.015,
-    rotationRate: data[earthId]/0.71833,
+    size: data[earthId].size * 4.01,
+    distanceFromSun: data[earthId].distanceFromSun * 19.191,
+    orbitRate: data[earthId].orbitRate * 84.02,
+    rotationRate: -data[earthId].rotationRate * 1.3888,
+    equatorInclination: 98,
+    orbitalInclination: 0.7666,
     color: 'img/uranusColorMap.jpg',
-    ring: 'img/uranusRingColor.jpg'
+    ring: 'img/uranusRingColor.jpg',
+    icon: 'img/uranus.png'
 };
 data[neptuneId] = {
     name: "Neptune",
-    size: 1.94,
-    distanceFromSun: 485,
-    orbitRate: 60223.3528,
-    rotationRate: data[earthId]/0.67125,
-    color: 'img/neptuneColorMap.jpg'
+    size: data[earthId].size * 3.88,
+    distanceFromSun: data[earthId].distanceFromSun * 30.069,
+    orbitRate: data[earthId].orbitRate * 164.79,
+    rotationRate: data[earthId].rotationRate * 1.4912,
+    equatorInclination: 28.8,
+    orbitalInclination: 1.7666,
+    color: 'img/neptuneColorMap.jpg',
+    icon: 'img/neptune.png'
 };
 data[plutoId] = {
     name: "Pluto",
-    size: 1/0.555,
-    distanceFromSun: 965,
-    orbitRate: 91201.35,
-    rotationRate: data[earthId]*6.387230,
+    size: data[earthId].size * 0.18,
+    distanceFromSun: data[earthId].distanceFromSun * 39.44,
+    orbitRate: data[earthId].orbitRate * 249.6913,
+    rotationRate: -data[earthId].rotationRate * 0.0065,
+    equatorInclination: 0,
+    orbitalInclination: 17.1666,
     color: 'img/plutoColorMap.jpg',
-    bump: 'img/plutoBumpMap.jpg'
+    bump: 'img/plutoBumpMap.jpg',
+    icon: 'img/pluto.png'
 };
 data[moonId] = {
     name: "Moon",
-    orbitRate: 29.5,
-    rotationRate: 0.01,
+    orbitRate: 27.3,
+    rotationRate: data[earthId].rotationRate * 0.0366,
     distanceFromEarth: 2.0,
-    size: 0.2728,
+    size: data[earthId].size * 0.2725,
+    equatorInclination: 0,
+    orbitalInclination: 5.25,
     color: 'img/moonColorMap.jpg',
-    bump: 'img/moonBumpMap.jpg'
+    bump: 'img/moonBumpMap.jpg',
+    icon: 'img/moon.png'
 };
 
 var scene, camera, renderer, controls, raycaster;
@@ -146,8 +177,17 @@ var textureloader = new THREE.TextureLoader();
 // Play or pause the animation
 var play = true;
 
-// Speed factor
-var speedFactor = 1.0;
+// Rotation speed factor
+var rotationSpeedFactor = 1.0;
+
+// Revolution speed factor
+var revolutionSpeedFactor = 1.0;
+
+// Rotation
+var rotatingAroundEquator;
+
+// Revolution
+var rotatingAroundSun;
 
 // mouse
 var mouse;
@@ -157,7 +197,6 @@ var tooltipDiv = $("#tooltip");
 
 // Create orbit trajectory for the planets
 function createOrbitTrajectory(Id) {
-
     var geometry = null;
     if (Id == moonId) geometry = new THREE.CircleGeometry(data[Id].distanceFromEarth, 128);
     else geometry = new THREE.CircleGeometry(data[Id].distanceFromSun, 128);
@@ -170,7 +209,6 @@ function createOrbitTrajectory(Id) {
     trajectories[Id].rotation.x = Math.PI * 0.5;
     if (Id == moonId) planets[earthId].add(trajectories[Id]);
     else solarSystem.add(trajectories[Id]);
-
 }
 
 // Create planet
@@ -215,27 +253,27 @@ function createPlanet(Id) {
             side: THREE.DoubleSide
         });
         planets[saturnRingId] = new THREE.Mesh(ringGeometry, ringMaterial);
-        planets[saturnId].add(planets[saturnRingId]);
         planets[saturnRingId].rotation.x = Math.PI/2;
+        planets[saturnId].add(planets[saturnRingId]);
     }
 }
 
 // Move planet
 function rotationPlanet(Id, time) {
-
     // Rotation motion
-    if (Id == venusId || Id == neptuneId) planets[Id].rotation.y -= data[Id].rotationRate * speedFactor;      // Retrograde motion
-    else planets[Id].rotation.y += data[Id].rotationRate * speedFactor;
+    if(rotatingAroundEquator) planets[Id].rotation.y += data[Id].rotationRate * rotationSpeedFactor;
 
     // Orbit motion
-    if(Id == moonId) {
-        planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / speedFactor)))) * data[Id].distanceFromEarth;
-        planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / speedFactor)))) * data[Id].distanceFromEarth;
-    }
-    else {
-        if (Id != sunId) {
-            planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / speedFactor)))) * data[Id].distanceFromSun;
-            planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / speedFactor)))) * data[Id].distanceFromSun;
+    if(rotatingAroundSun) {
+        if(Id == moonId) {
+            planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distanceFromEarth;
+            planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distanceFromEarth;
+        }
+        else {
+            if (Id != sunId) {
+                planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distanceFromSun;
+                planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distanceFromSun;
+            }
         }
     }
 }
@@ -258,12 +296,12 @@ function dblclickPlanet(event) {
         controls.update();
         let id = 0;
         for(let i = 0; i <= moonId; i++) if(planets[i] == targetElement) id = i;
-        selector.selectedIndex = id;
+        $("#cameraSelect").val(id);
+        $("#cameraSelect").formSelect();
     }
 }
 
 function showInfoPlanet(event) {
-
     // normalize mouse coordinates
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -317,7 +355,8 @@ function showInfoPlanet(event) {
 // Initialize
 function init() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, far );
+    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, far);
+    camera.position.y = 45;
     camera.position.z = 100;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     raycaster = new THREE.Raycaster();
@@ -361,6 +400,10 @@ function init() {
     createPlanet(neptuneId);
     createPlanet(plutoId);
 
+    //Rotation and revolution
+    rotatingAroundEquator = true;
+    rotatingAroundSun = true;
+
     // Stars background
     var stars = './img/stars.jpg';
     var starsArray = [stars, stars, stars, stars, stars, stars];
@@ -384,7 +427,7 @@ function init() {
     window.addEventListener('mousemove', showInfoPlanet, false);
 
     // listeners for sidebar menu
-    $("#trajCheckbox").on("change", function(event) {
+    $("#trajectoriesCheckbox").on("change", function(event) {
         if (event.target.checked)
             for (let i = mercuryId; i <= moonId; i++)
                 trajectories[i].visible = true;
@@ -404,9 +447,24 @@ function init() {
         }
     });
 
-    $("#speedSlider").on("input", function(event) {
-        speedFactor = event.target.value;
-        document.getElementById("speedText").innerHTML = "Speed: "+speedFactor+"x";
+    $("#rotationCheckbox").on("change", function(event) {
+        if (event.target.checked) rotatingAroundEquator = true;
+        else rotatingAroundEquator= false;
+    });
+
+    $("#revolutionCheckbox").on("change", function(event) {
+        if (event.target.checked) rotatingAroundSun = true;
+        else rotatingAroundSun= false;
+    });
+
+    $("#rotationSpeedSlider").on("input", function(event) {
+        rotationSpeedFactor = event.target.value;
+        document.getElementById("rotationSpeedText").innerHTML = "Rotation speed: "+rotationSpeedFactor+"x";
+    });
+
+    $("#revolutionSpeedSlider").on("input", function(event) {
+        revolutionSpeedFactor = event.target.value;
+        document.getElementById("revolutionSpeedText").innerHTML = "Revolution speed: "+revolutionSpeedFactor+"x";
     });
 
     $("#farSlider").on("input", function(event) {
@@ -419,7 +477,7 @@ function init() {
     $("#lightSlider").on("input", function(event) {
         let intensity = parseFloat(event.target.value);
         pointLight.intensity = intensity;
-        document.getElementById("lightText").innerHTML = "Light intensity: "+intensity;
+        document.getElementById("lightText").innerHTML = "Sun light intensity: "+intensity;
     });
 
     $("#cameraSelect").on("change", function(event) {
@@ -429,13 +487,12 @@ function init() {
     });
 
     $("#ambientLightCheckbox").on("change", function(event) {
-        if (event.target.checked)
-            scene.add(ambientLight);
-        else
-            scene.remove(ambientLight);
+        if (event.target.checked) scene.add(ambientLight);
+        else scene.remove(ambientLight);
     });
 
     $(document).ready(function() {
+        $('.sidenav').sidenav({edge: 'right'});
         $('select').formSelect();
     });
 }

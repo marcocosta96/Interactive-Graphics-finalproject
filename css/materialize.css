@@ -5246,7 +5246,7 @@ small {
 
 .btn:focus, .btn-large:focus, .btn-small:focus,
 .btn-floating:focus {
-  background-color: #1d7d74;
+  background-color: #7d1d26;
 }
 
 .btn, .btn-large, .btn-small {
@@ -5261,7 +5261,7 @@ small {
 }
 
 .btn:hover, .btn-large:hover, .btn-small:hover {
-  background-color: #2bbbad;
+  background-color: #bb2b39;
 }
 
 .btn-floating {
@@ -7540,7 +7540,7 @@ input[type=range]::-ms-thumb {
   height: calc(100% + 60px);
   height: -moz-calc(100%);
   padding-bottom: 60px;
-  background-color: #fff;
+  background-color: #222222;
   z-index: 999;
   overflow-y: auto;
   will-change: transform;
@@ -7599,7 +7599,7 @@ input[type=range]::-ms-thumb {
 }
 
 .sidenav li > a.btn:hover, .sidenav li > a.btn-large:hover, .sidenav li > a.btn-small:hover, .sidenav li > a.btn-large:hover {
-  background-color: #2bbbad;
+  background-color: #bb2b39;
 }
 
 .sidenav li > a.btn-floating:hover {

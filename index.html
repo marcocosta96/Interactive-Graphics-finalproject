@@ -11,70 +11,99 @@
         <link type="text/css" rel="stylesheet" href="css/materialize.css"  media="screen,projection"/>
     </head>
     <body>
-        <div class="sidebar">
-            <ul>
-                <li><a>
-                    <label>
-                        <input type="checkbox" id="trajCheckbox" class="filled-in" checked="checked" />
-                        <span>Show/Hide the trajectories</span>
-                    </label>
-                </a></li>
-                <li><a>
-                    <button type="button" id="playButton" class="waves-effect waves-light btn">Pause Animation</button>
-                </a></li>
-                <li><a>
-                    <p id="speedText">Speed: 1.0x</p>
-                    <p class="range-field">
-                        <input type="range" min="0.02" max="20.0" step="0.02" value="1.0" id="speedSlider"/>
-                    </p>
-                </a></li>
-                <li><a>
-                    <p id="farText">Far: 10000</p>
-                    <p class="range-field">
-                        <input type="range" min="1000" max="100000" step="1000" value="10000" id="farSlider"/>
-                    </p>
-                </a></li>
-                <li><a>
-                    <div class="input-field col s12 m6">
-                        <select class="icons" id="cameraSelect">
-                             <option value=0 data-icon="img/sun.png">Sun</option>
-                             <option value=1 data-icon="img/mercury.png">Mercury</option>
-                             <option value=2 data-icon="img/venus.png">Venus</option>
-                             <option value=3 data-icon="img/earth.png">Earth</option>
-                             <option value=10 data-icon="img/moon.png">Moon</option>
-                             <option value=4 data-icon="img/mars.png">Mars</option>
-                             <option value=5 data-icon="img/jupiter.png">Jupiter</option>
-                             <option value=6 data-icon="img/saturn.png">Saturn</option>
-                             <option value=7 data-icon="img/uranus.png">Uranus</option>
-                             <option value=8 data-icon="img/neptune.png">Neptune</option>
-                             <option value=9 data-icon="img/pluto.png">Pluto</option>
-                        </select>
-                        <label>Camera:</label>
-                    </div>
-                </a></li>
-                <li><a>
-                    <p id="lightText">Light intensity: 1.5</p>
-                    <p class="range-field">
-                        <input type="range" min="0.1" max="10" step="0.1" value="1.5" id="lightSlider"/>
-                    </p>
-                </a></li>
-                <li><a>
-                    <label>
-                        <input type="checkbox" id="ambientLightCheckbox" class="filled-in"/>
-                        <span>Turn on/off ambient light</span>
-                    </label>
-                </a></li>
-            </ul>
-            <button class="sidebarButton">
-                <span></span>
-            </button>
-        </div>
+        <ul id="slide-out" class="sidenav">
+            <li><div class="user-view">
+                <div class="background">
+                    <img src="img/sidebar.jpg">
+                </div>
+                <a href="#"><img class="circle" src="img/sun.png"></a>
+                <a href="#"><span class="white-text name">Settings</span></a>
+                <a href="#"><span class="white-text"> </span></a>
+            </div></li>
+            <li><a>
+                <label>
+                    <input type="checkbox" id="trajectoriesCheckbox" class="filled-in" checked="checked" />
+                    <span class="white-text">Show trajectories</span>
+                </label>
+            </a></li>
+            <li><a>
+                <button type="button" id="playButton" class="waves-effect waves-light btn">Pause Animation</button>
+            </a></li>
+            <li><a>
+                <label>
+                    <input type="checkbox" id="rotationCheckbox" class="filled-in" checked="checked" />
+                    <span class="white-text">Rotation</span>
+                </label>
+            </a></li>
+            <li><a>
+                <label>
+                    <input type="checkbox" id="revolutionCheckbox" class="filled-in" checked="checked" />
+                    <span class="white-text">Revolution</span>
+                </label>
+            </a></li>
+            <li><a>
+                <p id="rotationSpeedText" class="white-text">Rotation speed: 1.0x</p>
+            </a></li>
+            <li><a>
+                <p class="range-field">
+                    <input type="range" min="0.02" max="20.0" step="0.02" value="1.0" id="rotationSpeedSlider"/>
+                </p>
+            </a></li>
+            <li><a>
+                <p id="revolutionSpeedText" class="white-text">Revolution speed: 1.0x</p>
+            </a></li>
+            <li><a>
+                <p class="range-field">
+                    <input type="range" min="0.02" max="20.0" step="0.02" value="1.0" id="revolutionSpeedSlider"/>
+                </p>
+            </a></li>
+            <li><a>
+                <p id="farText" class="white-text">Far: 10000</p>
+            </a></li>
+            <li><a>
+                <p class="range-field">
+                    <input type="range" min="1000" max="100000" step="1000" value="10000" id="farSlider"/>
+                </p>
+            </a></li>
+            <li><a>
+                <div class="input-field col s12 m6">
+                    <select class="icons" id="cameraSelect">
+                         <option value="0" data-icon="img/sun.png">Sun</option>
+                         <option value="1" data-icon="img/mercury.png">Mercury</option>
+                         <option value="2" data-icon="img/venus.png">Venus</option>
+                         <option value="3" data-icon="img/earth.png">Earth</option>
+                         <option value="10" data-icon="img/moon.png">Moon</option>
+                         <option value="4" data-icon="img/mars.png">Mars</option>
+                         <option value="5" data-icon="img/jupiter.png">Jupiter</option>
+                         <option value="6" data-icon="img/saturn.png">Saturn</option>
+                         <option value="7" data-icon="img/uranus.png">Uranus</option>
+                         <option value="8" data-icon="img/neptune.png">Neptune</option>
+                         <option value="9" data-icon="img/pluto.png">Pluto</option>
+                    </select>
+                    <label class="white-text">Camera:</label>
+                </div>
+            </a></li>
+            <li><a>
+                <p id="lightText" class="white-text">Sun light intensity: 1.5</p>
+            </a></li>
+            <li><a>
+                <p class="range-field">
+                    <input type="range" min="0.1" max="10" step="0.1" value="1.5" id="lightSlider"/>
+                </p>
+            </a></li>
+            <li><a>
+                <label>
+                    <input type="checkbox" id="ambientLightCheckbox" class="filled-in"/>
+                    <span class="white-text">Ambient light</span>
+                </label>
+            </a></li>
+        </ul>
+        <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
         <div id="tooltip"></div>
         <div id="container"></div>
         <script src="libraries/three.min.js"></script>
         <script src="libraries/OrbitControls.js"></script>
         <script src="libraries/jquery-3.4.1.js"></script>
-        <script src="libraries/sidebar.js"></script>
         <!--Import materialize.js-->
         <script type="text/javascript" src="libraries/materialize.js"></script>
         <script src="main.js"></script>
