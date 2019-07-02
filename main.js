@@ -14,8 +14,9 @@ const plutoId = 9;
 const moonId = 10;
 const earthCloudId = 11;
 const saturnRingId = 12;
-const sunGlowId = 13;
-const solarSystemId = 14;
+const uranusRingId = 13;
+const sunGlowId = 14;
+const solarSystemId = 15;
 
 // Planet (Sphere) segments
 const planetSegments = 48;
@@ -35,7 +36,9 @@ data[earthId] = {
     bump: 'img/earthBumpMap.jpg',
     specular: 'img/earthSpecularMap.jpg',
     cloud: 'img/earthCloudMap.jpg',
-    icon: 'img/earth.png'
+    cloudTrans: 'img/earthCloudMapTrans.jpg',
+    icon: 'img/earth.png',
+    bumpScale: 0.05
 };
 data[sunId] = {
     name: "Sun",
@@ -43,7 +46,8 @@ data[sunId] = {
     rotationRate: data[earthId].rotationRate * 0.037,
     equatorInclination: 7.4166,
     color: 'img/sunColorMap.jpg',
-    glow: 'img/glow.png'
+    glow: 'img/glow.png',
+    bumpScale: 0.05
 };
 data[mercuryId] = {
     name: "Mercury",
@@ -56,7 +60,8 @@ data[mercuryId] = {
     orbitCenter: solarSystemId,
     color: 'img/mercuryColorMap.jpg',
     bump: 'img/mercuryBumpMap.jpg',
-    icon: 'img/mercury.png'
+    icon: 'img/mercury.png',
+    bumpScale: 0.005
 };
 data[venusId] = {
     name: "Venus",
@@ -69,7 +74,8 @@ data[venusId] = {
     orbitCenter: solarSystemId,
     color: 'img/venusColorMap.jpg',
     bump: 'img/venusBumpMap.jpg',
-    icon: 'img/venus.png'
+    icon: 'img/venus.png',
+    bumpScale: 0.005
 };
 data[marsId] = {
     name: "Mars",
@@ -83,7 +89,8 @@ data[marsId] = {
     color: 'img/marsColorMap.jpg',
     bump: 'img/marsBumpMap.jpg',
     normal: 'img/marsNormalMap.jpg',
-    icon: 'img/mars.png'
+    icon: 'img/mars.png',
+    bumpScale: 0.05
 };
 data[jupiterId] = {
     name: "Jupiter",
@@ -95,7 +102,8 @@ data[jupiterId] = {
     orbitalInclination: 1.3,
     orbitCenter: solarSystemId,
     color: 'img/jupiterColorMap.jpg',
-    icon: 'img/jupiter.png'
+    icon: 'img/jupiter.png',
+    bumpScale: 0.02
 };
 data[saturnId] = {
     name: "Saturn",
@@ -105,15 +113,17 @@ data[saturnId] = {
     rotationRate: data[earthId].rotationRate * 2.3388,
     equatorInclination: 26.7333,
     orbitalInclination: 2.4833,
-    ringInnerDiameter: data[earthId].size * 10,
-    ringOuterDiameter: data[earthId].size * 13,
     ringSegments: 500,
     orbitCenter: solarSystemId,
     color: 'img/saturnColorMap.jpg',
     ringColor: 'img/saturnRingColor.jpg',
     ringPattern: 'img/saturnRingPattern.gif',
-    icon: 'img/saturn.png'
+    ringId: saturnRingId,
+    icon: 'img/saturn.png',
+    bumpScale: 0.05
 };
+data[saturnId].ringInnerDiameter = data[saturnId].size * 1.5;
+data[saturnId].ringOuterDiameter = data[saturnId].ringInnerDiameter * 1.5;
 data[uranusId] = {
     name: "Uranus",
     size: data[earthId].size * 4.01,
@@ -122,11 +132,17 @@ data[uranusId] = {
     rotationRate: -data[earthId].rotationRate * 1.3888,
     equatorInclination: 98,
     orbitalInclination: 0.7666,
+    ringSegments: 500,
     orbitCenter: solarSystemId,
     color: 'img/uranusColorMap.jpg',
-    ring: 'img/uranusRingColor.jpg',
-    icon: 'img/uranus.png'
+    ringColor: 'img/uranusRingColor.jpg',
+    ringPattern: 'img/uranusRingPattern.gif',
+    ringId: uranusRingId,
+    icon: 'img/uranus.png',
+    bumpScale: 0.05
 };
+data[uranusId].ringInnerDiameter = data[uranusId].size * 1.5;
+data[uranusId].ringOuterDiameter = data[uranusId].ringInnerDiameter * 1.5;
 data[neptuneId] = {
     name: "Neptune",
     size: data[earthId].size * 3.88,
@@ -150,7 +166,8 @@ data[plutoId] = {
     orbitCenter: solarSystemId,
     color: 'img/plutoColorMap.jpg',
     bump: 'img/plutoBumpMap.jpg',
-    icon: 'img/pluto.png'
+    icon: 'img/pluto.png',
+    bumpScale: 0.005
 };
 data[moonId] = {
     name: "Moon",
@@ -163,7 +180,8 @@ data[moonId] = {
     orbitCenter: earthId,
     color: 'img/moonColorMap.jpg',
     bump: 'img/moonBumpMap.jpg',
-    icon: 'img/moon.png'
+    icon: 'img/moon.png',
+    bumpScale: 0.002
 };
 
 var scene, camera, renderer, controls, raycaster;
@@ -237,7 +255,9 @@ function createSun() {
     var geometry = new THREE.SphereGeometry(data[sunId].size, 48, 48 );
 	var texture = textureLoader.load(data[sunId].color);
     var material = new THREE.MeshBasicMaterial({
-        map: texture
+        map: texture,
+        bumpMap: texture,
+        bumpScale: data[sunId].bumpScale
     });
     planets[sunId] = new THREE.Mesh(geometry, material);
     planets[sunId].name = data[sunId].name;
@@ -268,8 +288,14 @@ function createPlanet(Id) {
         shininess: 20,
         map: texture
     });
-    if(data[Id].hasOwnProperty('bump')) material.bumpMap = textureLoader.load(data[Id].bump);
-    if(data[Id].hasOwnProperty('specular')) material.specularMap = textureLoader.load(data[Id].specular);
+    if(data[Id].hasOwnProperty('bump')) {
+        material.bumpMap = textureLoader.load(data[Id].bump);
+        material.bumpScale = data[Id].bumpScale;
+    }
+    if(data[Id].hasOwnProperty('specular')) {
+        material.specularMap = textureLoader.load(data[Id].specular);
+        material.specular = new THREE.Color('grey');
+    }
     if(data[Id].hasOwnProperty('normal')) material.normalMap = textureLoader.load(data[Id].normal);
 
     planets[Id] = new THREE.Mesh(geometry, material);
@@ -282,21 +308,24 @@ function createPlanet(Id) {
     // Draws its orbit trajectory
     createOrbitTrajectory(Id);
 
-    if(Id == saturnId) {
-        var ringGeometry = new THREE.RingGeometry(data[saturnId].ringInnerDiameter, data[saturnId].ringOuterDiameter, data[saturnId].ringSegments);
-        var ringTexture = textureLoader.load(data[saturnId].ringColor);
-        var ringPattern = textureLoader.load(data[saturnId].ringPattern);
-        var ringMaterial = new THREE.MeshBasicMaterial({
-            map: ringTexture,
-            alphaMap: ringPattern,
-            side: THREE.DoubleSide
-        });
-        planets[saturnRingId] = new THREE.Mesh(ringGeometry, ringMaterial);
-        planets[saturnRingId].rotation.x = Math.PI/2;
-        planets[saturnRingId].name = "Rings of Saturn";       // used for not ignoring if focus on it
-        planets[saturnRingId].myId = saturnRingId;
-        planets[saturnId].add(planets[saturnRingId]);
-    }
+    if(data[Id].hasOwnProperty('ringId')) createRing(Id);
+}
+
+// Create ring
+function createRing(Id) {
+    var ringGeometry = new THREE.RingGeometry(data[Id].ringInnerDiameter, data[Id].ringOuterDiameter, data[Id].ringSegments);
+    var ringTexture = textureLoader.load(data[Id].ringColor);
+    var ringPattern = textureLoader.load(data[Id].ringPattern);
+    var ringMaterial = new THREE.MeshBasicMaterial({
+        map: ringTexture,
+        alphaMap: ringPattern,
+        side: THREE.DoubleSide
+    });
+    planets[data[Id].ringId] = new THREE.Mesh(ringGeometry, ringMaterial);
+    planets[data[Id].ringId].rotation.x = Math.PI/2;
+    planets[data[Id].ringId].name = "Rings of " + data[Id].name; // used for not ignoring if focus on it
+    planets[data[Id].ringId].myId = data[Id].ringId;
+    planets[Id].add(planets[data[Id].ringId]);
 }
 
 //Create stars
@@ -310,14 +339,59 @@ function createStars(image) {
 
 // Create Earth cloud
 function createEarthCloud() {
-    var cloudTexture = textureLoader.load(data[earthId].cloud);
-    var material = new THREE.MeshPhongMaterial({
-        map: cloudTexture,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.8
-    });
-    planets[earthCloudId] = new THREE.Mesh(new THREE.SphereGeometry(data[earthId].size, planetSegments, planetSegments), material);
+    // create destination canvas
+	var canvasResult	= document.createElement('canvas');
+	canvasResult.width	= 1024;
+	canvasResult.height	= 512;
+	var contextResult	= canvasResult.getContext('2d');
+
+	// load earthcloudmap
+	var imageMap	= new Image();
+	imageMap.addEventListener("load", function() {
+
+		// create dataMap ImageData for earthcloudmap
+		var canvasMap	= document.createElement('canvas');
+		canvasMap.width	= imageMap.width;
+		canvasMap.height= imageMap.height;
+		var contextMap	= canvasMap.getContext('2d');
+		contextMap.drawImage(imageMap, 0, 0);
+		var dataMap	= contextMap.getImageData(0, 0, canvasMap.width, canvasMap.height);
+
+		// load earthcloudmaptrans
+		var imageTrans	= new Image();
+		imageTrans.addEventListener("load", function(){
+			// create dataTrans ImageData for earthcloudmaptrans
+			var canvasTrans		= document.createElement('canvas');
+			canvasTrans.width	= imageTrans.width;
+			canvasTrans.height	= imageTrans.height;
+			var contextTrans	= canvasTrans.getContext('2d');
+			contextTrans.drawImage(imageTrans, 0, 0);
+			var dataTrans		= contextTrans.getImageData(0, 0, canvasTrans.width, canvasTrans.height);
+			// merge dataMap + dataTrans into dataResult
+			var dataResult		= contextMap.createImageData(canvasMap.width, canvasMap.height);
+			for(var y = 0, offset = 0; y < imageMap.height; y++){
+				for(var x = 0; x < imageMap.width; x++, offset += 4){
+					dataResult.data[offset+0]	= dataMap.data[offset+0];
+					dataResult.data[offset+1]	= dataMap.data[offset+1];
+					dataResult.data[offset+2]	= dataMap.data[offset+2];
+					dataResult.data[offset+3]	= 255 - dataTrans.data[offset+0];
+				}
+			}
+			// update texture with result
+			contextResult.putImageData(dataResult,0,0)
+			material.map.needsUpdate = true;
+		})
+		imageTrans.src	= data[earthId].cloudTrans;
+	}, false);
+	imageMap.src = data[earthId].cloud;
+    var geometry = new THREE.SphereGeometry(data[earthId].size, planetSegments, planetSegments);
+	var material = new THREE.MeshPhongMaterial({
+		map: new THREE.Texture(canvasResult),
+		side: THREE.DoubleSide,
+		transparent: true,
+		opacity: 0.8
+	});
+	planets[earthCloudId] = new THREE.Mesh(geometry, material);
     planets[earthCloudId].scale.set(1.02, 1.02, 1.02);
     planets[earthCloudId].name = "Earth clouds";
     planets[earthCloudId].myId = earthCloudId;
@@ -327,6 +401,7 @@ function createEarthCloud() {
 function rotationPlanet(Id, time) {
     // Rotation motion
     if(rotatingAroundEquator) planets[Id].rotation.y += data[Id].rotationRate * rotationSpeedFactor;
+    if(Id == earthId) planets[earthCloudId].rotation.y -= data[Id].rotationRate/2 * rotationSpeedFactor;
 
     // Orbit motion
     if(rotatingAroundSun && Id != sunId) {
