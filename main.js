@@ -526,6 +526,7 @@ function init() {
     $(document).ready(function() {
         $('.sidenav').sidenav({edge: 'right'});
         $('select').formSelect();
+        $('.tap-target').tapTarget();
     });
 }
 
