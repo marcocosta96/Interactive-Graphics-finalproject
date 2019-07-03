@@ -204,6 +204,9 @@ data[asteroidBeltId] = {
 
 var scene, camera, renderer, controls, raycaster;
 
+// Current date
+var dateStart = new Date();
+
 // Far camera parameter
 var far = 10000;
 
@@ -299,7 +302,7 @@ function createSun() {
         blending: THREE.AdditiveBlending
     });
     planets[sunGlowId] = new THREE.Sprite(spriteMaterial);
-    planets[sunGlowId].name = "trajectory";
+    planets[sunGlowId].name = "Sun Glow";
     planets[sunGlowId].scale.set(70, 70, 1.0);
     planets[sunId].add(planets[sunGlowId]); // This centers the glow at the sun.
 }
@@ -476,9 +479,10 @@ function createAsteroidBelt() {
 
     asteroidsGeometry.morphAttributes = {};     // use to fix updateMorphAttribute bug
 
-    var asteroids = new THREE.PointCloud(asteroidsGeometry, new THREE.PointCloudMaterial({ size: asteroidSize }));
-    asteroids.name = data[asteroidBeltId].name;
-    planets[solarSystemId].add(asteroids);
+    planets[asteroidBeltId] = new THREE.PointCloud(asteroidsGeometry, new THREE.PointCloudMaterial({ size: asteroidSize }));
+    planets[asteroidBeltId].name = data[asteroidBeltId].name;
+    planets[asteroidBeltId].myId = asteroidBeltId;
+    planets[solarSystemId].add(planets[asteroidBeltId]);
 }
 
 // Move planet
@@ -518,7 +522,7 @@ function captureObject(point) {
 
     // Analize the result
     for (let i = 0; i < intersects.length; i++)
-        if (intersects[i].object.name != "trajectory") {
+        if (intersects[i].object.name != "trajectory" && intersects[i].object.name != "Sun Glow") {
             if (point) point.coord = intersects[i].point;   // funct called by showInfoPlanet
             return intersects[i].object;    // found object that is not a trajectory
         }
@@ -531,7 +535,7 @@ function dblclickPlanet(event) {
     var targetElement = captureObject(null);       // null if it's not object or it's trajectory
 
     // focus camera on it
-    if (targetElement) {
+    if (targetElement && targetElement.name != planets[asteroidBeltId].name) {
         followPlanetId = targetElement.myId;
         if(data[followPlanetId].hasOwnProperty('groupId')) followPlanetId = data[followPlanetId].groupId;
         followPlanet(followPlanetId);
@@ -742,6 +746,7 @@ function init() {
         $('.sidenav').sidenav({edge: 'right'});
         $('select').formSelect();
         $('.tap-target').tapTarget();
+        $('.datepicker').datepicker({defaultDate: dateStart, setDefaultDate: true, yearRange: 50});
     });
 }
 

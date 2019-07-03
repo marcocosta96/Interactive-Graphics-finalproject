@@ -16,6 +16,18 @@ body {
     right: 10px;
 }
 
+#dateDiv {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 200px;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.datepicker {
+    color: #ffffff;
+}
+
 .loader {
     position: fixed;
     left: 0px;
