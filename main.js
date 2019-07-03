@@ -17,6 +17,9 @@ const saturnRingId = 12;
 const uranusRingId = 13;
 const sunGlowId = 14;
 const solarSystemId = 15;
+const earthSystemId = 16;
+const saturnSystemId = 17;
+const uranusSystemId = 18;
 
 // Planet (Sphere) segments
 const planetSegments = 48;
@@ -31,7 +34,8 @@ data[earthId] = {
     rotationRate: 0.015,
     equatorInclination: 23.45,
     orbitalInclination: 0,
-    orbitCenter: solarSystemId,
+    orbitCenter: earthSystemId,
+    groupId: earthSystemId,
     color: 'img/earthColorMap.jpg',
     bump: 'img/earthBumpMap.jpg',
     specular: 'img/earthSpecularMap.jpg',
@@ -115,6 +119,7 @@ data[saturnId] = {
     orbitalInclination: 2.4833,
     ringSegments: 500,
     orbitCenter: solarSystemId,
+    groupId: saturnSystemId,
     color: 'img/saturnColorMap.jpg',
     ringColor: 'img/saturnRingColor.jpg',
     ringPattern: 'img/saturnRingPattern.gif',
@@ -134,6 +139,7 @@ data[uranusId] = {
     orbitalInclination: 0.7666,
     ringSegments: 500,
     orbitCenter: solarSystemId,
+    groupId: uranusSystemId,
     color: 'img/uranusColorMap.jpg',
     ringColor: 'img/uranusRingColor.jpg',
     ringPattern: 'img/uranusRingPattern.gif',
@@ -177,7 +183,7 @@ data[moonId] = {
     size: data[earthId].size * 0.2725,
     equatorInclination: 0,
     orbitalInclination: 5.25,
-    orbitCenter: earthId,
+    orbitCenter: earthSystemId,
     color: 'img/moonColorMap.jpg',
     bump: 'img/moonBumpMap.jpg',
     icon: 'img/moon.png',
@@ -236,12 +242,17 @@ function createOrbitTrajectory(Id) {
     trajectories[Id] = new THREE.LineLoop(geometry, material);
     trajectories[Id].rotation.x = Math.PI * 0.5;
     trajectories[Id].name = "trajectory";        // used for ignoring if focus on it
-    planets[data[Id].orbitCenter].add(trajectories[Id]);
+    if(Id != moonId) planets[solarSystemId].add(trajectories[Id]);
+    else planets[data[Id].orbitCenter].add(trajectories[Id]);
 }
 
 function createSun() {
     planets[solarSystemId] = new THREE.Group();
     scene.add(planets[solarSystemId]);
+
+    planets[earthSystemId] = new THREE.Group();
+    planets[earthSystemId].position.set(data[earthId].distance, 0, 0);
+    planets[solarSystemId].add(planets[earthSystemId]);
 
     // The sun is a light source
     sunLight = new THREE.PointLight("rgb(255, 220, 180)", 1.5);
@@ -300,13 +311,21 @@ function createPlanet(Id) {
     planets[Id].name = data[Id].name; // used for not ignoring if focus on it
     planets[Id].myId = Id;
     planets[Id].rotation.x = data[Id].equatorInclination * Math.PI/180;
-    planets[Id].position.set(data[Id].distance, 0, 0);
-    planets[data[Id].orbitCenter].add(planets[Id]);
+
+    if(data[Id].hasOwnProperty('ringId')) {
+        planets[data[Id].groupId] = new THREE.Group();
+        planets[data[Id].groupId].add(planets[Id]);
+        createRing(Id);
+        planets[data[Id].groupId].position.set(data[Id].distance, 0, 0);
+        planets[data[Id].orbitCenter].add(planets[data[Id].groupId]);
+    }
+    else {
+        if(Id != earthId) planets[Id].position.set(data[Id].distance, 0, 0);
+        planets[data[Id].orbitCenter].add(planets[Id]);
+    }
 
     // Draws its orbit trajectory
     createOrbitTrajectory(Id);
-
-    if(data[Id].hasOwnProperty('ringId')) createRing(Id);
 }
 
 // Create ring
@@ -328,8 +347,7 @@ function createRing(Id) {
     planets[data[Id].ringId].rotation.x = Math.PI/2 + data[Id].equatorInclination * Math.PI/180;
     planets[data[Id].ringId].name = "Rings of " + data[Id].name; // used for not ignoring if focus on it
     planets[data[Id].ringId].myId = data[Id].ringId;
-    planets[data[Id].ringId].position.set(data[Id].distance, 0, 0);
-    planets[solarSystemId].add(planets[data[Id].ringId]);
+    planets[data[Id].groupId].add(planets[data[Id].ringId]);
 }
 
 //Create stars
@@ -407,15 +425,23 @@ function rotationPlanet(Id, time) {
     // Rotation motion
     if(rotatingAroundEquator) {
         planets[Id].rotation.y += data[Id].rotationRate * rotationSpeedFactor;
-        if(Id == earthId) planets[earthCloudId].rotation.y -= data[Id].rotationRate/2 * rotationSpeedFactor;
+        if(Id == earthId) {
+            planets[earthCloudId].rotation.y -= data[Id].rotationRate/2 * rotationSpeedFactor;
+            //planets[moonId].position.setFromMatrixPosition(planets[earthId].children[1].matrixWorld);
+        }
         if(data[Id].hasOwnProperty('ringId')) planets[data[Id].ringId].rotation.z += data[Id].rotationRate * rotationSpeedFactor;
     }
 
     // Orbit motion
     if(rotatingAroundSun && Id != sunId) {
-        planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
-        planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
-        if(data[Id].hasOwnProperty('ringId')) planets[data[Id].ringId].position.set(planets[Id].position.x, planets[Id].position.y, planets[Id].position.z);
+        if(data[Id].hasOwnProperty('groupId')) {
+            planets[data[Id].groupId].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
+            planets[data[Id].groupId].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
+        }
+        else {
+            planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
+            planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
+        }
     }
 }
 
@@ -599,6 +625,7 @@ function init() {
 
     $("#cameraSelect").on("change", function(event) {
         let planetId = $("#cameraSelect").val();
+        if(data[planetId].hasOwnProperty('groupId')) planetId = data[planetId].groupId;
         controls.target.set(planets[planetId].position.x, planets[planetId].position.y, planets[planetId].position.z);
         controls.update();
     });
