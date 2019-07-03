@@ -285,7 +285,6 @@ function createPlanet(Id) {
     var geometry = new THREE.SphereGeometry(data[Id].size, planetSegments, planetSegments);
     var texture = textureLoader.load(data[Id].color);
     var material = new THREE.MeshPhongMaterial({
-        shininess: 20,
         map: texture
     });
     if(data[Id].hasOwnProperty('bump')) {
@@ -313,13 +312,17 @@ function createPlanet(Id) {
 
 // Create ring
 function createRing(Id) {
-    var ringGeometry = new THREE.RingGeometry(data[Id].ringInnerDiameter, data[Id].ringOuterDiameter, data[Id].ringSegments);
+    var ringGeometry = new THREE.BufferGeometry().fromGeometry(
+                new _RingGeometry(data[Id].ringInnerDiameter, data[Id].ringOuterDiameter, data[Id].ringSegments));
+    //new THREE.RingGeometry(data[Id].ringInnerDiameter, data[Id].ringOuterDiameter, data[Id].ringSegments);
     var ringTexture = textureLoader.load(data[Id].ringColor);
     var ringPattern = textureLoader.load(data[Id].ringPattern);
-    var ringMaterial = new THREE.MeshBasicMaterial({
+    var ringMaterial = new THREE.MeshPhongMaterial({
         map: ringTexture,
         alphaMap: ringPattern,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
+		transparent: true,
+		opacity: 0.8
     });
     planets[data[Id].ringId] = new THREE.Mesh(ringGeometry, ringMaterial);
     planets[data[Id].ringId].rotation.x = Math.PI/2;
@@ -389,6 +392,7 @@ function createEarthCloud() {
 		map: new THREE.Texture(canvasResult),
 		side: THREE.DoubleSide,
 		transparent: true,
+        depthWrite: false,
 		opacity: 0.8
 	});
 	planets[earthCloudId] = new THREE.Mesh(geometry, material);
@@ -512,6 +516,7 @@ function init() {
 
     // Create light viewable from all directions.
     ambientLight = new THREE.AmbientLight(0xaaaaaa);
+    scene.add(ambientLight);
 
     mouse = new THREE.Vector2();
 
