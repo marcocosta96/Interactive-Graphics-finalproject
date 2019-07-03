@@ -15,7 +15,8 @@ const moonId = 10;
 const earthCloudId = 11;
 const saturnRingId = 12;
 const sunGlowId = 13;
-const solarSystemId = 14;
+const asteroidBeltId = 14;
+const solarSystemId = 15;
 
 // Planet (Sphere) segments
 const planetSegments = 48;
@@ -164,6 +165,17 @@ data[moonId] = {
     color: 'img/moonColorMap.jpg',
     bump: 'img/moonBumpMap.jpg',
     icon: 'img/moon.png'
+};
+data[asteroidBeltId] = {
+    name: "Asteroid Belt",
+    distance: (data[jupiterId].distance + data[marsId].distance)/2,
+    size: 0.01,
+    minOffsetY: -5,
+    maxOffsetY: 5,
+    minOffsetXZ: -30,
+    maxOffsetXZ: 30,
+    number: 20000,
+    orbitCenter: solarSystemId
 };
 
 var scene, camera, renderer, controls, raycaster;
@@ -323,6 +335,50 @@ function createEarthCloud() {
     planets[earthCloudId].myId = earthCloudId;
 }
 
+// Create asteroid belt
+function createAsteroidBelt() {
+    // Values as variables to not made code too difficult to read
+    const asteroidSize = data[asteroidBeltId].size;
+    const distance = data[asteroidBeltId].distance;
+    const minOffsetY = data[asteroidBeltId].minOffsetY;
+    const maxOffsetY = data[asteroidBeltId].maxOffsetY;
+    const minOffsetXZ = data[asteroidBeltId].minOffsetXZ;
+    const maxOffsetXZ = data[asteroidBeltId].maxOffsetXZ;
+
+    // Create an invisible torus only to make working showInfoPlanet when move on it
+    var torusAsteroid = new THREE.Mesh(new THREE.TorusGeometry(distance, maxOffsetXZ, planetSegments, planetSegments), new THREE.MeshBasicMaterial({
+        transparent: true,  // made torus transparent
+        opacity: 0.0        // made torus transparent
+    }));
+    torusAsteroid.rotation.x = Math.PI/2;
+    torusAsteroid.name = data[asteroidBeltId].name;
+    planets[solarSystemId].add(torusAsteroid);
+
+    const asteroidCount = data[asteroidBeltId].number;
+    var asteroidsGeometry = new THREE.Geometry();
+
+    // now create the individual particles
+    for (let i = 0; i < asteroidCount; i++) {
+        // create a particle with random position
+        var asteroidDistance = distance + THREE.Math.randFloat(minOffsetXZ, maxOffsetXZ);
+        var angle = THREE.Math.randFloat(0, 2*Math.PI);
+        var coord = new THREE.Vector3();
+
+        coord.x = Math.cos(angle) * asteroidDistance;
+        coord.y = THREE.Math.randFloat(minOffsetY, maxOffsetY);
+        coord.z = Math.sin(angle) * asteroidDistance;
+
+        // insert asteroid
+        asteroidsGeometry.vertices.push(coord);
+    }
+
+    asteroidsGeometry.morphAttributes = {};     // use to fix updateMorphAttribute bug
+
+    var asteroids = new THREE.PointCloud(asteroidsGeometry, new THREE.PointCloudMaterial({ size: asteroidSize }));
+    asteroids.name = data[asteroidBeltId].name;
+    planets[solarSystemId].add(asteroids);
+}
+
 // Move planet
 function rotationPlanet(Id, time) {
     // Rotation motion
@@ -428,6 +484,9 @@ function init() {
 
     // Create planets
     for(let i = mercuryId; i <= moonId; i++) createPlanet(i);
+
+    // Create asteroid belt
+    createAsteroidBelt();
 
     // Create Earth clouds
     createEarthCloud();
