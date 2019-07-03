@@ -247,7 +247,6 @@ function createSun() {
     sunLight = new THREE.PointLight("rgb(255, 220, 180)", 1.5);
     sunLight.castShadow = true;
     sunLight.shadow.bias = 0.001;
-    sunLight.shadowDarkness = 0.2;
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
     scene.add(sunLight);
@@ -256,9 +255,7 @@ function createSun() {
     var geometry = new THREE.SphereGeometry(data[sunId].size, 48, 48 );
 	var texture = textureLoader.load(data[sunId].color);
     var material = new THREE.MeshBasicMaterial({
-        map: texture,
-        bumpMap: texture,
-        bumpScale: data[sunId].bumpScale
+        map: texture
     });
     planets[sunId] = new THREE.Mesh(geometry, material);
     planets[sunId].name = data[sunId].name;
@@ -270,7 +267,6 @@ function createSun() {
     // Create the glow of the sun.
     var spriteMaterial = new THREE.SpriteMaterial({
         map: textureLoader.load(data[sunId].glow),
-        useScreenCoordinates: false,
         color: 0xffffee,
         transparent: true,
         blending: THREE.AdditiveBlending
@@ -300,7 +296,7 @@ function createPlanet(Id) {
 
     planets[Id] = new THREE.Mesh(geometry, material);
     if(Id == moonId) planets[Id].castShadow = true;
-    if(Id == earthId || Id == saturnId || Id == uranusId) planets[Id].receiveShadow = true;
+    else if(Id == earthId) planets[Id].receiveShadow = true;
     planets[Id].name = data[Id].name;       // used for not ignoring if focus on it
     planets[Id].myId = Id;
     planets[Id].position.set(data[Id].distance, 0, 0);
@@ -505,8 +501,8 @@ function init() {
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById("container").appendChild(renderer.domElement);
-    renderer.shadowMapEnabled = true;
-    renderer.shadowMapType = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     controls = new THREE.OrbitControls(camera, document.getElementById("container"));
 
     // Create Solar System group
