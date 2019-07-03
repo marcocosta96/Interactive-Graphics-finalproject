@@ -231,6 +231,10 @@ var mouse;
 // tooltip
 var tooltipDiv = $("#tooltip");
 
+// Follow planet
+var followPlanetId = sunId;
+var cameraFollowsPlanet = true;
+
 // Create orbit trajectory for the planets
 function createOrbitTrajectory(Id) {
     var geometry = null;
@@ -472,11 +476,17 @@ function dblclickPlanet(event) {
 
     // focus camera on it
     if (targetElement) {
-        controls.target.set(targetElement.position.x, targetElement.position.y, targetElement.position.z);
-        controls.update();
+        followPlanetId = targetElement.myId;
+        if(data[followPlanetId].hasOwnProperty('groupId')) followPlanetId = data[followPlanetId].groupId;
+        followPlanet(followPlanetId);
         $("#cameraSelect").val(targetElement.myId);
         $("#cameraSelect").formSelect();
     }
+}
+
+function followPlanet(Id) {
+    controls.target.set(planets[Id].position.x, planets[Id].position.y, planets[Id].position.z);
+    controls.update();
 }
 
 function showInfoPlanet(event) {
@@ -537,6 +547,7 @@ function init() {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     controls = new THREE.OrbitControls(camera, document.getElementById("container"));
+    controls.autoRotateSpeed = 1;
 
     // Create Solar System group
     createSun();
@@ -628,17 +639,23 @@ function init() {
     $("#cameraSelect").on("change", function(event) {
         let planetId = $("#cameraSelect").val();
         if(data[planetId].hasOwnProperty('groupId')) planetId = data[planetId].groupId;
-        controls.target.set(planets[planetId].position.x, planets[planetId].position.y, planets[planetId].position.z);
-        controls.update();
+        followPlanetId = planetId;
+        followPlanet(followPlanetId);
+    });
+
+    $("#followPlanetCheckbox").on("change", function(event) {
+        if (event.target.checked) cameraFollowsPlanet = true;
+        else cameraFollowsPlanet = false;
+    });
+
+    $("#rotateCameraCheckbox").on("change", function(event) {
+        if (event.target.checked) controls.autoRotate = true;
+        else controls.autoRotate = false;
     });
 
     $("#earthCloudCheckbox").on("change", function(event) {
-        if (event.target.checked) {
-            planets[earthId].add(planets[earthCloudId]);
-        }
-        else {
-            planets[earthId].remove(planets[earthCloudId]);
-        }
+        if (event.target.checked) planets[earthId].add(planets[earthCloudId]);
+        else planets[earthId].remove(planets[earthCloudId]);
     });
 
     $("#ambientLightCheckbox").on("change", function(event) {
@@ -674,6 +691,7 @@ function render () {
     requestAnimationFrame(render);
     var time = Date.now();
     for(let i = sunId; i <= moonId; i++) rotationPlanet(i, time);
+    if(cameraFollowsPlanet) followPlanet(followPlanetId);
     controls.update();
     renderer.render(scene, camera);
 }
