@@ -416,7 +416,8 @@ function createEarthCloud() {
 	});
 	planets[earthCloudId] = new THREE.Mesh(geometry, material);
     planets[earthCloudId].scale.set(1.02, 1.02, 1.02);
-    planets[earthCloudId].name = "Earth clouds";
+    planets[earthCloudId].name = "Earth";
+    planets[earthCloudId].receiveShadow = true;
     planets[earthCloudId].myId = earthCloudId;
 }
 
@@ -550,6 +551,7 @@ function init() {
     createStars('./img/stars.jpg');
 
     // Create light viewable from all directions.
+    scene.add(new THREE.AmbientLight(0x222222));
     ambientLight = new THREE.AmbientLight(0xaaaaaa);
 
     mouse = new THREE.Vector2();
