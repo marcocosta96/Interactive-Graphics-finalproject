@@ -297,8 +297,9 @@ function createPlanet(Id) {
     planets[Id] = new THREE.Mesh(geometry, material);
     if(Id == moonId) planets[Id].castShadow = true;
     else if(Id == earthId) planets[Id].receiveShadow = true;
-    planets[Id].name = data[Id].name;       // used for not ignoring if focus on it
+    planets[Id].name = data[Id].name; // used for not ignoring if focus on it
     planets[Id].myId = Id;
+    planets[Id].rotation.x = data[Id].equatorInclination * Math.PI/180;
     planets[Id].position.set(data[Id].distance, 0, 0);
     planets[data[Id].orbitCenter].add(planets[Id]);
 
@@ -324,10 +325,11 @@ function createRing(Id) {
     });
     planets[data[Id].ringId] = new THREE.Mesh(ringGeometry, ringMaterial);
     planets[data[Id].ringId].castShadow = true;
-    planets[data[Id].ringId].rotation.x = Math.PI/2;
+    planets[data[Id].ringId].rotation.x = Math.PI/2 + data[Id].equatorInclination * Math.PI/180;
     planets[data[Id].ringId].name = "Rings of " + data[Id].name; // used for not ignoring if focus on it
     planets[data[Id].ringId].myId = data[Id].ringId;
-    planets[Id].add(planets[data[Id].ringId]);
+    planets[data[Id].ringId].position.set(data[Id].distance, 0, 0);
+    planets[solarSystemId].add(planets[data[Id].ringId]);
 }
 
 //Create stars
@@ -403,13 +405,17 @@ function createEarthCloud() {
 // Move planet
 function rotationPlanet(Id, time) {
     // Rotation motion
-    if(rotatingAroundEquator) planets[Id].rotation.y += data[Id].rotationRate * rotationSpeedFactor;
-    if(Id == earthId) planets[earthCloudId].rotation.y -= data[Id].rotationRate/2 * rotationSpeedFactor;
+    if(rotatingAroundEquator) {
+        planets[Id].rotation.y += data[Id].rotationRate * rotationSpeedFactor;
+        if(Id == earthId) planets[earthCloudId].rotation.y -= data[Id].rotationRate/2 * rotationSpeedFactor;
+        if(data[Id].hasOwnProperty('ringId')) planets[data[Id].ringId].rotation.z += data[Id].rotationRate * rotationSpeedFactor;
+    }
 
     // Orbit motion
     if(rotatingAroundSun && Id != sunId) {
         planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
         planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
+        if(data[Id].hasOwnProperty('ringId')) planets[data[Id].ringId].position.set(planets[Id].position.x, planets[Id].position.y, planets[Id].position.z);
     }
 }
 
@@ -519,7 +525,6 @@ function init() {
 
     // Create light viewable from all directions.
     ambientLight = new THREE.AmbientLight(0xaaaaaa);
-    scene.add(ambientLight);
 
     mouse = new THREE.Vector2();
 
