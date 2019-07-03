@@ -2,7 +2,7 @@ var _RingGeometry = function (innerRadius, outerRadius, thetaSegments) {
 
 	THREE.Geometry.call(this);
 
-	var normal	= new THREE.Vector3(0, 0, 1);
+	var normal = new THREE.Vector3(0, 0, 1);
 
 	for(var i = 0; i < thetaSegments; i++) {
 		var angleLo	= (i / thetaSegments) * Math.PI * 2;
@@ -13,12 +13,12 @@ var _RingGeometry = function (innerRadius, outerRadius, thetaSegments) {
 		var vertex3	= new THREE.Vector3(innerRadius * Math.cos(angleHi), innerRadius * Math.sin(angleHi), 0);
 		var vertex4	= new THREE.Vector3(outerRadius * Math.cos(angleHi), outerRadius * Math.sin(angleHi), 0);
 
-		this.vertices.push( vertex1 );
-		this.vertices.push( vertex2 );
-		this.vertices.push( vertex3 );
-		this.vertices.push( vertex4 );
+		this.vertices.push(vertex1);
+		this.vertices.push(vertex2);
+		this.vertices.push(vertex3);
+		this.vertices.push(vertex4);
 
-		var vertexIdx	= i * 4;
+		var vertexIdx = i * 4;
 
 		// Create the first triangle
 		var face = new THREE.Face3(vertexIdx + 0, vertexIdx + 1, vertexIdx + 2, normal);
