@@ -247,6 +247,7 @@ function createSun() {
     sunLight = new THREE.PointLight("rgb(255, 220, 180)", 1.5);
     sunLight.castShadow = true;
     sunLight.shadow.bias = 0.001;
+    sunLight.shadowDarkness = 0.2;
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
     scene.add(sunLight);
@@ -298,7 +299,8 @@ function createPlanet(Id) {
     if(data[Id].hasOwnProperty('normal')) material.normalMap = textureLoader.load(data[Id].normal);
 
     planets[Id] = new THREE.Mesh(geometry, material);
-    planets[Id].castShadow = true;
+    if(Id == moonId) planets[Id].castShadow = true;
+    if(Id == earthId || Id == saturnId || Id == uranusId) planets[Id].receiveShadow = true;
     planets[Id].name = data[Id].name;       // used for not ignoring if focus on it
     planets[Id].myId = Id;
     planets[Id].position.set(data[Id].distance, 0, 0);
@@ -325,6 +327,7 @@ function createRing(Id) {
 		opacity: 0.8
     });
     planets[data[Id].ringId] = new THREE.Mesh(ringGeometry, ringMaterial);
+    planets[data[Id].ringId].castShadow = true;
     planets[data[Id].ringId].rotation.x = Math.PI/2;
     planets[data[Id].ringId].name = "Rings of " + data[Id].name; // used for not ignoring if focus on it
     planets[data[Id].ringId].myId = data[Id].ringId;
@@ -497,9 +500,13 @@ function init() {
     camera.position.z = 100;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     raycaster = new THREE.Raycaster();
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({
+        antialias: true
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById("container").appendChild(renderer.domElement);
+    renderer.shadowMapEnabled = true;
+    renderer.shadowMapType = THREE.PCFSoftShadowMap;
     controls = new THREE.OrbitControls(camera, document.getElementById("container"));
 
     // Create Solar System group
