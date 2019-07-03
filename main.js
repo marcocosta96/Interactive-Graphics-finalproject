@@ -755,5 +755,10 @@ function render () {
     renderer.render(scene, camera);
 }
 
+// Listener for initial loading page
+window.onload=function(){
+    document.getElementById("loading").style.display="none";
+}
+
 init();
 render();
