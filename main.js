@@ -204,8 +204,11 @@ data[asteroidBeltId] = {
 
 var scene, camera, renderer, controls, raycaster;
 
-// Current date
-var dateStart = new Date();
+// Date
+var date = new Date();
+const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
 
 // Far camera parameter
 var far = 10000;
@@ -479,7 +482,7 @@ function createAsteroidBelt() {
 
     asteroidsGeometry.morphAttributes = {};     // use to fix updateMorphAttribute bug
 
-    planets[asteroidBeltId] = new THREE.PointCloud(asteroidsGeometry, new THREE.PointCloudMaterial({ size: asteroidSize }));
+    planets[asteroidBeltId] = new THREE.Points(asteroidsGeometry, new THREE.PointsMaterial({ size: asteroidSize }));
     planets[asteroidBeltId].name = data[asteroidBeltId].name;
     planets[asteroidBeltId].myId = asteroidBeltId;
     planets[solarSystemId].add(planets[asteroidBeltId]);
@@ -498,16 +501,14 @@ function rotationPlanet(Id, time) {
     }
 
     // Orbit motion
-    if(rotatingAroundSun && Id != sunId) {
-        if(data[Id].hasOwnProperty('groupId')) {
-            planets[data[Id].groupId].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
-            planets[data[Id].groupId].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
-        }
-        else {
-            planets[Id].position.x = Math.cos(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
-            planets[Id].position.z = Math.sin(time * (1.0/(data[Id].orbitRate * (200 / revolutionSpeedFactor)))) * data[Id].distance;
-        }
-    }
+    if(rotatingAroundSun && Id != sunId) revolutionMovement(Id, time);
+}
+
+function revolutionMovement(Id, time) {
+    let currentId = Id;
+    if(data[Id].hasOwnProperty('groupId')) currentId = data[Id].groupId;
+    planets[currentId].position.x = Math.cos(time/(data[Id].orbitRate * 100000)) * data[Id].distance;
+    planets[currentId].position.z = Math.sin(time/(data[Id].orbitRate * 100000)) * data[Id].distance;
 }
 
 // Capture the object selected with mouse
@@ -589,6 +590,20 @@ function showInfoPlanet(event) {
             display: "none"
         });
     }
+}
+
+function incrementDate() {
+    date = new Date(date.getTime() + 10 * revolutionSpeedFactor * 1000);
+    setDate(date);
+}
+
+function getMonthName(month) {
+    return monthNames[month];
+}
+
+function setDate() {
+    $("#currentDate").val(getMonthName(date.getMonth()) + " " + date.getDate() + ", " + date.getFullYear());
+    $("#currentTime").val(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
 }
 
 // Initialize
@@ -721,6 +736,11 @@ function init() {
         else planets[earthId].remove(planets[earthCloudId]);
     });
 
+    $("#asteroidBeltCheckbox").on("change", function(event) {
+        if (event.target.checked) planets[solarSystemId].add(planets[asteroidBeltId]);
+        else planets[solarSystemId].remove(planets[asteroidBeltId]);
+    });
+
     $("#ambientLightCheckbox").on("change", function(event) {
         if (event.target.checked) scene.add(ambientLight);
         else scene.remove(ambientLight);
@@ -742,19 +762,42 @@ function init() {
         document.getElementById("sunLightText").innerHTML = "Sun light intensity: "+intensity;
     });
 
+    $("#setDate").on("change", function(event) {
+        if(rotatingAroundSun) $("#revolutionCheckbox").click();
+        let newDate = document.getElementById("setDate").value;
+        let dateString = newDate + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+        date = new Date(dateString);
+        setDate();
+        for(let i = mercuryId; i <= moonId; i++) revolutionMovement(i, date.getTime());
+    });
+
+    $("#setTime").on("change", function(event) {
+        if(rotatingAroundSun) $("#revolutionCheckbox").click();
+        let newTime = document.getElementById("setTime").value;
+        let dateString = getMonthName(date.getMonth()) + " " + date.getDate() + ", " + date.getFullYear() + " " + newTime + ":" + date.getSeconds();
+        date = new Date(dateString);
+        setDate();
+        for(let i = mercuryId; i <= moonId; i++) revolutionMovement(i, date.getTime());
+    });
+
     $(document).ready(function() {
         $('.sidenav').sidenav({edge: 'right'});
         $('select').formSelect();
         $('.tap-target').tapTarget();
-        $('.datepicker').datepicker({defaultDate: dateStart, setDefaultDate: true, yearRange: 50});
+        $('.datepicker').datepicker({
+            container: $("#container"),
+            yearRange: 50,
+            format: "mmmm d, yyyy"
+        });
+        $('.timepicker').timepicker({container: "#container", twelveHour: false});
     });
 }
 
 // Update animation
 function render () {
     requestAnimationFrame(render);
-    var time = Date.now();
-    for(let i = sunId; i <= moonId; i++) rotationPlanet(i, time);
+    for(let i = sunId; i <= moonId; i++) rotationPlanet(i, date.getTime());
+    if(rotatingAroundSun) incrementDate();
     if(cameraFollowsPlanet) followPlanet(followPlanetId);
     controls.update();
     renderer.render(scene, camera);

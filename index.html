@@ -56,6 +56,18 @@
                     </label>
                 </div>
             </a></li>
+            <li><a>
+                <div class="input-field col s12">
+                    <input type="text" class="datepicker" id="setDate">
+                    <label for="setDate">Date</label>
+                </div>
+            </a></li>
+            <li><a>
+                <div class="input-field col s12">
+                    <input type="text" class="timepicker" id="setTime">
+                    <label for="setTime">Time</label>
+                </div>
+            </a></li>
             <li><div class="divider"></div></li>
             <li><a>
                 <p id="rotationSpeedText" class="white-text">Rotation speed: 1.0x</p>
@@ -113,7 +125,7 @@
             </a></li>
             <li><a>
                 <div class="switch mycolor">
-                    <span class="white-text right-padding">Camera rotation: </span>
+                    <span class="white-text right-padding">Rotate camera: </span>
                     <label>
                         Off
                         <input type="checkbox" id="rotateCameraCheckbox">
@@ -129,6 +141,17 @@
                     <label>
                         Off
                         <input type="checkbox" id="earthCloudCheckbox">
+                        <span class="lever"></span>
+                        On
+                    </label>
+                </div>
+            </a></li>
+            <li><a>
+                <div class="switch mycolor">
+                    <span class="white-text right-padding">Asteroid Belt: </span>
+                    <label>
+                        Off
+                        <input type="checkbox" id="asteroidBeltCheckbox" checked="checked">
                         <span class="lever"></span>
                         On
                     </label>
@@ -182,7 +205,13 @@
         <div id="tooltip"></div>
         <div id="dateDiv">
             <span class="white-text"><i class="material-icons left">calendar_today</i>Current date:</span>
-            <input type="text" class="datepicker" id="currentDate">
+            <div class="divide"></div>
+            <div id="currentDateDiv">
+                <input type="text" id="currentDate" readonly="readonly">
+            </div>
+            <div id="currentTimeDiv">
+                <input type="text" id="currentTime" readonly="readonly">
+            </div>
         </div>
         <div id="container"></div>
         <script src="libraries/three.min.js"></script>
