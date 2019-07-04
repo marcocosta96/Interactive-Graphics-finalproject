@@ -274,7 +274,7 @@ function createOrbitTrajectory(Id) {
     trajectories[Id] = new THREE.LineLoop(geometry, material);
     trajectories[Id].rotation.x = Math.PI * 0.5;
     trajectories[Id].name = "trajectory";        // used for ignoring if focus on it
-    if(Id != moonId) planets[solarSystemId].add(trajectories[Id]);
+    if (Id != moonId) planets[solarSystemId].add(trajectories[Id]);
     else planets[data[Id].orbitCenter].add(trajectories[Id]);
 }
 
@@ -327,20 +327,20 @@ function createPlanet(Id) {
     var material = new THREE.MeshPhongMaterial({
         map: texture
     });
-    if(data[Id].hasOwnProperty('bump')) {
+    if (data[Id].hasOwnProperty('bump')) {
         material.bumpMap = textureLoader.load(data[Id].bump);
         material.bumpScale = data[Id].bumpScale;
     }
-    if(data[Id].hasOwnProperty('specular')) {
+    if (data[Id].hasOwnProperty('specular')) {
         material.specularMap = textureLoader.load(data[Id].specular);
         material.specular = new THREE.Color('grey');
     }
-    if(data[Id].hasOwnProperty('normal')) material.normalMap = textureLoader.load(data[Id].normal);
+    if (data[Id].hasOwnProperty('normal')) material.normalMap = textureLoader.load(data[Id].normal);
 
     planets[Id] = new THREE.Mesh(geometry, material);
 
     // Eclipse
-    if(Id == earthId || Id == moonId) {
+    if (Id == earthId || Id == moonId) {
         planets[Id].receiveShadow = true;
         planets[Id].castShadow = true;
     }
@@ -348,7 +348,7 @@ function createPlanet(Id) {
     planets[Id].myId = Id;
     planets[Id].rotation.x = data[Id].equatorInclination * Math.PI/180;
 
-    if(data[Id].hasOwnProperty('ringId')) {
+    if (data[Id].hasOwnProperty('ringId')) {
         planets[data[Id].groupId] = new THREE.Group();
         planets[data[Id].groupId].add(planets[Id]);
         createRing(Id);
@@ -356,7 +356,7 @@ function createPlanet(Id) {
         planets[data[Id].orbitCenter].add(planets[data[Id].groupId]);
     }
     else {
-        if(Id != earthId) planets[Id].position.set(data[Id].distance, 0, 0);
+        if (Id != earthId) planets[Id].position.set(data[Id].distance, 0, 0);
         planets[data[Id].orbitCenter].add(planets[Id]);
     }
 
@@ -389,7 +389,7 @@ function createRing(Id) {
 //Create stars
 function createStars(image) {
     var starsArray = [];
-    for(let i = 0; i < 6; i++) starsArray[i] = image;
+    for (let i = 0; i < 6; i++) starsArray[i] = image;
     var cubeStars = new THREE.CubeTextureLoader().load(starsArray);
     cubeStars.format = THREE.RGBFormat;
     scene.background = cubeStars;
@@ -427,8 +427,8 @@ function createEarthCloud() {
 			var dataTrans		= contextTrans.getImageData(0, 0, canvasTrans.width, canvasTrans.height);
 			// merge dataMap + dataTrans into dataResult
 			var dataResult		= contextMap.createImageData(canvasMap.width, canvasMap.height);
-			for(var y = 0, offset = 0; y < imageMap.height; y++){
-				for(var x = 0; x < imageMap.width; x++, offset += 4){
+			for (var y = 0, offset = 0; y < imageMap.height; y++){
+				for (var x = 0; x < imageMap.width; x++, offset += 4){
 					dataResult.data[offset+0]	= dataMap.data[offset+0];
 					dataResult.data[offset+1]	= dataMap.data[offset+1];
 					dataResult.data[offset+2]	= dataMap.data[offset+2];
@@ -505,23 +505,23 @@ function createAsteroidBelt() {
 // Move planet
 function movePlanet(Id, time) {
     // Rotation motion
-    if(rotatingAroundEquator) rotationMovement(Id, time);
+    if (rotatingAroundEquator) rotationMovement(Id, time);
 
     // Orbit motion
-    if(rotatingAroundSun && Id != sunId) revolutionMovement(Id, time);
+    if (rotatingAroundSun && Id != sunId) revolutionMovement(Id, time);
 }
 
 function rotationMovement(Id, time) {
     planets[Id].rotation.y += data[Id].rotationRate * rotationSpeedFactor;
-    if(Id == earthId) {
+    if (Id == earthId) {
         planets[earthCloudId].rotation.y -= data[Id].rotationRate/2 * rotationSpeedFactor;
     }
-    if(data[Id].hasOwnProperty('ringId')) planets[data[Id].ringId].rotation.z += data[Id].rotationRate * rotationSpeedFactor;
+    if (data[Id].hasOwnProperty('ringId')) planets[data[Id].ringId].rotation.z += data[Id].rotationRate * rotationSpeedFactor;
 }
 
 function revolutionMovement(Id, time) {
     let currentId = Id;
-    if(data[Id].hasOwnProperty('groupId')) currentId = data[Id].groupId;
+    if (data[Id].hasOwnProperty('groupId')) currentId = data[Id].groupId;
     planets[currentId].position.x = Math.cos(time/(data[Id].orbitRate * 100000)) * data[Id].distance;
     planets[currentId].position.z = Math.sin(time/(data[Id].orbitRate * 100000)) * data[Id].distance;
 }
@@ -539,12 +539,12 @@ function captureObject(point) {
     // Analize the result
     for (let i = 0; i < intersects.length; i++)
         if (intersects[i].object.name != "trajectory" && intersects[i].object.name != "Sun Glow") {
-            if($("#asteroidBeltCheckbox").is(':checked')) {
+            if ($("#asteroidBeltCheckbox").is(':checked')) {
                 if (point) point.coord = intersects[i].point;   // funct called by showInfoPlanet
                 return intersects[i].object;    // found object that is not a trajectory or sun glow
             }
             else {
-                if(intersects[i].object.name != "Asteroid Belt") {
+                if (intersects[i].object.name != "Asteroid Belt") {
                     if (point) point.coord = intersects[i].point;   // funct called by showInfoPlanet
                     return intersects[i].object;    // found object that is not a trajectory, sun glow or asteroid belt
                 }
@@ -561,7 +561,7 @@ function dblclickPlanet(event) {
     // focus camera on it
     if (targetElement && targetElement.name != planets[asteroidBeltId].name) {
         followPlanetId = targetElement.myId;
-        if(data[followPlanetId].hasOwnProperty('groupId')) followPlanetId = data[followPlanetId].groupId;
+        if (data[followPlanetId].hasOwnProperty('groupId')) followPlanetId = data[followPlanetId].groupId;
         followPlanet(followPlanetId);
         goToObject(followPlanetId);
         $("#cameraSelect").val(targetElement.myId);
@@ -648,7 +648,7 @@ function ambientMusic() {
     // load a sound and set it as the Audio object's buffer
     audioLoader = new THREE.AudioLoader();
 
-    for(let i = 0; i < tracks.length; i++) {
+    for (let i = 0; i < tracks.length; i++) {
         // create a global audio source array
         sounds[i] = new THREE.Audio(audioListener);
 
@@ -657,7 +657,7 @@ function ambientMusic() {
         	sounds[i].setLoop(true);
         	sounds[i].setVolume(volume);
             // Start firts track
-            if(i == 0) {
+            if (i == 0) {
                 sound = sounds[0];
                 sound.play();
             }
@@ -687,7 +687,7 @@ function init() {
     createSun();
 
     // Create planets
-    for(let i = mercuryId; i <= moonId; i++) createPlanet(i);
+    for (let i = mercuryId; i <= moonId; i++) createPlanet(i);
 
     // Create asteroid belt
     createAsteroidBelt();
@@ -750,8 +750,8 @@ function init() {
         if (play) {
             play = false;
             event.target.innerHTML = "<i class='material-icons left'>play_circle_filled</i>Play Animation";
-            if($("#rotationCheckbox").is(':checked')) $("#rotationCheckbox").click();
-            if($("#revolutionCheckbox").is(':checked')) $("#revolutionCheckbox").click();
+            if ($("#rotationCheckbox").is(':checked')) $("#rotationCheckbox").click();
+            if ($("#revolutionCheckbox").is(':checked')) $("#revolutionCheckbox").click();
             $("#rotationCheckbox").attr("disabled", "true");
             $("#revolutionCheckbox").attr("disabled", "true");
         }
@@ -794,7 +794,7 @@ function init() {
 
     $("#cameraSelect").on("change", function(event) {
         let planetId = $("#cameraSelect").val();
-        if(data[planetId].hasOwnProperty('groupId')) planetId = data[planetId].groupId;
+        if (data[planetId].hasOwnProperty('groupId')) planetId = data[planetId].groupId;
         followPlanetId = planetId;
         followPlanet(followPlanetId);
         goToObject(followPlanetId);
@@ -856,21 +856,21 @@ function init() {
     });
 
     $("#setDate").on("change", function(event) {
-        if(rotatingAroundSun) $("#revolutionCheckbox").click();
+        if (rotatingAroundSun) $("#revolutionCheckbox").click();
         let newDate = document.getElementById("setDate").value;
         let dateString = newDate + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
         date = new Date(dateString);
         setDate();
-        for(let i = mercuryId; i <= moonId; i++) revolutionMovement(i, date.getTime());
+        for (let i = mercuryId; i <= moonId; i++) revolutionMovement(i, date.getTime());
     });
 
     $("#setTime").on("change", function(event) {
-        if(rotatingAroundSun) $("#revolutionCheckbox").click();
+        if (rotatingAroundSun) $("#revolutionCheckbox").click();
         let newTime = document.getElementById("setTime").value;
         let dateString = getMonthName(date.getMonth()) + " " + date.getDate() + ", " + date.getFullYear() + " " + newTime + ":" + date.getSeconds();
         date = new Date(dateString);
         setDate();
-        for(let i = mercuryId; i <= moonId; i++) revolutionMovement(i, date.getTime());
+        for (let i = mercuryId; i <= moonId; i++) revolutionMovement(i, date.getTime());
     });
 
     $(document).ready(function() {
@@ -889,19 +889,19 @@ function init() {
 // Update animation
 function render () {
     requestAnimationFrame(render);
-    for(let i = sunId; i <= moonId; i++) movePlanet(i, date.getTime());
-    if(rotatingAroundSun) {
+    for (let i = sunId; i <= moonId; i++) movePlanet(i, date.getTime());
+    if (rotatingAroundSun) {
         incrementDate();
         planets[asteroidBeltId].rotation.y -= revolutionSpeedFactor/(2 * data[asteroidBeltId].orbitRate); // Rotate asteroid belt
     }
-    if(cameraFollowsPlanet) followPlanet(followPlanetId);
+    if (cameraFollowsPlanet) followPlanet(followPlanetId);
     controls.update();
     renderer.render(scene, camera);
 }
 
 // Listener for initial loading page
-window.onload=function(){
-    document.getElementById("loading").style.display="none";
+window.onload = function() {
+    document.getElementById("loading").style.display = "none";
 }
 
 init();
