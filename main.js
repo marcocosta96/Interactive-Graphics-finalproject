@@ -546,11 +546,25 @@ function dblclickPlanet(event) {
         followPlanetId = targetElement.myId;
         if(data[followPlanetId].hasOwnProperty('groupId')) followPlanetId = data[followPlanetId].groupId;
         followPlanet(followPlanetId);
+        goToObject(followPlanetId);
         $("#cameraSelect").val(targetElement.myId);
         $("#cameraSelect").formSelect();
     }
 }
 
+// Function to move the camera near the object
+function goToObject(Id) {
+    if (Id == sunId) {
+        camera.position.set(planets[Id].position.x+30, planets[Id].position.y+15, planets[Id].position.z+30);
+        camera.zoom = 3.0;
+    }
+    else {
+        camera.position.set(planets[Id].position.x+25, planets[Id].position.y+12.5, planets[Id].position.z+25);
+        camera.zoom = 3.0;
+    }
+}
+
+// Function to update target object
 function followPlanet(Id) {
     controls.target.set(planets[Id].position.x, planets[Id].position.y, planets[Id].position.z);
     controls.update();
@@ -759,6 +773,7 @@ function init() {
         if(data[planetId].hasOwnProperty('groupId')) planetId = data[planetId].groupId;
         followPlanetId = planetId;
         followPlanet(followPlanetId);
+        goToObject(followPlanetId);
     });
 
     $("#followPlanetCheckbox").on("change", function(event) {
