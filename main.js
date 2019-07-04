@@ -250,7 +250,10 @@ var mouse;
 var tooltipDiv = $("#tooltip");
 
 // sound var used in addAmbientMusic function
-var sound;
+var sound, audioListener, audioLoader;
+var volume = 0.3;
+var tracks = ['sounds/ambient.ogg', 'sounds/strangerThings.ogg'];
+var sounds = [];
 
 // Follow planet
 var followPlanetId = sunId;
@@ -282,7 +285,7 @@ function createSun() {
     // The sun is a light source
     sunLight = new THREE.PointLight("rgb(255, 220, 180)", 1.5);
     sunLight.castShadow = true;
-    sunLight.shadow.bias = 0.001;
+    sunLight.shadow.bias = 0.0001;
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
     scene.add(sunLight);
@@ -331,8 +334,12 @@ function createPlanet(Id) {
     if(data[Id].hasOwnProperty('normal')) material.normalMap = textureLoader.load(data[Id].normal);
 
     planets[Id] = new THREE.Mesh(geometry, material);
-    if(Id == moonId) planets[Id].castShadow = true;
-    else if(Id == earthId) planets[Id].receiveShadow = true;
+
+    // Eclipse
+    if(Id == earthId || Id == moonId) {
+        planets[Id].receiveShadow = true;
+        planets[Id].castShadow = true;
+    }
     planets[Id].name = data[Id].name; // used for not ignoring if focus on it
     planets[Id].myId = Id;
     planets[Id].rotation.x = data[Id].equatorInclination * Math.PI/180;
@@ -492,19 +499,20 @@ function createAsteroidBelt() {
 }
 
 // Move planet
-function rotationPlanet(Id, time) {
+function movePlanet(Id, time) {
     // Rotation motion
-    if(rotatingAroundEquator) {
-        planets[Id].rotation.y += data[Id].rotationRate * rotationSpeedFactor;
-        if(Id == earthId) {
-            planets[earthCloudId].rotation.y -= data[Id].rotationRate/2 * rotationSpeedFactor;
-            //planets[moonId].position.setFromMatrixPosition(planets[earthId].children[1].matrixWorld);
-        }
-        if(data[Id].hasOwnProperty('ringId')) planets[data[Id].ringId].rotation.z += data[Id].rotationRate * rotationSpeedFactor;
-    }
+    if(rotatingAroundEquator) rotationMovement(Id, time);
 
     // Orbit motion
     if(rotatingAroundSun && Id != sunId) revolutionMovement(Id, time);
+}
+
+function rotationMovement(Id, time) {
+    planets[Id].rotation.y += data[Id].rotationRate * rotationSpeedFactor;
+    if(Id == earthId) {
+        planets[earthCloudId].rotation.y -= data[Id].rotationRate/2 * rotationSpeedFactor;
+    }
+    if(data[Id].hasOwnProperty('ringId')) planets[data[Id].ringId].rotation.z += data[Id].rotationRate * rotationSpeedFactor;
 }
 
 function revolutionMovement(Id, time) {
@@ -527,8 +535,16 @@ function captureObject(point) {
     // Analize the result
     for (let i = 0; i < intersects.length; i++)
         if (intersects[i].object.name != "trajectory" && intersects[i].object.name != "Sun Glow") {
-            if (point) point.coord = intersects[i].point;   // funct called by showInfoPlanet
-            return intersects[i].object;    // found object that is not a trajectory
+            if($("#asteroidBeltCheckbox").is(':checked')) {
+                if (point) point.coord = intersects[i].point;   // funct called by showInfoPlanet
+                return intersects[i].object;    // found object that is not a trajectory or sun glow
+            }
+            else {
+                if(intersects[i].object.name != "Asteroid Belt") {
+                    if (point) point.coord = intersects[i].point;   // funct called by showInfoPlanet
+                    return intersects[i].object;    // found object that is not a trajectory, sun glow or asteroid belt
+                }
+            }
         }
     return null;    // there are no element or only trajectories
 }
@@ -611,21 +627,23 @@ function setDate() {
 
 // Ambient music
 function ambientMusic() {
-    // create an AudioListener and add it to the camera
-    var listener = new THREE.AudioListener();
-    camera.add(listener);
-
-    // create a global audio source
-    sound = new THREE.Audio(listener);
-
     // load a sound and set it as the Audio object's buffer
-    var audioLoader = new THREE.AudioLoader();
-    audioLoader.load( 'sounds/ambient.ogg', function(buffer) {
-    	sound.setBuffer(buffer);
-    	sound.setLoop(true);
-    	sound.setVolume(0.3);
-    	sound.play();
-    });
+    audioLoader = new THREE.AudioLoader();
+
+    for(let i = 0; i < tracks.length; i++) {
+        // create a global audio source array
+        sounds[i] = new THREE.Audio(audioListener);
+
+        audioLoader.load(tracks[i], function(buffer) {
+        	sounds[i].setBuffer(buffer);
+        	sounds[i].setLoop(true);
+        	sounds[i].setVolume(volume);
+            if(i == 0) {
+                sound = sounds[0];
+                sound.play();
+            }
+        });
+    }
 }
 
 // Initialize
@@ -664,6 +682,10 @@ function init() {
     // Create light viewable from all directions.
     scene.add(new THREE.AmbientLight(0x222222));
     ambientLight = new THREE.AmbientLight(0xaaaaaa);
+
+    // create an AudioListener and add it to the camera
+    audioListener = new THREE.AudioListener();
+    camera.add(audioListener);
 
     // Add ambient music
     ambientMusic();
@@ -736,19 +758,19 @@ function init() {
 
     $("#rotationSpeedSlider").on("input", function(event) {
         rotationSpeedFactor = event.target.value;
-        document.getElementById("rotationSpeedText").innerHTML = "Rotation speed: "+rotationSpeedFactor+"x";
+        document.getElementById("rotationSpeedText").innerHTML = "Rotation speed: " + rotationSpeedFactor + "x";
     });
 
     $("#revolutionSpeedSlider").on("input", function(event) {
         revolutionSpeedFactor = event.target.value;
-        document.getElementById("revolutionSpeedText").innerHTML = "Revolution speed: "+revolutionSpeedFactor+"x";
+        document.getElementById("revolutionSpeedText").innerHTML = "Revolution speed: " + revolutionSpeedFactor + "x";
     });
 
     $("#farSlider").on("input", function(event) {
         far = parseFloat(event.target.value);
         camera.far = far;
         camera.updateProjectionMatrix();
-        document.getElementById("farText").innerHTML = "Far: "+far;
+        document.getElementById("farText").innerHTML = "Far: " + far;
     });
 
     $("#cameraSelect").on("change", function(event) {
@@ -796,7 +818,21 @@ function init() {
     $("#sunLightSlider").on("input", function(event) {
         let intensity = parseFloat(event.target.value);
         sunLight.intensity = intensity;
-        document.getElementById("sunLightText").innerHTML = "Sun light intensity: "+intensity;
+        document.getElementById("sunLightText").innerHTML = "Sun light intensity: " + intensity;
+    });
+
+    $("#trackSelect").on("change", function(event) {
+        let track = $("#trackSelect").val();
+        sound.stop();
+        sound = sounds[track];
+        sound.setVolume(volume);
+        sound.play();
+    });
+
+    $("#volumeSlider").on("input", function(event) {
+        volume = parseFloat(event.target.value);
+        sound.setVolume(volume);
+        document.getElementById("volumeText").innerHTML = "Volume: " + volume;
     });
 
     $("#setDate").on("change", function(event) {
@@ -833,7 +869,7 @@ function init() {
 // Update animation
 function render () {
     requestAnimationFrame(render);
-    for(let i = sunId; i <= moonId; i++) rotationPlanet(i, date.getTime());
+    for(let i = sunId; i <= moonId; i++) movePlanet(i, date.getTime());
     if(rotatingAroundSun) incrementDate();
     if(cameraFollowsPlanet) followPlanet(followPlanetId);
     controls.update();
