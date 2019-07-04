@@ -25,6 +25,9 @@ const asteroidBeltId = 19;
 // Planet (Sphere) segments
 const planetSegments = 48;
 
+// Trajectory segments
+const trajSegments = 1024;
+
 // Planet data
 const data = [];
 data[earthId] = {
@@ -259,7 +262,7 @@ var cameraFollowsPlanet = true;
 // Create orbit trajectory for the planets
 function createOrbitTrajectory(Id) {
     var geometry = null;
-    geometry = new THREE.CircleGeometry(data[Id].distance, 128);
+    geometry = new THREE.CircleGeometry(data[Id].distance, trajSegments);
     var material = new THREE.LineBasicMaterial({color: 0xffffff});
 
     geometry.vertices.shift();  // Remove center vertex
