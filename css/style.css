@@ -28,6 +28,12 @@ body {
     background: rgba(0, 0, 0, 0.8);
 }
 
+.volume-button {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+}
+
 #currentDate, #currentTime  {
     float: left;
     width: 50%;
@@ -36,6 +42,18 @@ body {
 
 .datepicker, .timepicker {
     color: #fff;
+}
+
+.loader {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: #000000 url(../img/loader.gif) no-repeat center center;
+    text-align: center;
+    color: #999;
 }
 
 .select-wrapper input.select-dropdown {
