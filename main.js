@@ -202,7 +202,8 @@ data[asteroidBeltId] = {
     minOffsetXZ: -30,
     maxOffsetXZ: 30,
     number: 20000,
-    orbitCenter: solarSystemId
+    orbitCenter: solarSystemId,
+    orbitRate: (data[marsId].orbitRate + data[jupiterId].orbitRate)/2
 };
 
 var scene, camera, renderer, controls, raycaster;
@@ -571,11 +572,11 @@ function dblclickPlanet(event) {
 // Function to move the camera near the object
 function goToObject(Id) {
     if (Id == sunId) {
-        camera.position.set(planets[Id].position.x+30, planets[Id].position.y+15, planets[Id].position.z+30);
+        camera.position.set(planets[Id].position.x + 30, planets[Id].position.y + 15, planets[Id].position.z + 30);
         camera.zoom = 3.0;
     }
     else {
-        camera.position.set(planets[Id].position.x+25, planets[Id].position.y+12.5, planets[Id].position.z+25);
+        camera.position.set(planets[Id].position.x + 25, planets[Id].position.y + 12.5, planets[Id].position.z + 25);
         camera.zoom = 3.0;
     }
 }
@@ -655,6 +656,7 @@ function ambientMusic() {
         	sounds[i].setBuffer(buffer);
         	sounds[i].setLoop(true);
         	sounds[i].setVolume(volume);
+            // Start firts track
             if(i == 0) {
                 sound = sounds[0];
                 sound.play();
@@ -888,7 +890,10 @@ function init() {
 function render () {
     requestAnimationFrame(render);
     for(let i = sunId; i <= moonId; i++) movePlanet(i, date.getTime());
-    if(rotatingAroundSun) incrementDate();
+    if(rotatingAroundSun) {
+        incrementDate();
+        planets[asteroidBeltId].rotation.y -= revolutionSpeedFactor/(2 * data[asteroidBeltId].orbitRate); // Rotate asteroid belt
+    }
     if(cameraFollowsPlanet) followPlanet(followPlanetId);
     controls.update();
     renderer.render(scene, camera);
