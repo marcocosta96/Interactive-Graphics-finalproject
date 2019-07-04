@@ -246,6 +246,9 @@ var mouse;
 // tooltip
 var tooltipDiv = $("#tooltip");
 
+// sound var used in addAmbientMusic function
+var sound;
+
 // Follow planet
 var followPlanetId = sunId;
 var cameraFollowsPlanet = true;
@@ -451,7 +454,7 @@ function createAsteroidBelt() {
     const maxOffsetXZ = data[asteroidBeltId].maxOffsetXZ;
 
     // Create an invisible torus only to make working showInfoPlanet when move on it
-    var torusAsteroid = new THREE.Mesh(new THREE.TorusGeometry(distance, maxOffsetXZ, planetSegments, planetSegments), new THREE.MeshBasicMaterial({
+    var torusAsteroid = new THREE.Mesh(new THREE.TorusGeometry(distance, maxOffsetY, planetSegments, planetSegments), new THREE.MeshBasicMaterial({
         transparent: true,  // made torus transparent
         opacity: 0.0        // made torus transparent
     }));
@@ -591,6 +594,25 @@ function showInfoPlanet(event) {
     }
 }
 
+// Ambient music
+function ambientMusic() {
+    // create an AudioListener and add it to the camera
+    var listener = new THREE.AudioListener();
+    camera.add(listener);
+
+    // create a global audio source
+    sound = new THREE.Audio(listener);
+
+    // load a sound and set it as the Audio object's buffer
+    var audioLoader = new THREE.AudioLoader();
+    audioLoader.load( 'sounds/ambient.ogg', function(buffer) {
+    	sound.setBuffer(buffer);
+    	sound.setLoop(true);
+    	sound.setVolume(0.3);
+    	sound.play();
+    });
+}
+
 // Initialize
 function init() {
     scene = new THREE.Scene();
@@ -628,6 +650,9 @@ function init() {
     scene.add(new THREE.AmbientLight(0x222222));
     ambientLight = new THREE.AmbientLight(0xaaaaaa);
 
+    // Add ambient music
+    ambientMusic();
+
     mouse = new THREE.Vector2();
 
     // listener for window resizing
@@ -642,6 +667,18 @@ function init() {
 
     // listener for hover on a planet
     window.addEventListener('mousemove', showInfoPlanet, false);
+
+    // listener for ambient music
+    $("#music-button").on("click", function(event) {
+        if (sound.isPlaying) {
+            sound.pause();
+            $("#music-button").html('<i class="material-icons">volume_up</i>');
+        }
+        else {
+            sound.play();
+            $("#music-button").html('<i class="material-icons">volume_off</i>');
+        }
+    });
 
     // listeners for sidebar menu
     $("#trajectoriesCheckbox").on("change", function(event) {
