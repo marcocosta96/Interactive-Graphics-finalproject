@@ -55,6 +55,7 @@ data[sunId] = {
     equatorInclination: 7.4166,
     color: 'img/sunColorMap.jpg',
     glow: 'img/glow.png',
+    icon: 'img/sun.png',
     bumpScale: 0.05
 };
 data[mercuryId] = {
@@ -475,6 +476,7 @@ function createAsteroidBelt() {
     }));
     torusAsteroid.rotation.x = Math.PI/2;
     torusAsteroid.name = data[asteroidBeltId].name;
+    torusAsteroid.myId = asteroidBeltId;
     planets[solarSystemId].add(torusAsteroid);
 
     const asteroidCount = data[asteroidBeltId].number;
@@ -616,7 +618,10 @@ function showInfoPlanet(event) {
             top: `${tooltipPosition.y - tootipHeight - 70}px`
         });
 
-        tooltipDiv.text(targetElement.name);
+        let currentId = targetElement.myId;
+
+        if (currentId != asteroidBeltId) tooltipDiv.html("<img src='" + data[currentId].icon + "' width=20>" + " " + targetElement.name);
+        else tooltipDiv.text(targetElement.name);
 
         setTimeout(function() {
             tooltipDiv.css({
