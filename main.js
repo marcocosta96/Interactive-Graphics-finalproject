@@ -338,14 +338,15 @@ function createPlanet(Id) {
     if (data[Id].hasOwnProperty('normal')) material.normalMap = textureLoader.load(data[Id].normal);
 
     planets[Id] = new THREE.Mesh(geometry, material);
+    planets[Id].myId = Id;
 
     // Eclipse
     if (Id == earthId || Id == moonId) {
         planets[Id].receiveShadow = true;
         planets[Id].castShadow = true;
+        planets[Id].myId = earthSystemId;
     }
     planets[Id].name = data[Id].name; // used for not ignoring if focus on it
-    planets[Id].myId = Id;
     planets[Id].rotation.x = data[Id].equatorInclination * Math.PI/180;
     planets[Id].rotation.z = data[Id].equatorInclination * Math.PI/180;
 
@@ -383,7 +384,7 @@ function createRing(Id) {
     planets[data[Id].ringId].castShadow = true;
     planets[data[Id].ringId].rotation.x = Math.PI/2 + data[Id].equatorInclination * Math.PI/180;
     planets[data[Id].ringId].name = "Rings of " + data[Id].name; // used for not ignoring if focus on it
-    planets[data[Id].ringId].myId = data[Id].ringId;
+    planets[data[Id].ringId].myId = Id;
     planets[data[Id].groupId].add(planets[data[Id].ringId]);
 }
 
@@ -561,7 +562,7 @@ function dblclickPlanet(event) {
     var targetElement = captureObject(null);       // null if it's not object or it's trajectory
 
     // focus camera on it
-    if (targetElement && targetElement.name != planets[asteroidBeltId].name && targetElement.name != planets[moonId].name) {
+    if (targetElement && targetElement.name != planets[asteroidBeltId].name) {
         followPlanetId = targetElement.myId;
         if (data[followPlanetId].hasOwnProperty('groupId')) followPlanetId = data[followPlanetId].groupId;
         followPlanet(followPlanetId);
