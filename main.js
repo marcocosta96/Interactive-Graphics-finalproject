@@ -34,7 +34,7 @@ data[earthId] = {
     name: "Earth",
     size: 1,
     distance: 50,
-    orbitRate: 365.2564,
+    orbitRate: 365,
     rotationRate: 0.015,
     equatorInclination: 23.45,
     orbitalInclination: 0,
@@ -76,7 +76,7 @@ data[venusId] = {
     size: data[earthId].size * 0.949,
     distance: data[earthId].distance * 0.723,
     orbitRate: data[earthId].orbitRate * 0.6152,
-    rotationRate: -data[earthId].rotationRate * 0.0041,
+    rotationRate: data[earthId].rotationRate * 0.0041,
     equatorInclination: 178,
     orbitalInclination: 3.4,
     orbitCenter: solarSystemId,
@@ -138,7 +138,7 @@ data[uranusId] = {
     size: data[earthId].size * 4.01,
     distance: data[earthId].distance * 19.191,
     orbitRate: data[earthId].orbitRate * 84.02,
-    rotationRate: -data[earthId].rotationRate * 1.3888,
+    rotationRate: data[earthId].rotationRate * 1.3888,
     equatorInclination: 98,
     orbitalInclination: 0.7666,
     ringSegments: 500,
@@ -170,7 +170,7 @@ data[plutoId] = {
     size: data[earthId].size * 0.18,
     distance: data[earthId].distance * 39.44,
     orbitRate: data[earthId].orbitRate * 249.6913,
-    rotationRate: -data[earthId].rotationRate * 0.0065,
+    rotationRate: data[earthId].rotationRate * 0.0065,
     equatorInclination: 0,
     orbitalInclination: 17.1666,
     orbitCenter: solarSystemId,
@@ -347,6 +347,7 @@ function createPlanet(Id) {
     planets[Id].name = data[Id].name; // used for not ignoring if focus on it
     planets[Id].myId = Id;
     planets[Id].rotation.x = data[Id].equatorInclination * Math.PI/180;
+    planets[Id].rotation.z = data[Id].equatorInclination * Math.PI/180;
 
     if (data[Id].hasOwnProperty('ringId')) {
         planets[data[Id].groupId] = new THREE.Group();
@@ -522,8 +523,8 @@ function rotationMovement(Id, time) {
 function revolutionMovement(Id, time) {
     let currentId = Id;
     if (data[Id].hasOwnProperty('groupId')) currentId = data[Id].groupId;
-    planets[currentId].position.x = Math.cos(time/(data[Id].orbitRate * 100000)) * data[Id].distance;
-    planets[currentId].position.z = Math.sin(time/(data[Id].orbitRate * 100000)) * data[Id].distance;
+    planets[currentId].position.x = -Math.cos(time * 2 * Math.PI/(data[Id].orbitRate *24*3600000)) * data[Id].distance;
+    planets[currentId].position.z = Math.sin(time * 2 * Math.PI/(data[Id].orbitRate *24*3600000)) * data[Id].distance;
 }
 
 // Capture the object selected with mouse
@@ -559,7 +560,7 @@ function dblclickPlanet(event) {
     var targetElement = captureObject(null);       // null if it's not object or it's trajectory
 
     // focus camera on it
-    if (targetElement && targetElement.name != planets[asteroidBeltId].name) {
+    if (targetElement && targetElement.name != planets[asteroidBeltId].name && targetElement.name != planets[moonId].name) {
         followPlanetId = targetElement.myId;
         if (data[followPlanetId].hasOwnProperty('groupId')) followPlanetId = data[followPlanetId].groupId;
         followPlanet(followPlanetId);
@@ -630,7 +631,7 @@ function showInfoPlanet(event) {
 }
 
 function incrementDate() {
-    date = new Date(date.getTime() + 10 * revolutionSpeedFactor * 1000);
+    date = new Date(date.getTime() + 86400000 * revolutionSpeedFactor);
     setDate(date);
 }
 
@@ -892,7 +893,7 @@ function render () {
     for (let i = sunId; i <= moonId; i++) movePlanet(i, date.getTime());
     if (rotatingAroundSun) {
         incrementDate();
-        planets[asteroidBeltId].rotation.y -= revolutionSpeedFactor/(2 * data[asteroidBeltId].orbitRate); // Rotate asteroid belt
+        planets[asteroidBeltId].rotation.y += revolutionSpeedFactor/(2 * data[asteroidBeltId].orbitRate); // Rotate asteroid belt
     }
     if (cameraFollowsPlanet) followPlanet(followPlanetId);
     controls.update();
