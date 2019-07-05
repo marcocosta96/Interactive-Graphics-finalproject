@@ -344,7 +344,6 @@ function createPlanet(Id) {
     if (Id == earthId || Id == moonId) {
         planets[Id].receiveShadow = true;
         planets[Id].castShadow = true;
-        planets[Id].myId = earthSystemId;
     }
     planets[Id].name = data[Id].name; // used for not ignoring if focus on it
     planets[Id].rotation.x = data[Id].equatorInclination * Math.PI/180;
@@ -562,8 +561,9 @@ function dblclickPlanet(event) {
     var targetElement = captureObject(null);       // null if it's not object or it's trajectory
 
     // focus camera on it
-    if (targetElement && targetElement.name != planets[asteroidBeltId].name) {
+    if (targetElement && targetElement.name != planets[asteroidBeltId].name && targetElement.name != planets[moonId].name) {
         followPlanetId = targetElement.myId;
+        if (data[followPlanetId].hasOwnProperty('groupId')) followPlanetId = data[followPlanetId].groupId;
         followPlanet(followPlanetId);
         goToObject(followPlanetId);
         $("#cameraSelect").val(targetElement.myId);
