@@ -183,7 +183,7 @@ data[plutoId] = {
 data[moonId] = {
     name: "Moon",
     orbitRate: 27.3,
-    rotationRate: data[earthId].rotationRate * 270321662037,
+    rotationRate: data[earthId].rotationRate * 27.0321662037,
     distance: 2.0,
     size: data[earthId].size * 0.2725,
     equatorInclination: 0,
