@@ -523,8 +523,9 @@ function rotationMovement(Id, time) {
 function revolutionMovement(Id, time) {
     let currentId = Id;
     if (data[Id].hasOwnProperty('groupId')) currentId = data[Id].groupId;
-    planets[currentId].position.x = -Math.cos(time * 2 * Math.PI/(data[Id].orbitRate *24*3600000)) * data[Id].distance;
-    planets[currentId].position.z = Math.sin(time * 2 * Math.PI/(data[Id].orbitRate *24*3600000)) * data[Id].distance;
+    // All in milliseconds
+    planets[currentId].position.x = -Math.cos(time * 2 * Math.PI/(data[Id].orbitRate * 86400000)) * data[Id].distance; // Anti-clockwise
+    planets[currentId].position.z = Math.sin(time * 2 * Math.PI/(data[Id].orbitRate * 86400000)) * data[Id].distance;
 }
 
 // Capture the object selected with mouse
@@ -631,7 +632,7 @@ function showInfoPlanet(event) {
 }
 
 function incrementDate() {
-    date = new Date(date.getTime() + 86400000 * revolutionSpeedFactor);
+    date = new Date(date.getTime() + 86400000 * revolutionSpeedFactor); // Increment in milliseconds
     setDate(date);
 }
 
