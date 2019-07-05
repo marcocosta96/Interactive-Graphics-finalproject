@@ -564,7 +564,6 @@ function dblclickPlanet(event) {
     // focus camera on it
     if (targetElement && targetElement.name != planets[asteroidBeltId].name) {
         followPlanetId = targetElement.myId;
-        if (data[followPlanetId].hasOwnProperty('groupId')) followPlanetId = data[followPlanetId].groupId;
         followPlanet(followPlanetId);
         goToObject(followPlanetId);
         $("#cameraSelect").val(targetElement.myId);
