@@ -642,7 +642,7 @@ function showInfoPlanet(event) {
 // Increment date
 function incrementDate() {
     let increment = 864000; // 1/100 of a day, 86400000 milliseconds = 1 day (1 x 24 x 60 x 60 x 1000)
-    date = new Date(date.getTime() + increment * speedFactor); // Increment in milliseconds
+    date.setTime(date.getTime() + increment * speedFactor); // Increment in milliseconds
     setDate(date);
 }
 
@@ -757,7 +757,7 @@ function init() {
     $("#playButton").on("click", function(event) {
         if (play) {
             play = false;
-            event.target.innerHTML = "<i class='material-icons left'>play_circle_filled</i>Play Animation";
+            event.target.html("<i class='material-icons left'>play_circle_filled</i>Play Animation");
             if ($("#rotationCheckbox").is(':checked')) $("#rotationCheckbox").click();
             if ($("#revolutionCheckbox").is(':checked')) $("#revolutionCheckbox").click();
             $("#rotationCheckbox").attr("disabled", "true");
@@ -765,7 +765,7 @@ function init() {
         }
         else {
             play = true;
-            event.target.innerHTML = "<i class='material-icons left'>pause_circle_filled</i>Pause Animation";
+            event.target.html("<i class='material-icons left'>pause_circle_filled</i>Pause Animation");
             $("#rotationCheckbox").removeAttr("disabled");
             $("#revolutionCheckbox").removeAttr("disabled");
             $("#rotationCheckbox").click();
@@ -798,9 +798,9 @@ function init() {
     // Listener for modify current date
     $("#setDate").on("change", function(event) {
         if (play) $("#playButton").click();
-        let newDate = document.getElementById("setDate").value;
+        let newDate = $("#setDate").val();
         let dateString = newDate + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-        date = new Date(dateString);
+        date.setTime(dateString);
         setDate();
         for (let i = mercuryId; i <= moonId; i++) revolutionMovement(i);
     });
@@ -808,9 +808,9 @@ function init() {
     // Listener for modify current time
     $("#setTime").on("change", function(event) {
         if (play) $("#playButton").click();
-        let newTime = document.getElementById("setTime").value;
+        let newTime = $("#setTime").val();
         let dateString = getMonthName(date.getMonth()) + " " + date.getDate() + ", " + date.getFullYear() + " " + newTime + ":" + date.getSeconds();
-        date = new Date(dateString);
+        date.setTime(dateString);
         setDate();
         for (let i = mercuryId; i <= moonId; i++) revolutionMovement(i);
     });
@@ -818,7 +818,7 @@ function init() {
     // Listener for modify speedFactor value
     $("#speedSlider").on("input", function(event) {
         speedFactor = event.target.value;
-        document.getElementById("speedText").innerHTML = "Speed: " + speedFactor + "x";
+        $("#speedText").html("Speed: " + speedFactor + "x");
     });
 
     // Listener for modify far value
@@ -826,7 +826,7 @@ function init() {
         far = parseFloat(event.target.value);
         camera.far = far;
         camera.updateProjectionMatrix();
-        document.getElementById("farText").innerHTML = "Far: " + far;
+        $("farText").html("Far: " + far);
     });
 
     // Listener for move camera on a selected planet
@@ -884,7 +884,7 @@ function init() {
     $("#sunLightSlider").on("input", function(event) {
         let intensity = parseFloat(event.target.value);
         sunLight.intensity = intensity;
-        document.getElementById("sunLightText").innerHTML = "Sun light intensity: " + intensity;
+        $("#sunLightText").html("Sun light intensity: " + intensity);
     });
 
     // Listener for modify sound track
@@ -900,7 +900,7 @@ function init() {
     $("#volumeSlider").on("input", function(event) {
         volume = parseFloat(event.target.value);
         sound.setVolume(volume);
-        document.getElementById("volumeText").innerHTML = "Volume: " + volume;
+        $("#volumeText").html("Volume: " + volume);
     });
 
     // Listener for initialize materialize components
