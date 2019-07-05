@@ -35,7 +35,7 @@ data[earthId] = {
     size: 1,
     distance: 50,
     orbitRate: 365,
-    rotationRate: 0.015,
+    rotationRate: 24,
     equatorInclination: 23.45,
     orbitalInclination: 0,
     orbitCenter: earthSystemId,
@@ -51,7 +51,7 @@ data[earthId] = {
 data[sunId] = {
     name: "Sun",
     size: data[earthId].size * 15,
-    rotationRate: data[earthId].rotationRate * 0.037,
+    rotationRate: data[earthId].rotationRate * 25.38,
     equatorInclination: 7.4166,
     color: 'img/sunColorMap.jpg',
     glow: 'img/glow.png',
@@ -63,7 +63,7 @@ data[mercuryId] = {
     size: data[earthId].size * 0.382,
     distance: data[earthId].distance * 0.387,
     orbitRate: data[earthId].orbitRate * 0.0219,
-    rotationRate: data[earthId].rotationRate * 0.017,
+    rotationRate: data[earthId].rotationRate * 58.785,
     equatorInclination: 0,
     orbitalInclination: 7,
     orbitCenter: solarSystemId,
@@ -77,7 +77,7 @@ data[venusId] = {
     size: data[earthId].size * 0.949,
     distance: data[earthId].distance * 0.723,
     orbitRate: data[earthId].orbitRate * 0.6152,
-    rotationRate: data[earthId].rotationRate * 0.0041,
+    rotationRate: data[earthId].rotationRate * 243.69,
     equatorInclination: 178,
     orbitalInclination: 3.4,
     orbitCenter: solarSystemId,
@@ -91,7 +91,7 @@ data[marsId] = {
     size: data[earthId].size * 0.532,
     distance: data[earthId].distance * 1.524,
     orbitRate: data[earthId].orbitRate * 1.881,
-    rotationRate: data[earthId].rotationRate * 0.949,
+    rotationRate: data[earthId].rotationRate * 1.02595675,
     equatorInclination: 23.9833,
     orbitalInclination: 1.85,
     orbitCenter: solarSystemId,
@@ -106,7 +106,7 @@ data[jupiterId] = {
     size: data[earthId].size * 11.19,
     distance: data[earthId].distance * 5.203,
     orbitRate: data[earthId].orbitRate * 11.86,
-    rotationRate: data[earthId].rotationRate * 2.434,
+    rotationRate: data[earthId].rotationRate * 0.41354,
     equatorInclination: 3.0833,
     orbitalInclination: 1.3,
     orbitCenter: solarSystemId,
@@ -119,7 +119,7 @@ data[saturnId] = {
     size: data[earthId].size * 9.26,
     distance: data[earthId].distance * 9.537,
     orbitRate: data[earthId].orbitRate * 29.45,
-    rotationRate: data[earthId].rotationRate * 2.3388,
+    rotationRate: data[earthId].rotationRate * 0.44401,
     equatorInclination: 26.7333,
     orbitalInclination: 2.4833,
     ringSegments: 500,
@@ -139,7 +139,7 @@ data[uranusId] = {
     size: data[earthId].size * 4.01,
     distance: data[earthId].distance * 19.191,
     orbitRate: data[earthId].orbitRate * 84.02,
-    rotationRate: data[earthId].rotationRate * 1.3888,
+    rotationRate: data[earthId].rotationRate * 0.71833,
     equatorInclination: 98,
     orbitalInclination: 0.7666,
     ringSegments: 500,
@@ -159,7 +159,7 @@ data[neptuneId] = {
     size: data[earthId].size * 3.88,
     distance: data[earthId].distance * 30.069,
     orbitRate: data[earthId].orbitRate * 164.79,
-    rotationRate: data[earthId].rotationRate * 1.4912,
+    rotationRate: data[earthId].rotationRate * 0.67125,
     equatorInclination: 28.8,
     orbitalInclination: 1.7666,
     orbitCenter: solarSystemId,
@@ -183,7 +183,7 @@ data[plutoId] = {
 data[moonId] = {
     name: "Moon",
     orbitRate: 27.3,
-    rotationRate: data[earthId].rotationRate * 0.0366,
+    rotationRate: data[earthId].rotationRate * 270321662037,
     distance: 2.0,
     size: data[earthId].size * 0.2725,
     equatorInclination: 0,
@@ -236,11 +236,8 @@ var textureLoader = new THREE.TextureLoader();
 // Play or pause the animation
 var play = true;
 
-// Rotation speed factor
-var rotationSpeedFactor = 1.0;
-
-// Revolution speed factor
-var revolutionSpeedFactor = 1.0;
+// Speed factor
+var speedFactor = 1.0;
 
 // Rotation
 var rotatingAroundEquator = true;
@@ -339,7 +336,6 @@ function createPlanet(Id) {
     if (data[Id].hasOwnProperty('normal')) material.normalMap = textureLoader.load(data[Id].normal);
 
     planets[Id] = new THREE.Mesh(geometry, material);
-    planets[Id].myId = Id;
 
     // Eclipse
     if (Id == earthId || Id == moonId) {
@@ -347,8 +343,8 @@ function createPlanet(Id) {
         planets[Id].castShadow = true;
     }
     planets[Id].name = data[Id].name; // used for not ignoring if focus on it
+    planets[Id].myId = Id;
     planets[Id].rotation.x = data[Id].equatorInclination * Math.PI/180;
-    planets[Id].rotation.z = data[Id].equatorInclination * Math.PI/180;
 
     if (data[Id].hasOwnProperty('ringId')) {
         planets[data[Id].groupId] = new THREE.Group();
@@ -456,7 +452,7 @@ function createEarthCloud() {
     planets[earthCloudId].scale.set(1.02, 1.02, 1.02);
     planets[earthCloudId].name = "Earth";
     planets[earthCloudId].receiveShadow = true;
-    planets[earthCloudId].myId = earthCloudId;
+    planets[earthCloudId].myId = earthId;
 }
 
 // Create asteroid belt
@@ -506,28 +502,27 @@ function createAsteroidBelt() {
 }
 
 // Move planet
-function movePlanet(Id, time) {
+function movePlanet(Id) {
     // Rotation motion
-    if (rotatingAroundEquator) rotationMovement(Id, time);
+    if (rotatingAroundEquator) rotationMovement(Id);
 
     // Orbit motion
-    if (rotatingAroundSun && Id != sunId) revolutionMovement(Id, time);
+    if (rotatingAroundSun && Id != sunId) revolutionMovement(Id);
 }
 
-function rotationMovement(Id, time) {
-    planets[Id].rotation.y += data[Id].rotationRate * rotationSpeedFactor;
-    if (Id == earthId) {
-        planets[earthCloudId].rotation.y -= data[Id].rotationRate/2 * rotationSpeedFactor;
-    }
-    if (data[Id].hasOwnProperty('ringId')) planets[data[Id].ringId].rotation.z += data[Id].rotationRate * rotationSpeedFactor;
+function rotationMovement(Id) {
+    let theta = 2 * Math.PI * (date.getTime() / (data[Id].rotationRate * 3600000)); // In milliseconds
+    planets[Id].rotation.y = theta;
+    if (Id == earthId) planets[earthCloudId].rotation.y = theta/2;
+    if (data[Id].hasOwnProperty('ringId')) planets[data[Id].ringId].rotation.z = theta;
 }
 
-function revolutionMovement(Id, time) {
+function revolutionMovement(Id) {
+    let theta = 2 * Math.PI * (date.getTime() / (data[Id].orbitRate * 86400000)); // In milliseconds
     let currentId = Id;
     if (data[Id].hasOwnProperty('groupId')) currentId = data[Id].groupId;
-    // All in milliseconds
-    planets[currentId].position.x = -Math.cos(time * 2 * Math.PI/(data[Id].orbitRate * 86400000)) * data[Id].distance; // Anti-clockwise
-    planets[currentId].position.z = Math.sin(time * 2 * Math.PI/(data[Id].orbitRate * 86400000)) * data[Id].distance;
+    planets[currentId].position.x = -Math.cos(theta) * data[Id].distance; // Anti-clockwise
+    planets[currentId].position.z = Math.sin(theta) * data[Id].distance;
 }
 
 // Capture the object selected with mouse
@@ -637,7 +632,8 @@ function showInfoPlanet(event) {
 }
 
 function incrementDate() {
-    date = new Date(date.getTime() + 86400000 * revolutionSpeedFactor); // Increment in milliseconds
+    let increment = 864000; // 86400000 milliseconds = 1 day (1 x 24 x 60 x 60 x 1000)
+    date = new Date(date.getTime() + increment * speedFactor); // Increment in milliseconds
     setDate(date);
 }
 
@@ -782,14 +778,9 @@ function init() {
         else rotatingAroundSun= false;
     });
 
-    $("#rotationSpeedSlider").on("input", function(event) {
-        rotationSpeedFactor = event.target.value;
-        document.getElementById("rotationSpeedText").innerHTML = "Rotation speed: " + rotationSpeedFactor + "x";
-    });
-
-    $("#revolutionSpeedSlider").on("input", function(event) {
-        revolutionSpeedFactor = event.target.value;
-        document.getElementById("revolutionSpeedText").innerHTML = "Revolution speed: " + revolutionSpeedFactor + "x";
+    $("#speedSlider").on("input", function(event) {
+        speedFactor = event.target.value;
+        document.getElementById("speedText").innerHTML = "Speed: " + speedFactor + "x";
     });
 
     $("#farSlider").on("input", function(event) {
@@ -863,21 +854,21 @@ function init() {
     });
 
     $("#setDate").on("change", function(event) {
-        if (rotatingAroundSun) $("#revolutionCheckbox").click();
+        if (play) $("#playButton").click();
         let newDate = document.getElementById("setDate").value;
         let dateString = newDate + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
         date = new Date(dateString);
         setDate();
-        for (let i = mercuryId; i <= moonId; i++) revolutionMovement(i, date.getTime());
+        for (let i = mercuryId; i <= moonId; i++) revolutionMovement(i);
     });
 
     $("#setTime").on("change", function(event) {
-        if (rotatingAroundSun) $("#revolutionCheckbox").click();
+        if (play) $("#playButton").click();
         let newTime = document.getElementById("setTime").value;
         let dateString = getMonthName(date.getMonth()) + " " + date.getDate() + ", " + date.getFullYear() + " " + newTime + ":" + date.getSeconds();
         date = new Date(dateString);
         setDate();
-        for (let i = mercuryId; i <= moonId; i++) revolutionMovement(i, date.getTime());
+        for (let i = mercuryId; i <= moonId; i++) revolutionMovement(i);
     });
 
     $(document).ready(function() {
@@ -896,11 +887,9 @@ function init() {
 // Update animation
 function render () {
     requestAnimationFrame(render);
-    for (let i = sunId; i <= moonId; i++) movePlanet(i, date.getTime());
-    if (rotatingAroundSun) {
-        incrementDate();
-        planets[asteroidBeltId].rotation.y += revolutionSpeedFactor/(2 * data[asteroidBeltId].orbitRate); // Rotate asteroid belt
-    }
+    for (let i = sunId; i <= moonId; i++) movePlanet(i);
+    if (play) incrementDate();
+    if (rotatingAroundSun) planets[asteroidBeltId].rotation.y += speedFactor/(2 * data[asteroidBeltId].orbitRate); // Rotate asteroid belt
     if (cameraFollowsPlanet) followPlanet(followPlanetId);
     controls.update();
     renderer.render(scene, camera);
