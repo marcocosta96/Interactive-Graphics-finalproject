@@ -204,7 +204,7 @@ data[asteroidBeltId] = {
     maxOffsetXZ: 30,
     number: 20000,
     orbitCenter: solarSystemId,
-    orbitRate: (data[marsId].orbitRate + data[jupiterId].orbitRate)/2,
+    orbitRate: (data[jupiterId].orbitRate + data[marsId].orbitRate)/2,
     icon: 'img/asteroidBelt.png'
 };
 
@@ -922,7 +922,8 @@ function render () {
     requestAnimationFrame(render);
     for (let i = sunId; i <= moonId; i++) movePlanet(i); // Animate planets
     if (play) incrementDate(); // Increment date
-    if (playRevolutionMovement) celestialObjects[asteroidBeltId].rotation.y += speedFactor/(2 * data[asteroidBeltId].orbitRate); // Rotate asteroid belt
+    let theta = THREE.Math.degToRad(360) * (date.getTime() / (data[asteroidBeltId].orbitRate * 3600000)); // Asteroid belt rotation angle
+    if (playRevolutionMovement) celestialObjects[asteroidBeltId].rotation.y = theta; // Rotate asteroid belt
     if (cameraFollowsPlanet) followPlanet(followPlanetId); // Follow target planet
     controls.update();
     renderer.render(scene, camera);
