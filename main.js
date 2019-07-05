@@ -207,6 +207,7 @@ data[asteroidBeltId] = {
     orbitRate: (data[marsId].orbitRate + data[jupiterId].orbitRate)/2
 };
 
+// Scene variables
 var scene, camera, renderer, controls, raycaster;
 
 // Date
@@ -219,7 +220,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 var far = 10000;
 
 // Planets array
-var planets = [];
+var celestialObjects = [];
 
 // Trajectories array
 var trajectories = [];
@@ -261,7 +262,7 @@ var sounds = [];
 var followPlanetId = sunId;
 var cameraFollowsPlanet = true;
 
-// Create orbit trajectory for the planets
+// Create orbit trajectory for the planets and moon
 function createOrbitTrajectory(Id) {
     var geometry = null;
     geometry = new THREE.CircleGeometry(data[Id].distance, trajSegments);
@@ -270,19 +271,19 @@ function createOrbitTrajectory(Id) {
     geometry.vertices.shift();  // Remove center vertex
 
     trajectories[Id] = new THREE.LineLoop(geometry, material);
-    trajectories[Id].rotation.x = Math.PI * 0.5;
+    trajectories[Id].rotation.x = THREE.Math.degToRad(90);
     trajectories[Id].name = "trajectory";        // used for ignoring if focus on it
-    if (Id != moonId) planets[solarSystemId].add(trajectories[Id]);
-    else planets[data[Id].orbitCenter].add(trajectories[Id]);
+    if (Id != moonId) celestialObjects[solarSystemId].add(trajectories[Id]);
+    else celestialObjects[data[Id].orbitCenter].add(trajectories[Id]);
 }
 
 function createSun() {
-    planets[solarSystemId] = new THREE.Group();
-    scene.add(planets[solarSystemId]);
+    celestialObjects[solarSystemId] = new THREE.Group();
+    scene.add(celestialObjects[solarSystemId]);
 
-    planets[earthSystemId] = new THREE.Group();
-    planets[earthSystemId].position.set(data[earthId].distance, 0, 0);
-    planets[solarSystemId].add(planets[earthSystemId]);
+    celestialObjects[earthSystemId] = new THREE.Group();
+    celestialObjects[earthSystemId].position.set(data[earthId].distance, 0, 0);
+    celestialObjects[solarSystemId].add(celestialObjects[earthSystemId]);
 
     // The sun is a light source
     sunLight = new THREE.PointLight("rgb(255, 220, 180)", 1.5);
@@ -298,12 +299,12 @@ function createSun() {
     var material = new THREE.MeshBasicMaterial({
         map: texture
     });
-    planets[sunId] = new THREE.Mesh(geometry, material);
-    planets[sunId].name = data[sunId].name;
-    planets[sunId].myId = sunId;
-    planets[sunId].receiveShadow = false;
-    planets[sunId].castShadow = false;
-    planets[solarSystemId].add(planets[sunId]);
+    celestialObjects[sunId] = new THREE.Mesh(geometry, material);
+    celestialObjects[sunId].name = data[sunId].name;
+    celestialObjects[sunId].myId = sunId;
+    celestialObjects[sunId].receiveShadow = false;
+    celestialObjects[sunId].castShadow = false;
+    celestialObjects[solarSystemId].add(celestialObjects[sunId]);
 
     // Create the glow of the sun.
     var spriteMaterial = new THREE.SpriteMaterial({
@@ -312,10 +313,10 @@ function createSun() {
         transparent: true,
         blending: THREE.AdditiveBlending
     });
-    planets[sunGlowId] = new THREE.Sprite(spriteMaterial);
-    planets[sunGlowId].name = "Sun Glow";
-    planets[sunGlowId].scale.set(70, 70, 1.0);
-    planets[sunId].add(planets[sunGlowId]); // This centers the glow at the sun.
+    celestialObjects[sunGlowId] = new THREE.Sprite(spriteMaterial);
+    celestialObjects[sunGlowId].name = "Sun Glow";
+    celestialObjects[sunGlowId].scale.set(70, 70, 1.0);
+    celestialObjects[sunId].add(celestialObjects[sunGlowId]); // This centers the glow at the sun.
 }
 
 // Create planet
@@ -335,27 +336,27 @@ function createPlanet(Id) {
     }
     if (data[Id].hasOwnProperty('normal')) material.normalMap = textureLoader.load(data[Id].normal);
 
-    planets[Id] = new THREE.Mesh(geometry, material);
+    celestialObjects[Id] = new THREE.Mesh(geometry, material);
 
     // Eclipse
     if (Id == earthId || Id == moonId) {
-        planets[Id].receiveShadow = true;
-        planets[Id].castShadow = true;
+        celestialObjects[Id].receiveShadow = true;
+        celestialObjects[Id].castShadow = true;
     }
-    planets[Id].name = data[Id].name; // used for not ignoring if focus on it
-    planets[Id].myId = Id;
-    planets[Id].rotation.x = data[Id].equatorInclination * Math.PI/180;
+    celestialObjects[Id].name = data[Id].name; // used for not ignoring if focus on it
+    celestialObjects[Id].myId = Id;
+    celestialObjects[Id].rotation.x = THREE.Math.degToRad(data[Id].equatorInclination);
 
     if (data[Id].hasOwnProperty('ringId')) {
-        planets[data[Id].groupId] = new THREE.Group();
-        planets[data[Id].groupId].add(planets[Id]);
+        celestialObjects[data[Id].groupId] = new THREE.Group();
+        celestialObjects[data[Id].groupId].add(celestialObjects[Id]);
         createRing(Id);
-        planets[data[Id].groupId].position.set(data[Id].distance, 0, 0);
-        planets[data[Id].orbitCenter].add(planets[data[Id].groupId]);
+        celestialObjects[data[Id].groupId].position.set(data[Id].distance, 0, 0);
+        celestialObjects[data[Id].orbitCenter].add(celestialObjects[data[Id].groupId]);
     }
     else {
-        if (Id != earthId) planets[Id].position.set(data[Id].distance, 0, 0);
-        planets[data[Id].orbitCenter].add(planets[Id]);
+        if (Id != earthId) celestialObjects[Id].position.set(data[Id].distance, 0, 0);
+        celestialObjects[data[Id].orbitCenter].add(celestialObjects[Id]);
     }
 
     // Draws its orbit trajectory
@@ -376,12 +377,12 @@ function createRing(Id) {
 		transparent: true,
 		opacity: 0.8
     });
-    planets[data[Id].ringId] = new THREE.Mesh(ringGeometry, ringMaterial);
-    planets[data[Id].ringId].castShadow = true;
-    planets[data[Id].ringId].rotation.x = Math.PI/2 + data[Id].equatorInclination * Math.PI/180;
-    planets[data[Id].ringId].name = "Rings of " + data[Id].name; // used for not ignoring if focus on it
-    planets[data[Id].ringId].myId = Id;
-    planets[data[Id].groupId].add(planets[data[Id].ringId]);
+    celestialObjects[data[Id].ringId] = new THREE.Mesh(ringGeometry, ringMaterial);
+    celestialObjects[data[Id].ringId].castShadow = true;
+    celestialObjects[data[Id].ringId].rotation.x = THREE.Math.degToRad(90) + THREE.Math.degToRad(data[Id].equatorInclination);
+    celestialObjects[data[Id].ringId].name = "Rings of " + data[Id].name; // used for not ignoring if focus on it
+    celestialObjects[data[Id].ringId].myId = Id;
+    celestialObjects[data[Id].groupId].add(celestialObjects[data[Id].ringId]);
 }
 
 //Create stars
@@ -448,11 +449,11 @@ function createEarthCloud() {
         depthWrite: false,
 		opacity: 0.8
 	});
-	planets[earthCloudId] = new THREE.Mesh(geometry, material);
-    planets[earthCloudId].scale.set(1.02, 1.02, 1.02);
-    planets[earthCloudId].name = "Earth";
-    planets[earthCloudId].receiveShadow = true;
-    planets[earthCloudId].myId = earthId;
+	celestialObjects[earthCloudId] = new THREE.Mesh(geometry, material);
+    celestialObjects[earthCloudId].scale.set(1.02, 1.02, 1.02);
+    celestialObjects[earthCloudId].name = "Earth";
+    celestialObjects[earthCloudId].receiveShadow = true;
+    celestialObjects[earthCloudId].myId = earthId;
 }
 
 // Create asteroid belt
@@ -470,10 +471,10 @@ function createAsteroidBelt() {
         transparent: true,  // made torus transparent
         opacity: 0.0        // made torus transparent
     }));
-    torusAsteroid.rotation.x = Math.PI/2;
+    torusAsteroid.rotation.x = THREE.Math.degToRad(90);
     torusAsteroid.name = data[asteroidBeltId].name;
     torusAsteroid.myId = asteroidBeltId;
-    planets[solarSystemId].add(torusAsteroid);
+    celestialObjects[solarSystemId].add(torusAsteroid);
 
     const asteroidCount = data[asteroidBeltId].number;
     var asteroidsGeometry = new THREE.Geometry();
@@ -482,7 +483,7 @@ function createAsteroidBelt() {
     for (let i = 0; i < asteroidCount; i++) {
         // create a particle with random position
         var asteroidDistance = distance + THREE.Math.randFloat(minOffsetXZ, maxOffsetXZ);
-        var angle = THREE.Math.randFloat(0, 2*Math.PI);
+        var angle = THREE.Math.randFloat(0, THREE.Math.degToRad(360));
         var coord = new THREE.Vector3();
 
         coord.x = Math.cos(angle) * asteroidDistance;
@@ -495,10 +496,10 @@ function createAsteroidBelt() {
 
     asteroidsGeometry.morphAttributes = {};     // use to fix updateMorphAttribute bug
 
-    planets[asteroidBeltId] = new THREE.Points(asteroidsGeometry, new THREE.PointsMaterial({ size: asteroidSize }));
-    planets[asteroidBeltId].name = data[asteroidBeltId].name;
-    planets[asteroidBeltId].myId = asteroidBeltId;
-    planets[solarSystemId].add(planets[asteroidBeltId]);
+    celestialObjects[asteroidBeltId] = new THREE.Points(asteroidsGeometry, new THREE.PointsMaterial({ size: asteroidSize }));
+    celestialObjects[asteroidBeltId].name = data[asteroidBeltId].name;
+    celestialObjects[asteroidBeltId].myId = asteroidBeltId;
+    celestialObjects[solarSystemId].add(celestialObjects[asteroidBeltId]);
 }
 
 // Move planet
@@ -511,18 +512,18 @@ function movePlanet(Id) {
 }
 
 function rotationMovement(Id) {
-    let theta = 2 * Math.PI * (date.getTime() / (data[Id].rotationRate * 3600000)); // In milliseconds
-    planets[Id].rotation.y = theta;
-    if (Id == earthId) planets[earthCloudId].rotation.y = theta/2;
-    if (data[Id].hasOwnProperty('ringId')) planets[data[Id].ringId].rotation.z = theta;
+    let theta = THREE.Math.degToRad(360) * (date.getTime() / (data[Id].rotationRate * 3600000)); // In milliseconds
+    celestialObjects[Id].rotation.y = theta;
+    if (Id == earthId) celestialObjects[earthCloudId].rotation.y = theta/2;
+    if (data[Id].hasOwnProperty('ringId')) celestialObjects[data[Id].ringId].rotation.z = theta;
 }
 
 function revolutionMovement(Id) {
-    let theta = 2 * Math.PI * (date.getTime() / (data[Id].orbitRate * 86400000)); // In milliseconds
+    let theta = THREE.Math.degToRad(360) * (date.getTime() / (data[Id].orbitRate * 86400000)); // In milliseconds
     let currentId = Id;
     if (data[Id].hasOwnProperty('groupId')) currentId = data[Id].groupId;
-    planets[currentId].position.x = -Math.cos(theta) * data[Id].distance; // Anti-clockwise
-    planets[currentId].position.z = Math.sin(theta) * data[Id].distance;
+    celestialObjects[currentId].position.x = -Math.cos(theta) * data[Id].distance; // Anti-clockwise
+    celestialObjects[currentId].position.z = Math.sin(theta) * data[Id].distance;
 }
 
 // Capture the object selected with mouse
@@ -558,7 +559,7 @@ function dblclickPlanet(event) {
     var targetElement = captureObject(null);       // null if it's not object or it's trajectory
 
     // focus camera on it
-    if (targetElement && targetElement.name != planets[asteroidBeltId].name && targetElement.name != planets[moonId].name) {
+    if (targetElement && targetElement.name != celestialObjects[asteroidBeltId].name && targetElement.name != celestialObjects[moonId].name) {
         followPlanetId = targetElement.myId;
         if (data[followPlanetId].hasOwnProperty('groupId')) followPlanetId = data[followPlanetId].groupId;
         followPlanet(followPlanetId);
@@ -571,18 +572,18 @@ function dblclickPlanet(event) {
 // Function to move the camera near the object
 function goToObject(Id) {
     if (Id == sunId) {
-        camera.position.set(planets[Id].position.x + 30, planets[Id].position.y + 15, planets[Id].position.z + 30);
+        camera.position.set(celestialObjects[Id].position.x + 30, celestialObjects[Id].position.y + 15, celestialObjects[Id].position.z + 30);
         camera.zoom = 3.0;
     }
     else {
-        camera.position.set(planets[Id].position.x + 25, planets[Id].position.y + 12.5, planets[Id].position.z + 25);
+        camera.position.set(celestialObjects[Id].position.x + 25, celestialObjects[Id].position.y + 12.5, celestialObjects[Id].position.z + 25);
         camera.zoom = 3.0;
     }
 }
 
 // Function to update target object
 function followPlanet(Id) {
-    controls.target.set(planets[Id].position.x, planets[Id].position.y, planets[Id].position.z);
+    controls.target.set(celestialObjects[Id].position.x, celestialObjects[Id].position.y, celestialObjects[Id].position.z);
     controls.update();
 }
 
@@ -809,13 +810,13 @@ function init() {
     });
 
     $("#earthCloudCheckbox").on("change", function(event) {
-        if (event.target.checked) planets[earthId].add(planets[earthCloudId]);
-        else planets[earthId].remove(planets[earthCloudId]);
+        if (event.target.checked) celestialObjects[earthId].add(celestialObjects[earthCloudId]);
+        else celestialObjects[earthId].remove(celestialObjects[earthCloudId]);
     });
 
     $("#asteroidBeltCheckbox").on("change", function(event) {
-        if (event.target.checked) planets[solarSystemId].add(planets[asteroidBeltId]);
-        else planets[solarSystemId].remove(planets[asteroidBeltId]);
+        if (event.target.checked) celestialObjects[solarSystemId].add(celestialObjects[asteroidBeltId]);
+        else celestialObjects[solarSystemId].remove(celestialObjects[asteroidBeltId]);
     });
 
     $("#ambientLightCheckbox").on("change", function(event) {
@@ -829,8 +830,8 @@ function init() {
     });
 
     $("#sunGlowCheckbox").on("change", function(event) {
-        if (event.target.checked) planets[sunId].add(planets[sunGlowId]);
-        else planets[sunId].remove(planets[sunGlowId]);
+        if (event.target.checked) celestialObjects[sunId].add(celestialObjects[sunGlowId]);
+        else celestialObjects[sunId].remove(celestialObjects[sunGlowId]);
     });
 
     $("#sunLightSlider").on("input", function(event) {
@@ -889,7 +890,7 @@ function render () {
     requestAnimationFrame(render);
     for (let i = sunId; i <= moonId; i++) movePlanet(i);
     if (play) incrementDate();
-    if (rotatingAroundSun) planets[asteroidBeltId].rotation.y += speedFactor/(2 * data[asteroidBeltId].orbitRate); // Rotate asteroid belt
+    if (rotatingAroundSun) celestialObjects[asteroidBeltId].rotation.y += speedFactor/(2 * data[asteroidBeltId].orbitRate); // Rotate asteroid belt
     if (cameraFollowsPlanet) followPlanet(followPlanetId);
     controls.update();
     renderer.render(scene, camera);
