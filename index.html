@@ -3,16 +3,20 @@
 <html>
     <head>
         <title>Solar System</title>
-        <link rel="shortcut icon" href="img/icon.ico"/>
-        <!--Import Google Icon Font-->
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <!--Import materialize.css-->
-        <link type="text/css" rel="stylesheet" href="css/materialize.css"  media="screen,projection"/>
-        <link rel="stylesheet" href="css/style.css">
+        <link rel="shortcut icon" href="img/icon.ico"/> <!--Tab icon-->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> <!--Google Icon Font-->
+        <link type="text/css" rel="stylesheet" href="css/materialize.css"  media="screen,projection"/> <!--Materialize css-->
+        <link rel="stylesheet" href="css/style.css"> <!--Style-->
     </head>
     <body>
+
+        <!--Loading div-->
         <div class="loader" id="loading">LOADING...</div>
+
+        <!--Sidebar menu-->
         <ul id="slide-out" class="sidenav">
+
+            <!--Sidebar menu header-->
             <li><div class="user-view">
                 <div class="background">
                     <img src="img/sidebar.jpg">
@@ -21,9 +25,13 @@
                 <a href="#"><span class="white-text name settingsTitle">Settings</span></a>
                 <a href="#"><span class="white-text"> </span></a>
             </div></li>
+
+            <!--Play/pause animation button-->
             <li><a>
                 <button type="button" id="playButton" class="waves-effect waves-red btn"><i class="material-icons left">pause_circle_filled</i>Pause Animation</button>
             </a></li>
+
+            <!--Rotation checkbox-->
             <li><a>
                 <div class="switch mycolor">
                     <span class="white-text right-padding">Rotation: </span>
@@ -35,6 +43,8 @@
                     </label>
                 </div>
             </a></li>
+
+            <!--Revolution checkbox-->
             <li><a>
                 <div class="switch mycolor">
                     <span class="white-text right-padding">Revolution: </span>
@@ -46,6 +56,8 @@
                     </label>
                 </div>
             </a></li>
+
+            <!--Trajectories checkbox-->
             <li><a>
                 <div class="switch mycolor">
                     <span class="white-text right-padding">Trajectories: </span>
@@ -57,12 +69,16 @@
                     </label>
                 </div>
             </a></li>
+
+            <!--Date selector-->
             <li><a>
                 <div class="input-field col s12">
                     <input type="text" class="datepicker" id="setDate">
                     <label for="setDate">Date</label>
                 </div>
             </a></li>
+
+            <!--Time selector-->
             <li><a>
                 <div class="input-field col s12">
                     <input type="text" class="timepicker" id="setTime">
@@ -70,6 +86,8 @@
                 </div>
             </a></li>
             <li><div class="divider"></div></li>
+
+            <!--Speed slider-->
             <li><a>
                 <p id="speedText" class="white-text">Speed: 1.0x</p>
             </a></li>
@@ -78,6 +96,8 @@
                     <input type="range" min="0" max="100" step="0.5" value="1" id="speedSlider"/>
                 </p>
             </a></li>
+
+            <!--Far slider-->
             <li><a>
                 <p id="farText" class="white-text">Far: 10000</p>
             </a></li>
@@ -86,7 +106,10 @@
                     <input type="range" min="1000" max="100000" step="1000" value="10000" id="farSlider"/>
                 </p>
             </a></li>
+
             <li><div class="divider"></div></li>
+
+            <!--Planet selector-->
             <li><a>
                 <div class="input-field col s12 m6 white-text">
                     <select class="icons white-text" id="cameraSelect">
@@ -104,6 +127,8 @@
                     <label class="white-text">Camera:</label>
                 </div>
             </a></li>
+
+            <!--Follow planet checkbox-->
             <li><a>
                 <div class="switch mycolor">
                     <span class="white-text right-padding">Follow planet: </span>
@@ -115,6 +140,8 @@
                     </label>
                 </div>
             </a></li>
+
+            <!--Rotate camera checkbox-->
             <li><a>
                 <div class="switch mycolor">
                     <span class="white-text right-padding">Rotate camera: </span>
@@ -126,7 +153,10 @@
                     </label>
                 </div>
             </a></li>
+
             <li><div class="divider"></div></li>
+
+            <!--Earth clouds checkbox-->
             <li><a>
                 <div class="switch mycolor">
                     <span class="white-text right-padding">Earth clouds: </span>
@@ -138,6 +168,8 @@
                     </label>
                 </div>
             </a></li>
+
+            <!--Asteroid Belt checkbox-->
             <li><a>
                 <div class="switch mycolor">
                     <span class="white-text right-padding">Asteroid Belt: </span>
@@ -149,7 +181,11 @@
                     </label>
                 </div>
             </a></li>
+
+
             <li><div class="divider"></div></li>
+
+            <!--Ambient light checkbox-->
             <li><a>
                 <div class="switch mycolor">
                     <span class="white-text right-padding">Ambient light: </span>
@@ -161,6 +197,8 @@
                     </label>
                 </div>
             </a></li>
+
+            <!--Sun light checkbox-->
             <li><a>
                 <div class="switch mycolor">
                     <span class="white-text right-padding">Sun light: </span>
@@ -172,6 +210,8 @@
                     </label>
                 </div>
             </a></li>
+
+            <!--Sun glow checkbox-->
             <li><a>
                 <div class="switch mycolor">
                     <span class="white-text right-padding">Sun glow: </span>
@@ -183,6 +223,8 @@
                     </label>
                 </div>
             </a></li>
+
+            <!--Sun light slider-->
             <li><a>
                 <p id="sunLightText" class="white-text">Sun light intensity: 1.5</p>
             </a></li>
@@ -191,7 +233,10 @@
                     <input type="range" min="0.1" max="10" step="0.1" value="1.5" id="sunLightSlider"/>
                 </p>
             </a></li>
+
             <li><div class="divider"></div></li>
+
+            <!--Track selector-->
             <li><a>
                 <div class="input-field col s12 m6 white-text">
                     <select class="icons white-text" id="trackSelect">
@@ -201,6 +246,8 @@
                     <label class="white-text">Track:</label>
                 </div>
             </a></li>
+
+            <!--Volume slider-->
             <li><a>
                 <p id="volumeText" class="white-text">Volume: 0.3</p>
             </a></li>
@@ -211,9 +258,17 @@
             </a></li>
             <li><a><div class="padding"></div></a></li>
         </ul>
+
+        <!--Show sidebar menu button-->
         <a id="sidenav-button" data-target="slide-out" class="sidenav-trigger waves-effect waves-red btn btn-floating"><i class="material-icons">menu</i></a>
+
+        <!--Play/stop music button-->
         <a id="music-button" data-target="music" class="volume-button waves-effect waves-red btn btn-floating"><i class="material-icons">volume_off</i></a>
+
+        <!--Div where to show tooltip-->
         <div id="tooltip"></div>
+
+        <!--Div where to show current date-->
         <div id="dateDiv">
             <span class="white-text"><i class="material-icons left">calendar_today</i>Current date:</span>
             <div class="divide"></div>
@@ -224,13 +279,17 @@
                 <input type="text" id="currentTime" readonly="readonly">
             </div>
         </div>
+
+        <!--Container div-->
         <div id="container"></div>
-        <script src="libraries/three.min.js"></script>
-        <script src="libraries/ringGeometry.js"></script>
-        <script src="libraries/OrbitControls.js"></script>
-        <script src="libraries/jquery-3.4.1.js"></script>
-        <!--Import materialize.js-->
-        <script type="text/javascript" src="libraries/materialize.js"></script>
+
+        <!--Libraries-->
+        <script src="libraries/three.min.js"></script> <!--Three js library-->
+        <script src="libraries/ringGeometry.js"></script> <!--Ring geometry-->
+        <script src="libraries/OrbitControls.js"></script> <!--Controlls library-->
+        <script src="libraries/jquery-3.4.1.js"></script> <!--jQuery library-->
+        <script type="text/javascript" src="libraries/materialize.js"></script> <!--Materialize library-->
         <script src="main.js"></script>
+
     </body>
 </html>

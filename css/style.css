@@ -1,3 +1,4 @@
+/* Body style */
 body {
     background-color: #000000;
     margin:0;
@@ -5,21 +6,25 @@ body {
     overflow: hidden;
 }
 
+/* Container style */
 #container {
     width: 100%;
     height: 100%;
 }
 
+/* Sidenav button style */
 #sidenav-button {
     position: fixed;
     top: 10px;
     right: 10px;
 }
 
+/* Divider div style */
 .divide {
     clear: both;
 }
 
+/* Date div style */
 #dateDiv {
     position: fixed;
     top: 0px;
@@ -28,12 +33,7 @@ body {
     background: rgba(0, 0, 0, 0.8);
 }
 
-.volume-button {
-    position: absolute;
-    bottom: 0px;
-    left: 0px;
-}
-
+/* Date and time style */
 #currentDate, #currentTime  {
     float: left;
     width: 50%;
@@ -44,6 +44,14 @@ body {
     color: #fff;
 }
 
+/* Volume button style */
+.volume-button {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+}
+
+/* Loader style */
 .loader {
     position: fixed;
     left: 0px;
@@ -56,6 +64,7 @@ body {
     color: #999;
 }
 
+/* Selector style */
 .select-wrapper input.select-dropdown {
     color: #ffffff;
 }
@@ -64,6 +73,7 @@ body {
     background-color: #222222;
 }
 
+/* Padding style */
 .padding {
     padding-bottom: 100px;
 }
@@ -72,6 +82,7 @@ body {
     padding-right: 10px;
 }
 
+/* Checkbox style */
 .switch.mycolor label input[type=checkbox]:checked+.lever {
    background-color: #F44336;
 }
@@ -80,6 +91,7 @@ body {
    background-color: #e51c23;
 }
 
+/* Tooltip style */
 #tooltip {
     position: fixed;
     left: 0;
