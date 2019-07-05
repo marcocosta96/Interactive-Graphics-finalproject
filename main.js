@@ -346,8 +346,8 @@ function createPlanet(Id) {
         planets[Id].castShadow = true;
     }
     planets[Id].name = data[Id].name; // used for not ignoring if focus on it
-    planets[Id].rotation.x = data[Id].equatorInclination * Math.PI/180;
-    planets[Id].rotation.z = data[Id].equatorInclination * Math.PI/180;
+    planets[Id].rotation.x = THREE.Math.degToRad(data[Id].equatorInclination);
+    planets[Id].rotation.z = THREE.Math.degToRad(data[Id].equatorInclination);
 
     if (data[Id].hasOwnProperty('ringId')) {
         planets[data[Id].groupId] = new THREE.Group();
@@ -381,7 +381,7 @@ function createRing(Id) {
     });
     planets[data[Id].ringId] = new THREE.Mesh(ringGeometry, ringMaterial);
     planets[data[Id].ringId].castShadow = true;
-    planets[data[Id].ringId].rotation.x = Math.PI/2 + data[Id].equatorInclination * Math.PI/180;
+    planets[data[Id].ringId].rotation.x = Math.PI/2 + THREE.Math.degToRad(data[Id].equatorInclination);
     planets[data[Id].ringId].name = "Rings of " + data[Id].name; // used for not ignoring if focus on it
     planets[data[Id].ringId].myId = Id;
     planets[data[Id].groupId].add(planets[data[Id].ringId]);
