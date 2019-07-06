@@ -922,7 +922,7 @@ function render () {
     requestAnimationFrame(render);
     for (let i = sunId; i <= moonId; i++) movePlanet(i); // Animate planets
     if (play) incrementDate(); // Increment date
-    let theta = THREE.Math.degToRad(360) * (date.getTime() / (data[asteroidBeltId].orbitRate * 3600000)); // Asteroid belt rotation angle
+    let theta = THREE.Math.degToRad(360) * (date.getTime() / (data[asteroidBeltId].orbitRate * 86400000)); // Asteroid belt rotation angle
     if (playRevolutionMovement) celestialObjects[asteroidBeltId].rotation.y = theta; // Rotate asteroid belt
     if (cameraFollowsPlanet) followPlanet(followPlanetId); // Follow target planet
     controls.update();
