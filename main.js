@@ -211,14 +211,14 @@ data[asteroidBeltId] = {
 // Scene variables
 var scene, camera, renderer, controls, raycaster;
 
+// Far camera parameter
+var far = 10000;
+
 // Date
-var date = new Date();
+var date;
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
-
-// Far camera parameter
-var far = 10000;
 
 // Planets array
 var celestialObjects = [];
@@ -233,27 +233,27 @@ var sunLight;
 var ambientLight;
 
 // Texture Loader
-var textureLoader = new THREE.TextureLoader();
+var textureLoader;
 
 // Play or pause the animation
-var play = true;
+var play;
 
 // Play or pause rotation
-var playRotationMovement = true;
+var playRotationMovement;
 
 // Play or pause revolution
-var playRevolutionMovement = true;
+var playRevolutionMovement;
 
 // Speed factor
 var speedFactor = 1.0;
 
-// mouse
+// Mouse
 var mouse;
 
-// tooltip
-var tooltipDiv = $("#tooltip");
+// Tooltip
+var tooltipDiv;
 
-// sound var used in addAmbientMusic function
+// Sound vars
 var sound, audioListener, audioLoader;
 var volume = 0.3;
 var tracks = ['sounds/ambient.ogg', 'sounds/strangerThings.ogg'];
@@ -353,7 +353,7 @@ function createPlanet(Id) {
 
     celestialObjects[Id].name = data[Id].name; // Used for not ignoring if focus on it
     celestialObjects[Id].myId = Id; // Id of celestial object
-    celestialObjects[Id].rotation.x = THREE.Math.degToRad(data[Id].equatorInclination); //Axis inclination
+    celestialObjects[Id].rotation.x = THREE.Math.degToRad(data[Id].equatorInclination); // Axis inclination
 
     // Create rings of Saturn and Uranus
     if (data[Id].hasOwnProperty('ringId')) {
@@ -376,7 +376,7 @@ function createPlanet(Id) {
 function createRing(Id) {
     let ringGeometry = new THREE.BufferGeometry().fromGeometry(new _RingGeometry(data[Id].ringInnerDiameter, data[Id].ringOuterDiameter, data[Id].ringSegments));
     let ringMaterial = new THREE.MeshPhongMaterial({
-        map: textureLoader.load(data[Id].ringColor), //Color texture
+        map: textureLoader.load(data[Id].ringColor), // Color texture
         alphaMap: textureLoader.load(data[Id].ringPattern), // Pattern texture
         side: THREE.DoubleSide,
 		transparent: true,
@@ -389,7 +389,7 @@ function createRing(Id) {
     celestialObjects[data[Id].groupId].add(celestialObjects[data[Id].ringId]);
 }
 
-//Create stars (A cube with the same texture on the 6 inner faces)
+// Create stars (A cube with the same texture on the 6 inner faces)
 function createStars() {
     let starsArray = [];
     for (let i = 0; i < 6; i++) starsArray[i] = './img/stars.jpg'; // Stars texture
@@ -472,8 +472,8 @@ function createAsteroidBelt() {
 
     // Create an invisible torus only to make working showInfoPlanet when move on it
     let torusAsteroid = new THREE.Mesh(new THREE.TorusGeometry(distance, maxOffsetY, planetSegments, planetSegments), new THREE.MeshBasicMaterial({
-        transparent: true,  // made torus transparent
-        opacity: 0.0        // made torus transparent
+        transparent: true,  // Make torus transparent
+        opacity: 0.0        // Make torus transparent
     }));
     torusAsteroid.rotation.x = THREE.Math.degToRad(90);
     torusAsteroid.name = data[asteroidBeltId].name;
@@ -494,11 +494,11 @@ function createAsteroidBelt() {
         coord.y = THREE.Math.randFloat(minOffsetY, maxOffsetY);
         coord.z = Math.sin(angle) * asteroidDistance;
 
-        // insert asteroid
+        // Insert asteroid
         asteroidsGeometry.vertices.push(coord);
     }
 
-    asteroidsGeometry.morphAttributes = {};     // use to fix updateMorphAttribute bug
+    asteroidsGeometry.morphAttributes = {};     // Used to fix updateMorphAttribute bug
 
     celestialObjects[asteroidBeltId] = new THREE.Points(asteroidsGeometry, new THREE.PointsMaterial({ size: asteroidSize }));
     celestialObjects[asteroidBeltId].name = data[asteroidBeltId].name;
@@ -697,6 +697,20 @@ function init() {
     controls = new THREE.OrbitControls(camera, document.getElementById("container"));
     controls.autoRotateSpeed = 1;
 
+    // Current date
+    date = new Date();
+
+    // Animation flags
+    play = true;
+    playRotationMovement = true;
+    playRevolutionMovement = true;
+
+    // Texture loader
+    textureLoader = new THREE.TextureLoader();
+
+    // Tooltip div
+    tooltipDiv = $("#tooltip");
+
     // Create Solar System group
     createSun();
 
@@ -716,7 +730,7 @@ function init() {
     scene.add(new THREE.AmbientLight(0x222222));
     ambientLight = new THREE.AmbientLight(0xaaaaaa);
 
-    // create an AudioListener and add it to the camera
+    // Create an AudioListener and add it to the camera
     audioListener = new THREE.AudioListener();
     camera.add(audioListener);
 
@@ -757,7 +771,7 @@ function init() {
     $("#playButton").on("click", function(event) {
         if (play) {
             play = false;
-            event.target.html("<i class='material-icons left'>play_circle_filled</i>Play Animation");
+            $("#playButton").html("<i class='material-icons left'>play_circle_filled</i>Play Animation");
             if ($("#rotationCheckbox").is(':checked')) $("#rotationCheckbox").click();
             if ($("#revolutionCheckbox").is(':checked')) $("#revolutionCheckbox").click();
             $("#rotationCheckbox").attr("disabled", "true");
@@ -765,7 +779,7 @@ function init() {
         }
         else {
             play = true;
-            event.target.html("<i class='material-icons left'>pause_circle_filled</i>Pause Animation");
+            $("#playButton").html("<i class='material-icons left'>pause_circle_filled</i>Pause Animation");
             $("#rotationCheckbox").removeAttr("disabled");
             $("#revolutionCheckbox").removeAttr("disabled");
             $("#rotationCheckbox").click();
@@ -800,7 +814,7 @@ function init() {
         if (play) $("#playButton").click();
         let newDate = $("#setDate").val();
         let dateString = newDate + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-        date.setTime(dateString);
+        date = new Date(dateString);
         setDate();
         for (let i = mercuryId; i <= moonId; i++) revolutionMovement(i);
     });
@@ -810,7 +824,7 @@ function init() {
         if (play) $("#playButton").click();
         let newTime = $("#setTime").val();
         let dateString = getMonthName(date.getMonth()) + " " + date.getDate() + ", " + date.getFullYear() + " " + newTime + ":" + date.getSeconds();
-        date.setTime(dateString);
+        date = new Date(dateString);
         setDate();
         for (let i = mercuryId; i <= moonId; i++) revolutionMovement(i);
     });
@@ -826,7 +840,7 @@ function init() {
         far = parseFloat(event.target.value);
         camera.far = far;
         camera.updateProjectionMatrix();
-        $("farText").html("Far: " + far);
+        $("#farText").html("Far: " + far);
     });
 
     // Listener for move camera on a selected planet
