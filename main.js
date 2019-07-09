@@ -352,17 +352,19 @@ function rotationMovement(Id) {
 function revolutionMovement(Id) {
     // Revolution angle
     let theta = THREE.Math.degToRad(360) * (date.getTime() / (data[Id].revolutionRate * 86400000)); // Cast revolutionRate in milliseconds
+	let phi = THREE.Math.degToRad(data[Id].orbitInclination);
 
     let currentId = Id;
     if (data[Id].hasOwnProperty('groupId')) currentId = data[Id].groupId;
     celestialObjects[currentId].position.x = -Math.cos(theta) * data[Id].distance; // Anti-clockwise
+	celestialObjects[currentId].position.y = 0;
     celestialObjects[currentId].position.z = Math.sin(theta) * data[Id].distance;
-	let phi = THREE.Math.degToRad(data[Id].orbitInclination);
+
+	// Inclined orbit
 	if (inclinedOrbit) {
 		celestialObjects[currentId].position.y = -Math.cos(theta) * Math.sin(phi) * data[Id].distance;
 		celestialObjects[currentId].position.x *= Math.cos(phi);
 	}
-	else celestialObjects[currentId].position.y = 0;
 }
 
 // Capture the object selected with mouse
