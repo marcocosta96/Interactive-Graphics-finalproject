@@ -65,6 +65,9 @@ var playRotationMovement;
 // Play or pause revolution
 var playRevolutionMovement;
 
+// Incline orbit
+var inclinedOrbit;
+
 // Speed factor
 var speedFactor = 1.0;
 
@@ -94,6 +97,7 @@ function createOrbitTrajectory(Id) {
 
     trajectories[Id] = new THREE.LineLoop(orbitTrajectoryGeometry, orbitTrajectoryMaterial);
     trajectories[Id].rotation.x = THREE.Math.degToRad(90);
+	if(inclinedOrbit) trajectories[Id].rotation.y = THREE.Math.degToRad(data[Id].orbitInclination);
     trajectories[Id].name = "trajectory"; // Used for ignoring if focus on it
     if (Id != moonId) celestialObjects[solarSystemId].add(trajectories[Id]); // Sun as orbit center of planets
     else celestialObjects[data[Id].orbitCenter].add(trajectories[Id]); // Earth as orbit center of moon
@@ -353,6 +357,12 @@ function revolutionMovement(Id) {
     if (data[Id].hasOwnProperty('groupId')) currentId = data[Id].groupId;
     celestialObjects[currentId].position.x = -Math.cos(theta) * data[Id].distance; // Anti-clockwise
     celestialObjects[currentId].position.z = Math.sin(theta) * data[Id].distance;
+	let phi = THREE.Math.degToRad(data[Id].orbitInclination);
+	if (inclinedOrbit) {
+		celestialObjects[currentId].position.y = -Math.cos(theta) * Math.sin(phi) * data[Id].distance;
+		celestialObjects[currentId].position.x *= Math.cos(phi);
+	}
+	else celestialObjects[currentId].position.y = 0;
 }
 
 // Capture the object selected with mouse
@@ -416,6 +426,7 @@ function followPlanet(Id) {
     controls.update();
 }
 
+// Function to show planet infos in a tooltip
 function showInfoPlanet(event) {
     // Capture the object
     var point = {coord:null};
@@ -537,6 +548,9 @@ function init() {
     playRotationMovement = true;
     playRevolutionMovement = true;
 
+	// Inclined orbit flag
+	inclinedOrbit = true;
+
     // Texture loader
     textureLoader = new THREE.TextureLoader();
 
@@ -631,14 +645,22 @@ function init() {
         else playRevolutionMovement= false;
     });
 
-    // Listener for show/hide trajectories
-    $("#trajectoriesCheckbox").on("change", function(event) {
-        if (event.target.checked)
-            for (let i = mercuryId; i <= moonId; i++)
-                trajectories[i].visible = true;
-        else
-            for (let i = mercuryId; i <= moonId; i++)
-                trajectories[i].visible = false;
+    // Listener for show/hide orbits
+    $("#orbitVisibilityCheckbox").on("change", function(event) {
+        if (event.target.checked) for (let i = mercuryId; i <= moonId; i++) trajectories[i].visible = true;
+        else for (let i = mercuryId; i <= moonId; i++) trajectories[i].visible = false;
+    });
+
+    // Listener for incline/not incline orbits
+    $("#orbitInclinationCheckbox").on("change", function(event) {
+        if (event.target.checked) {
+			inclinedOrbit = true;
+			for (let i = mercuryId; i <= moonId; i++) trajectories[i].rotation.y = THREE.Math.degToRad(data[i].orbitInclination);
+		}
+        else {
+			inclinedOrbit = false;
+			for (let i = mercuryId; i <= moonId; i++) trajectories[i].rotation.y = 0;
+		}
     });
 
     // Listener for modify current date
@@ -775,10 +797,10 @@ function render () {
     renderer.render(scene, camera);
 }
 
+init();
+
 // Listener for initial loading page
 window.onload = function() {
     document.getElementById("loading").style.display = "none";
+	render();
 }
-
-init();
-render();
