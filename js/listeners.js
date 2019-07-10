@@ -284,6 +284,12 @@ $("#sunLightSlider").on("input", function(event) {
     $("#sunLightText").html("Sun light intensity: " + intensity);
 });
 
+// Listener for modify background
+$("#backgroundSelect").on("change", function(event) {
+    let background = $("#backgroundSelect").val();
+    scene.background = backgrounds[background];
+});
+
 // Listener for modify sound track
 $("#trackSelect").on("change", function(event) {
     let track = $("#trackSelect").val();

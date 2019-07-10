@@ -10,15 +10,6 @@ var sunLight;
 // Ambient light
 var ambientLight;
 
-// Create stars (A cube with the same texture on the 6 inner faces)
-function createStars(image) {
-    let starsArray = [];
-    for (let i = 0; i < 6; i++) starsArray[i] = image; // Stars texture
-    let cubeStars = new THREE.CubeTextureLoader().load(starsArray);
-    cubeStars.format = THREE.RGBFormat;
-    return cubeStars;
-}
-
 // Create orbit for the planets and moon
 function createOrbit(Id) {
 	let orbitGeometry = new THREE.CircleGeometry(data[Id].distance, orbitSegments);

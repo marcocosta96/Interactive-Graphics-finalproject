@@ -30,10 +30,14 @@ var speedFactor = 1.0;
 // Mouse
 var mouse;
 
+// Wallpaper vars
+const wallpapers = ["img/stars.jpg", "img/stars2.jpg", "img/stars3.jpg", "img/stars4.jpg"];
+var backgrounds = [];
+
 // Sound vars
 var sound, audioListener, audioLoader;
 var volume = 0.3;
-var tracks = ["sounds/ambient.ogg", "sounds/strangerThings.ogg"];
+const tracks = ["sounds/ambient.ogg", "sounds/strangerThings.ogg"];
 var sounds = [];
 
 // Follow planet
@@ -85,7 +89,7 @@ function init() {
     createEarthCloud();
 
     // Stars background
-    scene.background = createStars("./img/stars.jpg");
+    createBackground();
 
     // Create light viewable from all directions.
     scene.add(new THREE.AmbientLight(0x222222));

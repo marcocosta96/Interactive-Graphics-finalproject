@@ -75,6 +75,17 @@ function setDate() {
     $("#currentTime").val(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
 }
 
+// Create stars (A cube with the same texture on the 6 inner faces)
+function createBackground() {
+    let cubeFaces = [];
+	for (let i = 0; i < wallpapers.length; i++) {
+	    for (let j = 0; j < 6; j++) cubeFaces[j] = wallpapers[i]; // Stars texture
+	    backgrounds[i] = new THREE.CubeTextureLoader().load(cubeFaces);
+	    backgrounds[i].format = THREE.RGBFormat;
+	}
+	scene.background = backgrounds[0];
+}
+
 // Ambient music
 function ambientMusic() {
     // Load sounds
