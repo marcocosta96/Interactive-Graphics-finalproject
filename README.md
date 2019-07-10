@@ -20,5 +20,5 @@ Please see the [DOCUMENTATION](./documentation/documentation.pdf) PDF file for d
 ## Demo
 Click on the image for the interactive demo
 <p align="center">
-    <a href="https://sapienzainteractivegraphicscourse.github.io/finalproject-er-clab/"><img src="img/sidebar.jpg" width="800"><a>
+    <a href="https://sapienzainteractivegraphicscourse.github.io/finalproject-er-clab/"><img src="img/galaxy.jpg" width="800"><a>
 </p>
