@@ -1,3 +1,10 @@
+const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+// Get month name from number
+function getMonthName(month) {
+    return monthNames[month];
+}
+
 var _RingGeometry = function (innerRadius, outerRadius, thetaSegments) {
 
 	THREE.Geometry.call(this);
@@ -54,3 +61,38 @@ var _RingGeometry = function (innerRadius, outerRadius, thetaSegments) {
 
 };
 _RingGeometry.prototype = Object.create(THREE.Geometry.prototype);
+
+// Increment date
+function incrementDate() {
+    let increment = 864000; // 1/100 of a day, 86400000 milliseconds = 1 day (1 x 24 x 60 x 60 x 1000)
+    date.setTime(date.getTime() + increment * speedFactor); // Increment in milliseconds
+    setDate(date);
+}
+
+// Set date
+function setDate() {
+    $("#currentDate").val(getMonthName(date.getMonth()) + " " + date.getDate() + ", " + date.getFullYear());
+    $("#currentTime").val(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
+}
+
+// Ambient music
+function ambientMusic() {
+    // Load sounds
+    audioLoader = new THREE.AudioLoader();
+
+    for (let i = 0; i < tracks.length; i++) {
+        // Create tracks and put it in global audio source array
+        sounds[i] = new THREE.Audio(audioListener);
+
+        audioLoader.load(tracks[i], function(buffer) {
+        	sounds[i].setBuffer(buffer);
+        	sounds[i].setLoop(true);
+        	sounds[i].setVolume(volume);
+            // Start firts track
+            if (i == 0) {
+                sound = sounds[0];
+                sound.play();
+            }
+        });
+    }
+}
