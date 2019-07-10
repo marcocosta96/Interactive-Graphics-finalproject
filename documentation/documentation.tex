@@ -20,6 +20,7 @@
 \author{Gianmarco Cariggi 1698481 \\ \medskip Marco Costa 1691388}
 \maketitle
 
+
 \section{Introduction}
 For the final project of the course of Interactive Graphics we decided to make a simulator of our solar system, trying to reproduce it in the most faithful and realistic way possible, using of course assumptions and approximations to simplify its implementation.
 
@@ -33,30 +34,71 @@ For the final project of the course of Interactive Graphics we decided to make a
 \end{itemize}
 
 \subsection{Environment}
-The project is developed in WebGL (Web Graphics Library) is a JavaScript API for rendering interactive 2D and 3D graphics within any compatible web browser without the use of plug-ins. It is fully integrated with other web standards, allowing GPU-accelerated usage of physics and image processing and effects as part of the web page canvas.
+The project is developed in WebGL (Web Graphics Library). It's a JavaScript API for rendering interactive 2D and 3D graphics within any compatible web browser without the use of plug-ins. It is fully integrated with other web standards, allowing GPU-accelerated usage of physics and image processing and effects as part of the web page canvas.
 \newline
 Click \href{https://get.webgl.org/}{here} to check if your browser supports WebGL.
 
 \subsection{Libraries not developed by the team}
 \begin{itemize}
-	\item \href{https://threejs.org/}{Three Js (rev. 107dev)}: a cross-browser JavaScript library and Application Programming Interface (API) used to create and display animated 3D computer graphics in a web browser using WebGL.
-	\item \href{https://materializecss.com/}{Materialize (v. 1.0.0)}: a design language that combines the classic principles of successful design along with innovation and technology.
-	\item \href{https://jquery.com/}{jQuery (v. 3.4.1)}: it takes a lot of common tasks that require many lines of JavaScript code to accomplish, and wraps them into methods that you can call with a single line of code. Italso simplifies a lot of the complicated things from JavaScript, like AJAX calls and DOM manipulation.
+	\item \href{https://threejs.org/}{\textbf{Three Js} (rev. 107dev)}: a cross-browser JavaScript library and Application Programming Interface (API) used to create and display animated 3D computer graphics in a web browser using \textit{WebGL}.
+	\item \href{https://materializecss.com/}{\textbf{Materialize} (v. 1.0.0)}: a design language that combines the classic principles of successful design along with innovation and technology.
+	\item \href{https://jquery.com/}{\textbf{jQuery} (v. 3.4.1)}: it takes a lot of common tasks that require many lines of JavaScript code to accomplish, and wraps them into methods that you can call with a single line of code. It also simplifies a lot of the complicated things from \textit{JavaScript}, like \textit{AJAX} calls and \textit{DOM} manipulation.
 \end{itemize}
 
 \subsection{Assumptions and approximations}
-As is well known, the planets follow an elliptical orbit (a "flattened" circumference), and the sun occupies one of the two focuses. Rotating along this orbit, we have the 4 seasons (also due to the inclination of the axis). For simplicity of implementation and positioning of the various planets, we have approximated the orbit with a circumference, and the sun occupies the center.
-\newline
-Another important fact is that the orbit of all the planets varies continuously (for example, the orbit of the earth is not the same from one year to the next), this is because there is the gravitational influence of all the celestial bodies present in the universe (and in particular in the solar system, being closer). In the solar system, besides the sun, Jupiter has an important influence, being the biggest planet. In our simulator we do not take into account all this, the planets revolve around the sun with the same orbit (we can say that the sun is the only body that influences the gravitation of the planets).
-\newline
-The last detail is the actual position of the planets. Probably they will not be located in the real position, because in our simulator this position depends on the date, and in javascript the function Date.getTime() returns the milliseconds passed from January 1, 1970 to the moment in which the function is called. In theory we should have the milliseconds passed from the birth of the solar system to today, or set a certain initial position so as to match the real position of each planet with that in the simulator. But this is very complex, so we preferred to concentrate on other things. It must be noted however that every planet makes a turn around the sun in the real time of revolution and makes a turn around its axis (inclined with respect to the equatorial plane) in the real time of rotation (for example the earth takes exactly one year to make the revolution around the sun and 24 hours to make a turn on itself).
-\newline
+As is well known, the planets follow an elliptical orbit (a "flattened" circumference), and the sun occupies one of the two focuses. Rotating along this orbit, we have the 4 seasons (also due to the inclination of the axis). For simplicity of implementation and positioning of the various planets, we have approximated the orbit with a circumference, and the sun occupies  centre. \newline
+\par Another important fact is that the orbit of all the planets varies continuously (for example, the orbit of the earth is not the same from one year to the next), this is because there is the gravitational influence of all the celestial bodies present in the universe (and in particular in the solar system, being closer). In the solar system, besides the sun, Jupiter has an important influence, being the biggest planet. In our simulator we do not take into account all this, the planets revolve around the sun with the same orbit (we can say that the sun is the only body that influences the gravitation of the planets). \newline
+\par The last detail is the actual position of the planets. Probably they will not be located in the real position, because in our simulator this position depends on the date, and in JavaScript the function \textbf{Date.getTime()} returns the milliseconds passed from January 1, 1970 to the moment in which the function is called. In theory we should have the milliseconds passed from the birth of the solar system to today, or set a certain initial position so as to match the real position of each planet with that in the simulator. But this is very complex, so we preferred to concentrate on other things. It must be noted however that every planet makes a turn around the sun in the real time of revolution and makes a turn around its axis (inclined with respect to the equatorial plane) in the real time of rotation (for example the earth takes exactly one year to make the revolution around the sun and 24 hours to make a turn on itself).\newline
 \href{https://theskylive.com/3dsolarsystem}{Here} it's possible to see the real position of the planets.
 
+
 \section{Usage}
+The graphic interface allows to client to interact with our projects. First of all there is a fast loader page meanwhile the browser loads all the data.\par
+At the beginning camera is focused on Sun and the \textit{follow-planet} flag is enabled, then you can only move camera around the sun. In order to move in the solar system, you have to disable it through the main menu.\newline
+In meanwhile a background music starts in order to create a pleasant atmosphere and to take a good travel around the solar system. If you don't like it, you can disable through the specific button at bottom right of the window.\newline
+Since you disable the \textit{follow-planet}, now you can move.\newline
+\textbf{Have a good trip!}
+
+\subsection{Mouse Controls}
+The mouse is very important to fully enjoy this experience, so we explain the  available mouse controls below:
+\begin{itemize}
+	\item \textbf{Left Click}: Normally you click button or elements in the menu. If menu is opened and click on the solar system, it will close. If you click and drag the camera orbits around the target point.
+	\item \textbf{Double Left Click}: If it's done over a celestial objects (except \textit{Asteroid Belt}), it permits to select and focus the camera on it.
+	\item \textbf{Right Click}: If the \textit{follow-planet} flag is disabled, you can move around the environment clicking and dragging.
+	\item \textbf{Scroll Wheel}: As usual, the scroll wheel permits to zoom in or zoom out on camera's target.
+	\item \textbf{Move on the object}: Moving over the planets, a pop-up window appears where there are all planet's physical data.
+\end{itemize}
+All the commands are possible through the using of \textit{OrbitControls} of \textit{Three JS}.
+
+\subsection{Menu Options}
+The menu offers to you a lot of options to custom the animation and the aspect of solar system. It can be opened or closed simply clicking on the relative button in the top right of the screen. So let to describe all the options:
+\begin{itemize}
+	\item \textbf{Play / Pause Animation}: Play or pause all animations of the solar system. (Default: Play)
+	\item \textbf{Rotation}: Play or pause only the rotation on the axis of planet. (Default: Play)
+	\item \textbf{Revolution}: Play or pause only the revolution orbit. (Default: Play)
+	\item \textbf{Trajectories}: Show / Hide the orbit trajectories. (Default: ON)
+	\item \textbf{Inclined orbit}: Set / Unset the real inclination of the planet's orbit. (Default: ON)
+	\item \textbf{Date}: Set a specific date to see the state of solar. system. 
+	\item \textbf{Time}: Set a specific time to see the state of solar system.
+	\item \textbf{Speed}: Set the speed of time flowing (and then the animation). (Default: 1.0x)
+	\item \textbf{Far}: Set the far parameter of camera. (Default: 10000).
+	\item \textbf{Camera}: Set the camera target planet (as double click on a planet). (Default: Sun)
+	\item \textbf{Follow}: Camera follows or not the target planet. (Default: ON)
+	\item \textbf{Rotate Camera}: Camera orbits around the target planet. (Default: OFF)
+	\item \textbf{Earth clouds}: Show / Hide the Earth's clouds. (Default: OFF)
+	\item \textbf{Asteroid Belt}: Show / Hide the asteroid belt. (Default: OFF)
+	\item \textbf{Ambient light}: Turn on / off the ambient light. (Default: OFF)
+	\item \textbf{Sun light}: Turn on / off the Sun light. (Default: ON)
+	\item \textbf{Sun glow}: Turn on / off the Sun glow. (Default: ON)
+	\item \textbf{Sun light intensity}: Set the sun light intensity (Default: 1.5)
+	\item \textbf{Wallpaper}: Choose the background.
+	\item \textbf{Track}: Choose the background music.
+	\item \textbf{Volume}: Set the volume of track. (Default: 0.3)
+\end{itemize}
 
 
 \section{Implementation}
+
 
 
 \appendix
@@ -64,7 +106,7 @@ The last detail is the actual position of the planets. Probably they will not be
 \addappheadtotoc
 \section{Sources}
 \begin{itemize}
-	\item \href{https://www.wikipedia.org/}{Wikipedia} - for data and descriptions
+	\item \href{https://www.wikipedia.org/}{Wikipedia} - for data and descriptions of the celestial objects.
 	\item \href{https://github.com/jeromeetienne/threex.planets/blob/master/threex.planets.js}{Threex.planets.js} - for loading earth clouds texture and have a ring geometry with a radius texture
 	\item \href{http://planetpixelemporium.com/planets.html}{Planet pixel emporium} - for textures
 	

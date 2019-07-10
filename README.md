@@ -1,4 +1,4 @@
-# Final Project of Interactive Graphics
+# Solar System Simulator
 
 Final project for the course of Interactive Graphics AY 2018/2019 at La Sapienza University of Rome.
 
