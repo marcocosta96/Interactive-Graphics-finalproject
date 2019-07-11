@@ -11,6 +11,38 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage{lineno}
 \usepackage{appendix}
+\usepackage{gensymb}
+
+\lstdefinelanguage{JavaScript}{
+	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+	keywordstyle=\color{blue}\bfseries,
+	ndkeywords={class, export, boolean, throw, implements, import, this},
+	ndkeywordstyle=\color{darkgray}\bfseries,
+	identifierstyle=\color{black},
+	sensitive=false,
+	comment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{purple}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	morestring=[b]',
+	morestring=[b]"
+}
+
+\lstset{
+	language=JavaScript,
+	backgroundcolor=\color{lightgray},
+	extendedchars=true,
+	basicstyle=\footnotesize\ttfamily,
+	showstringspaces=false,
+	showspaces=false,
+	numbers=left,
+	numberstyle=\footnotesize,
+	numbersep=9pt,
+	tabsize=2,
+	breaklines=true,
+	showtabs=false,
+	captionpos=b
+}
 
 \begin{document}
 \title{\textbf{Interactive Graphics - Final Project}
@@ -48,8 +80,7 @@ Click \href{https://get.webgl.org/}{here} to check if your browser supports WebG
 \subsection{Assumptions and approximations}
 As is well known, the planets follow an elliptical orbit (a "flattened" circumference), and the sun occupies one of the two focuses. Rotating along this orbit, we have the 4 seasons (also due to the inclination of the axis). For simplicity of implementation and positioning of the various planets, we have approximated the orbit with a circumference, and the sun occupies  centre. \newline
 \par Another important fact is that the orbit of all the planets varies continuously (for example, the orbit of the earth is not the same from one year to the next), this is because there is the gravitational influence of all the celestial bodies present in the universe (and in particular in the solar system, being closer). In the solar system, besides the sun, Jupiter has an important influence, being the biggest planet. In our simulator we do not take into account all this, the planets revolve around the sun with the same orbit (we can say that the sun is the only body that influences the gravitation of the planets). \newline
-\par The last detail is the actual position of the planets. Probably they will not be located in the real position, because in our simulator this position depends on the date, and in JavaScript the function \textbf{Date.getTime()} returns the milliseconds passed from January 1, 1970 to the moment in which the function is called. In theory we should have the milliseconds passed from the birth of the solar system to today, or set a certain initial position so as to match the real position of each planet with that in the simulator. But this is very complex, so we preferred to concentrate on other things. It must be noted however that every planet makes a turn around the sun in the real time of revolution and makes a turn around its axis (inclined with respect to the equatorial plane) in the real time of rotation (for example the earth takes exactly one year to make the revolution around the sun and 24 hours to make a turn on itself).\newline
-\href{https://theskylive.com/3dsolarsystem}{Here} it's possible to see the real position of the planets.
+\par The last detail is the actual position of the planets. Probably they will not be located in the real position, because in our simulator this position depends on the date, and in JavaScript the function \textbf{Date.getTime()} returns the milliseconds passed from January 1, 1970 to the moment in which the function is called. In theory we should have the milliseconds passed from the birth of the solar system to today, or set a certain initial position so as to match the real position of each planet with that in the simulator. But this is very complex, so we preferred to concentrate on other things. It must be noted however that every planet makes a turn around the sun in the real time of revolution and makes a turn around its axis (inclined with respect to the equatorial plane) in the real time of rotation (for example the earth takes exactly one year to make the revolution around the sun and 24 hours to make a turn on itself).\cite{solarsystemrealpositon}\cite{earthcloudsradiustexture}
 
 
 \section{Usage}
@@ -96,9 +127,73 @@ The menu offers to you a lot of options to custom the animation and the aspect o
 	\item \textbf{Volume}: Set the volume of track. (Default: 0.3)
 \end{itemize}
 
-
+\newpage
 \section{Implementation}
+In this section, let we how we implemented all the features in the project. We prefer to divide this section in subsection to make easier the lecture and understanding.
 
+\subsection{Three JS basic components}
+The first part is about the initialization of Three JS, in this case we create the scene and the other fundamental elements for a WebGL environment. We do this in the \textit{init} function.
+\subsubsection{Scene}
+The first element for Three JS environment is the \textit{scene}\cite{documentation:threejs}. It is rendered and be simply instantiate using:
+\begin{lstlisting}
+scene = new THREE.Scene();
+\end{lstlisting}
+\subsubsection{Camera and OrbitControls}
+The second step is the camera, it allows to watch the scene. In our case, we use a perspective camera, with a \textit{FOV} = 45\degree, \textit{near} = 0.1 and an adapting \textit{far} to make visible the far objects\cite{documentation:threejs}.
+\par Beside the camera, we use OrbitControls library that allows mouse interactions with the camera. The parameter passed to the function specify which area of the canvas is under control of \textit{OrbitControls}. We choose the container, in this way, when the menu is opened, menu area is ignored by the controller\cite{documentation:threejs}.
+\begin{lstlisting}
+camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, far);
+camera.position.y = 45;
+camera.position.z = 100;
+camera.lookAt(new THREE.Vector3(0, 0, 0));
+controls = new THREE.OrbitControls(camera, document.getElementById("container"));
+controls.autoRotateSpeed = 1;
+\end{lstlisting}
+\subsubsection{Raycaster}
+Raycaster is very important in our project, because we have to establish which object is "captured" by the mouse cursor for different goals as we explain later\cite{documentation:threejs}. It's sufficient an instruction:
+\begin{lstlisting}
+raycaster = new THREE.Raycaster();
+\end{lstlisting}
+\subsubsection{Renderer}
+We use the standard \textit{WebGLRenderer}\cite{documentation:threejs}, enabling the antialiasing filter and using Percentage-Closer Soft Shadows (PCSS) as shadow maps filter\cite{PCSS:nvidia}.
+\begin{lstlisting}
+renderer = new THREE.WebGLRenderer({
+antialias: true
+});
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.getElementById("container").appendChild(renderer.domElement);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+\end{lstlisting}
+\subsubsection{Texture Loader}
+Texture loader\cite{documentation:threejs} is used to load all textures to relative objects.
+\begin{lstlisting}
+textureLoader = new THREE.TextureLoader();
+\end{lstlisting}
+
+\subsection{Light}
+
+\subsection{Music}
+
+\subsection{Models}
+
+\subsection{Animation}
+
+\subsection{Client Interactions}
+
+\subsection{HTML and CSS}
+
+
+\begin{thebibliography}{99}
+\bibitem{solarsystemrealpositon} \href{https://theskylive.com/3dsolarsystem}{Verify} the real-time position of solar system objects.
+\bibitem{planetpixelemporium} \href{http://planetpixelemporium.com/planets.html}{Planet pixel emporium}, website for planet textures.
+\bibitem{wikipedia} \href{https://www.wikipedia.org/}{Wikipedia} - for data and descriptions of the celestial objects.
+\bibitem{earthcloudsradiustexture} \href{https://github.com/jeromeetienne/threex.planets/blob/master/threex.planets.js}{Threex.planets.js} - for loading earth clouds texture and have a ring geometry with a radius texture.
+\bibitem{documentation:threejs} ThreeJS documentation: \href{https://threejs.org/docs/#api/en/scenes/Scene}{Scene}
+\href{https://threejs.org/docs/#api/en/cameras/PerspectiveCamera}{Perspective Camera}  \href{https://threejs.org/docs/#examples/en/controls/OrbitControls}{OrbitControls} \href{https://threejs.org/docs/#api/en/core/Raycaster}{Raycaster} \href{https://threejs.org/docs/#api/en/renderers/WebGLRenderer}{WebGLRenderer}.
+\href{https://threejs.org/docs/#api/en/loaders/TextureLoader}{Texture Loader}
+\bibitem{PCSS:nvidia} \href{http://developer.download.nvidia.com/shaderlibrary/docs/shadow_PCSS.pdf}{Percentage-Closer Soft Shadows}, Randima Fernando, NVIDIA Corporation.
+\end{thebibliography}
 
 
 \appendix
@@ -106,9 +201,7 @@ The menu offers to you a lot of options to custom the animation and the aspect o
 \addappheadtotoc
 \section{Sources}
 \begin{itemize}
-	\item \href{https://www.wikipedia.org/}{Wikipedia} - for data and descriptions of the celestial objects.
-	\item \href{https://github.com/jeromeetienne/threex.planets/blob/master/threex.planets.js}{Threex.planets.js} - for loading earth clouds texture and have a ring geometry with a radius texture
-	\item \href{http://planetpixelemporium.com/planets.html}{Planet pixel emporium} - for textures
+	\item 
 	
 \end{itemize}
 
