@@ -37,7 +37,7 @@ var backgrounds = [];
 // Sound vars
 var sound, audioListener, audioLoader;
 var volume = 0.3;
-const tracks = ["sounds/ambient.ogg", "sounds/strangerThings.ogg"];
+const tracks = ["sounds/ambient.ogg", "sounds/lTheme.ogg", "sounds/strangerThings.ogg"];
 var sounds = [];
 
 // Follow planet
