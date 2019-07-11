@@ -12,6 +12,8 @@
 \usepackage{lineno}
 \usepackage{appendix}
 \usepackage{gensymb}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
 
 \lstdefinelanguage{JavaScript}{
 	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
@@ -172,10 +174,98 @@ textureLoader = new THREE.TextureLoader();
 \end{lstlisting}
 
 \subsection{Light}
+In our project, light is a fundamental element, all the objects in solar system receive the sunlight. We use two kind of light source: point light coming from the sun and an optional ambient light for a better view of the shaded parts.
+\subsubsection{Point Light}\label{subsec:pointlight}
+Point light represents the light Sun produces in its core using the energy released through the nuclear fusion of hydrogen atoms\cite{solarcore:wikipedia}.
+\par The implementation of a point light source requires the use of Three JS library that makes it easier\cite{documentation:threejs}. The code is contained in \textit{createSun()} function:
+\begin{lstlisting}
+sunLight = new THREE.PointLight("rgb(255, 220, 180)", 1.5);
+sunLight.castShadow = true;
+sunLight.shadow.bias = 0.0001;
+sunLight.shadow.mapSize.width = 2048;
+sunLight.shadow.mapSize.height = 2048;
+scene.add(sunLight);
+\end{lstlisting}
+First of all we set the colour of light and its intensity. In the next lines, instead, we put the shadow parameters (bias and map size of shadow). Finally we add the light to Three JS scene.
+\subsubsection{Ambient Light}
+We add the ambient light to show better the shadow areas. For this reason, you can turn off with relative switch and at the start it's off. As for the point light, also the ambient light is implemented using the specific Three JS function\cite{documentation:threejs}. The code is contained in \textit{init()} function:
+\begin{lstlisting}
+scene.add(new THREE.AmbientLight(0x222222));
+ambientLight = new THREE.AmbientLight(0xaaaaaa);
+\end{lstlisting}
+Simply, we create the ambient light and add it to the scene. The second initialization is used to add it again to scene if you turn off (indeed the listener of relative switch in menu adds \textit{ambient light var} when it's on).
 
 \subsection{Music}
+Music is another very important element in our project, due to amplify the user experience. Also music can be managed through Three JS library.
+\par The first step is to introduce the audio listener which allows the playback of tracks. It needs that audio listener object is added to camera as you see below:
+\begin{lstlisting}
+audioListener = new THREE.AudioListener();
+camera.add(audioListener);
+\end{lstlisting}
+\par Then, it needs to add the different track and we do this in \textit{ambientMusic()} function:
+\begin{lstlisting}
+for (let i = 0; i < tracks.length; i++) {
+	// Create tracks and put it in global audio source array
+	sounds[i] = new THREE.Audio(audioListener);
+	
+	audioLoader.load(tracks[i], function(buffer) {
+		sounds[i].setBuffer(buffer);
+		sounds[i].setLoop(true);
+		sounds[i].setVolume(volume);
+		// Start firts track
+		if (i == 0) {
+			sound = sounds[0];
+			sound.play();
+		}
+	});
+}
+\end{lstlisting}
+For every track, it needs to build THREE.Audio object that permits to play music, using AudioListener. Then we bind the track with Audio object, setting volume and loop playing. Finally if it is the first track, we play it.
 
 \subsection{Models}
+The models in our project are represented by the planets, Sun, Moon and other celestial objects as Asteroid Belt and planet rings. All this object are children of THREE Group Solar System.\\
+All the models and the objects are represented in a 3D space with this axis:
+\\
+%Representation of 3d space
+\begin{tikzpicture}
+	\draw [->] (0,0,0) -- (1.5,0,0) node [at end, right] {$x$};
+	\draw [->] (0,0,0) -- (0,1.5,0) node [at end, left] {$y$};
+	\draw [->] (0,0,0) -- (0,0,1.5) node [at end, left] {$z$};
+\end{tikzpicture}
+\\
+Now let we see all the models in this project.
+
+\subsubsection{Planet} 
+The planet is the most common model in our project. It is a sphere and is created in \textit{createPlanet()} function. All needed data to build the planet is taken by Wikipedia articles\cite{wikipedia}.
+\begin{lstlisting}
+let planetGeometry = new THREE.SphereGeometry(data[Id].size, planetSegments, planetSegments);
+let planetMaterial = new THREE.MeshPhongMaterial({
+	map: textureLoader.load(data[Id].color) // Color texture
+});
+//...
+celestialObjects[Id] = new THREE.Mesh(planetGeometry, planetMaterial);
+//...
+createOrbit(Id);
+\end{lstlisting}
+First of all, we need for a Geometry and Material objects to create a planet. The geometry we chosen is naturally a \textit{SphereGeometry} with as radius a proportion of its real radius. In particular we choose as Earth radius the value of 1, so to find all the other measure we have made the ratio (real planet radius)/(real Earth radius), to find "how many planet is in Earth". In this way we obtain an approximated scale.
+\par Regards to material object, we choose \textit{MeshPhongMaterial}, in which we load all the possible texture. In addiction of this, if it's available we load also \textit{bump, specular} and \textit{normal} texture, all taken in this website \cite{planetpixelemporium}. More are the available textures and more the planet is realistic.
+\par If the planet has got rings, (Saturn or Uranus), we also create the ring but especially a \textit{THREE Group} so that they make up a system.
+Finally we create its orbit trajectory through \textit{createOrbit} function.
+\subsubsection{Sun}
+In our implementation Sun can be associated to a planet, also if we wrote a specific function to build it (\textit{createSun()}). Indeed the building of it is very similar to a planet, the only elements that differentiate it is the light, which I have already explained in the previous \hyperref[subsec:pointlight]{section}, and its Corona that let we describe below:
+\begin{lstlisting}
+let spriteMaterial = new THREE.SpriteMaterial({
+map: textureLoader.load(data[sunId].glow), // Glow texture
+color: 0xffffee,
+transparent: true,
+blending: THREE.AdditiveBlending
+});
+celestialObjects[sunGlowId] = new THREE.Sprite(spriteMaterial);
+celestialObjects[sunGlowId].name = "Sun Glow";
+celestialObjects[sunGlowId].scale.set(70, 70, 1.0);
+celestialObjects[sunId].add(celestialObjects[sunGlowId]); // This centers the glow at the sun.
+\end{lstlisting}
+In order to create an effect similar to an atmosphere, we used the Three JS \textit{Sprite} object. It only needs for Material, in particular for \textit{SpriteMaterial}. Thus, after scaling, we add it to sun object.
 
 \subsection{Animation}
 
@@ -192,17 +282,21 @@ textureLoader = new THREE.TextureLoader();
 \bibitem{documentation:threejs} ThreeJS documentation: \href{https://threejs.org/docs/#api/en/scenes/Scene}{Scene}
 \href{https://threejs.org/docs/#api/en/cameras/PerspectiveCamera}{Perspective Camera}  \href{https://threejs.org/docs/#examples/en/controls/OrbitControls}{OrbitControls} \href{https://threejs.org/docs/#api/en/core/Raycaster}{Raycaster} \href{https://threejs.org/docs/#api/en/renderers/WebGLRenderer}{WebGLRenderer}.
 \href{https://threejs.org/docs/#api/en/loaders/TextureLoader}{Texture Loader}
+\href{https://threejs.org/docs/#api/en/lights/PointLight}{Point Light}
+\href{https://threejs.org/docs/#api/en/lights/AmbientLight}{Ambient Light}
 \bibitem{PCSS:nvidia} \href{http://developer.download.nvidia.com/shaderlibrary/docs/shadow_PCSS.pdf}{Percentage-Closer Soft Shadows}, Randima Fernando, NVIDIA Corporation.
+\bibitem{solarcore:wikipedia}
+\href{https://en.wikipedia.org/wiki/Solar_core#Energy_conversion}{Solar core}, Wikipedia article.
 \end{thebibliography}
 
 
-\appendix
-\appendixpage
-\addappheadtotoc
-\section{Sources}
-\begin{itemize}
-	\item 
-	
-\end{itemize}
+%\appendix
+%\appendixpage
+%\addappheadtotoc
+%\section{Sources}
+%\begin{itemize}
+%	\item 
+%	
+%\end{itemize}
 
 \end{document}

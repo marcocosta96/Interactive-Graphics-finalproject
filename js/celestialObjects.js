@@ -175,6 +175,7 @@ function createPlanet(Id) {
     if (data[Id].hasOwnProperty("ringId")) {
         celestialObjects[data[Id].groupId] = new THREE.Group();
         celestialObjects[data[Id].groupId].add(celestialObjects[Id]);
+        celestialObjects[Id].castShadow = true;	// Saturn and Uranus shadow their rings
         createRing(Id);
         celestialObjects[data[Id].groupId].position.set(data[Id].distance, 0, 0);
         celestialObjects[data[Id].orbitCenter].add(celestialObjects[data[Id].groupId]);
@@ -202,6 +203,7 @@ function createRing(Id) {
     celestialObjects[data[Id].ringId].rotation.x = THREE.Math.degToRad(90) + THREE.Math.degToRad(data[Id].equatorInclination); // Axis inclination
     celestialObjects[data[Id].ringId].name = "Rings of " + data[Id].name; // Used for not ignoring if focus on it
     celestialObjects[data[Id].ringId].myId = Id; // Set planet Id
+    celestialObjects[data[Id].ringId].receiveShadow = true;		// Rings are shadowed from their planet
     celestialObjects[data[Id].groupId].add(celestialObjects[data[Id].ringId]);
 }
 
