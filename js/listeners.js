@@ -1,3 +1,7 @@
+// Cursor variables
+var mouseDown = false;
+var tooltipping = false;
+
 // Capture the object selected with mouse
 function captureObject(point) {
     // Normalize mouse coordinates
@@ -71,8 +75,7 @@ function showInfoPlanet(event) {
             display: "block",
             opacity: 0.0
         });
-        $("#container").css("cursor", "pointer");
-
+        tooltipping = true;
         var canvasHalfWidth = renderer.domElement.offsetWidth / 2;
         var canvasHalfHeight = renderer.domElement.offsetHeight / 2;
 
@@ -113,7 +116,7 @@ function showInfoPlanet(event) {
         $("#tooltip").css({
             display: "none"
         });
-        $("#container").css("cursor", "default");
+        tooltipping = false;
     }
 }
 
@@ -332,4 +335,19 @@ $(document).ready(function() {
 $(window).on("load", function() {
     $("#loading").css("display", "none"); // Hide chargement
 	render(); // Render starts when window has been loaded
+});
+
+// Cursor listeners
+$("#container").on("mousemove", function() {
+    if (mouseDown) $("#container").css("cursor", "move");
+    else if (tooltipping )$("#container").css("cursor", "pointer");
+    else $("#container").css("cursor", "default");
+});
+
+$("#container").on("mousedown", function() {
+    mouseDown = true;
+});
+
+$("#container").on("mouseup", function() {
+    mouseDown = false;
 });
