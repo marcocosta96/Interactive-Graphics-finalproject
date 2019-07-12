@@ -87,7 +87,9 @@ Click \href{https://get.webgl.org/}{here} to check if your browser supports WebG
 \subsection{Assumptions and approximations}
 As is well known, the planets follow an elliptical orbit (a "flattened" circumference), and the sun occupies one of the two focuses. Rotating along this orbit, we have the 4 seasons (also due to the inclination of the axis). For simplicity of implementation and positioning of the various planets, we have approximated the orbit with a circumference, and the sun occupies  centre. \newline
 \par Another important fact is that the orbit of all the planets varies continuously (for example, the orbit of the earth is not the same from one year to the next), this is because there is the gravitational influence of all the celestial bodies present in the universe (and in particular in the solar system, being closer). In the solar system, besides the sun, Jupiter has an important influence, being the biggest planet. In our simulator we do not take into account all this, the planets revolve around the sun with the same orbit (we can say that the sun is the only body that influences the gravitation of the planets). \newline
-\par The last detail is the actual position of the planets. Probably they will not be located in the real position, because in our simulator this position depends on the date, and in JavaScript the function \textbf{Date.getTime()} returns the milliseconds passed from January 1, 1970 to the moment in which the function is called. In theory we should have the milliseconds passed from the birth of the solar system to today, or set a certain initial position so as to match the real position of each planet with that in the simulator. But this is very complex, so we preferred to concentrate on other things. It must be noted however that every planet makes a turn around the sun in the real time of revolution and makes a turn around its axis (inclined with respect to the equatorial plane) in the real time of rotation (for example the earth takes exactly one year to make the revolution around the sun and 24 hours to make a turn on itself).\cite{solarsystemrealpositon}\cite{earthcloudsradiustexture}
+\par The last detail is the actual position of the planets. Probably they will not be located in the real position, because in our simulator this position depends on the date, and in JavaScript the function \textbf{Date.getTime()} returns the milliseconds passed from January 1, 1970 to the moment in which the function is called. In theory we should have the milliseconds passed from the birth of the solar system to today, or set a certain initial position so as to match the real position of each planet with that in the simulator. 
+We decided to approximate the initial position by consulting an online simulator of the solar system\cite{solarsystemrealpositon}, setting the date to January 1, 1970. The position of each planet is determined by the angle formed by the straight line that connects each of the planets to the sun. Taking this into account, we have added an initial angle for each planet, obtained by comparing the position assumed by the various planets in our simulator and that of TheSkyLive. Obviously this angle is a simple approximation, because as said before the planets have an elliptical orbit, while in the simulator follow a circular orbit. The more time passes, the more the position of the planets in the simulator could be different from the real one. Looking at Pluto, it is possible to notice this easily, because this planet follows the most particular orbit.
+It must be noted however that every planet makes a turn around the sun in the real time of revolution and makes a turn around its axis (inclined with respect to the equatorial plane) in the real time of rotation (for example the earth takes exactly one year to make the revolution around the sun and 24 hours to make a turn on itself).
 
 
 
@@ -271,6 +273,7 @@ createOrbit(Id);
 First of all, we need for a Geometry and Material objects to create a planet. The geometry we chosen is naturally a \textit{SphereGeometry}\cite{documentation:threejs} with as radius a proportion of its real radius. In particular we choose as Earth radius the value of 1, so to find all the other measure we have made the ratio (real planet radius)/(real Earth radius), to find "how many planet is in Earth". In this way we obtain an approximated scale.
 \par Regards to material object, we choose \textit{MeshPhongMaterial}\cite{documentation:threejs}, in which we load all the possible texture. In addiction of this, if it's available we load also \textit{bump, specular} and \textit{normal} texture, all taken in this website \cite{planetpixelemporium}. More are the available textures and more the planet is realistic.
 \par If the planet has got rings, (Saturn or Uranus), we also create the ring but especially a \textit{THREE Group} so that they make up a system.
+We had some difficulty loading the texture of the rings, as it was not loaded radially. To solve this problem, we redefined the RingGeometry function, using the one in the \textit{THREEx.planets.js}\cite{earthcloudsradiustexture} library. This function can be found in the file \textit{helper.js}.
 Finally we create its orbit trajectory through \textit{createOrbit} function.
 
 \subsubsection{Sun}
@@ -287,6 +290,7 @@ celestialObjects[sunGlowId].name = "Sun Glow";
 celestialObjects[sunGlowId].scale.set(70, 70, 1.0);
 celestialObjects[sunId].add(celestialObjects[sunGlowId]); // This centers the glow at the sun.
 \end{lstlisting}
+<<<<<<< HEAD
 In order to create an effect similar to an atmosphere, we used the Three.js \textit{Sprite}\cite{documentation:threejs} object. It only needs for Material, in particular for \textit{SpriteMaterial}\cite{documentation:threejs}. Thus, after scaling, we add it to sun object.
 
 \subsubsection{Orbit Trajectory}
@@ -336,6 +340,11 @@ In the first step, we implement a \textit{TorusGeometry}\cite{documentation:thre
 \subsubsection{Rings of planet}
 Also in the implementation of 
 
+=======
+In order to create an effect similar to an atmosphere, we used the Three JS \textit{Sprite} object. It only needs for Material, in particular for \textit{SpriteMaterial}. Thus, after scaling, we add it to sun object.
+\newline
+\par N.B. The size of the sun is not exactly to scale like the rest of the celestial objects, as its actual size is about 110 times that of the earth. By creating the exact scale size the rest of the planets would have been tiny, so we decided to simply make it bigger than Jupiter.
+>>>>>>> 90a3e1e0add5b4c5e5bd3326c80b9672637a2e1d
 
 \subsection{Animation}
 

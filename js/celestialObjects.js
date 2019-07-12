@@ -108,8 +108,8 @@ function createSun() {
     sunLight = new THREE.PointLight("rgb(255, 220, 180)", 1.5);
     sunLight.castShadow = true;
     sunLight.shadow.bias = 0.0001;
-    sunLight.shadow.mapSize.width = 2048;
-    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.mapSize.width = 4096;
+    sunLight.shadow.mapSize.height = 4096;
     scene.add(sunLight);
 
     // Create Sun
@@ -196,6 +196,7 @@ function createRing(Id) {
         map: textureLoader.load(data[Id].ringColor), // Color texture
         alphaMap: textureLoader.load(data[Id].ringPattern), // Pattern texture
         side: THREE.DoubleSide,
+		shadowSide: THREE.DoubleSide,
 		transparent: true,
 		opacity: 0.8
     });
@@ -203,7 +204,7 @@ function createRing(Id) {
     celestialObjects[data[Id].ringId].rotation.x = THREE.Math.degToRad(90) + THREE.Math.degToRad(data[Id].equatorInclination); // Axis inclination
     celestialObjects[data[Id].ringId].name = "Rings of " + data[Id].name; // Used for not ignoring if focus on it
     celestialObjects[data[Id].ringId].myId = Id; // Set planet Id
-    celestialObjects[data[Id].ringId].receiveShadow = true;		// Rings are shadowed from their planet
+    celestialObjects[data[Id].ringId].receiveShadow = true; // Rings are shadowed from their planet
     celestialObjects[data[Id].groupId].add(celestialObjects[data[Id].ringId]);
 }
 

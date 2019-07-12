@@ -27,6 +27,9 @@ var inclinedOrbit;
 // Speed factor
 var speedFactor = 1.0;
 
+// Ambient Light intensity
+var ambientLightIntensity = 0.2;
+
 // Mouse
 var mouse;
 
@@ -61,6 +64,7 @@ function init() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     controls = new THREE.OrbitControls(camera, document.getElementById("container"));
     controls.autoRotateSpeed = 1;
+	controls.maxDistance = 5000;
 
     // Current date
     date = new Date();
@@ -92,8 +96,8 @@ function init() {
     createBackground();
 
     // Create light viewable from all directions.
-    scene.add(new THREE.AmbientLight(0x222222));
-    ambientLight = new THREE.AmbientLight(0xaaaaaa);
+    ambientLight = new THREE.AmbientLight(0xaaaaaa, ambientLightIntensity);
+    scene.add(ambientLight); // Just for few light
 
     // Create an AudioListener and add it to the camera
     audioListener = new THREE.AudioListener();
