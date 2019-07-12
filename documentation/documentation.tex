@@ -211,10 +211,10 @@ First of all we set the colour of light and its intensity. In the next lines, in
 \subsubsection{Ambient Light}
 We add the ambient light to show better the shadow areas. For this reason, you can turn off with relative switch and at the start it's off. As for the point light, also the ambient light is implemented using the specific Three.js function\cite{documentation:threejs}. The code is contained in \textit{init()} function:
 \begin{lstlisting}
-scene.add(new THREE.AmbientLight(0x222222));
-ambientLight = new THREE.AmbientLight(0xaaaaaa);
+ambientLight = new THREE.AmbientLight(0xaaaaaa, ambientLightIntensity);
+scene.add(ambientLight); // Just for few light
 \end{lstlisting}
-Simply, we create the ambient light and add it to the scene. The second initialization is used to add it again to scene if you turn off (indeed the listener of relative switch in menu adds \textit{ambient light var} when it's on).
+Simply, we create the ambient light and add it to the scene. The \textit{ambientLightIntensity} var is used to is used to adjust the intensity of the ambient light via the dedicated slider (it is initially set so that the ambient light is off).
 
 
 \subsection{Music}
@@ -290,7 +290,6 @@ celestialObjects[sunGlowId].name = "Sun Glow";
 celestialObjects[sunGlowId].scale.set(70, 70, 1.0);
 celestialObjects[sunId].add(celestialObjects[sunGlowId]); // This centers the glow at the sun.
 \end{lstlisting}
-<<<<<<< HEAD
 In order to create an effect similar to an atmosphere, we used the Three.js \textit{Sprite}\cite{documentation:threejs} object. It only needs for Material, in particular for \textit{SpriteMaterial}\cite{documentation:threejs}. Thus, after scaling, we add it to sun object.
 \par \textbf{N.B.} The size of the sun is not exactly to scale like the rest of the celestial objects, as its actual size is about 110 times that of the earth. By creating the exact scale size the rest of the planets would have been tiny, so we decided to simply make it bigger than Jupiter.
 
@@ -339,10 +338,54 @@ In the first step, we implement a \textit{TorusGeometry}\cite{documentation:thre
 \par In the second part, we create every asteroid with a random position such that it is inside the torus volume, adding it as a vertex in the geometry object. Then together the \textit{PointsMaterial}\cite{documentation:threejs}, we create the final object.
 
 \subsubsection{Rings of planet}
-Also in the implementation of 
+As far as the implementation of the planetary rings is concerned, we had some difficulties with the loading of the texture. The problem was that the texture was not loaded radially along the rings. But thanks to the solution found on GitHub\cite{earthcloudsradiustexture:github}, we were able to solve the issue, due to a problem related to the object \textit{RingGeometry}\cite{documentation:threejs}.
+\begin{lstlisting}
+let ringGeometry = new THREE.BufferGeometry().fromGeometry(new _RingGeometry(data[Id].ringInnerDiameter, data[Id].ringOuterDiameter, data[Id].ringSegments));
+let ringMaterial = new THREE.MeshPhongMaterial({
+	map: textureLoader.load(data[Id].ringColor), // Color texture
+	alphaMap: textureLoader.load(data[Id].ringPattern), // Pattern texture
+	side: THREE.DoubleSide,
+	shadowSide: THREE.DoubleSide,
+	transparent: true,
+	opacity: 0.8
+});
+celestialObjects[data[Id].ringId] = new THREE.Mesh(ringGeometry, ringMaterial);
+\end{lstlisting}
+Using \textit{\_RingGeometry} we manage to load texture in radial way.
+As other models, it needed to create both the geometry and the material.
+
+\subsubsection{Earth cloud}
+So we decided to add clouds to the Earth to make it more realistic. The problem we encountered was similar to the previous one for the rings of the planets, we found the solution from the same source\cite{documentation:threejs}.
+\par The model used is simply a \textit{SphereGeometry}\cite{documentation:threejs}, but the difficulty was in creating the material for the sphere. In order to create the material for the model, we decided to use the auxiliary function \textit{createEarthCloudMaterial()}.
+\begin{lstlisting}
+let earthCloudGeometry = new THREE.SphereGeometry(data[earthId].size, planetSegments, planetSegments);
+let earthCloudMaterial = createEarthCloudMaterial();
+celestialObjects[earthCloudId] = new THREE.Mesh(earthCloudGeometry, earthCloudMaterial);
+celestialObjects[earthCloudId].scale.set(1.02, 1.02, 1.02);
+//...
+\end{lstlisting}
 
 
 \subsection{Animation}
+The animation of our solar system is the most important part of our project. In fact, the movement of the planets and their orbits around the sun is the effect that most affects the user and that allows the best to simulate the position of the planets as time passes.
+\par All movements are allowed thanks to the \textit{render} function that allows frame after frame to render the positions of the various celestial bodies in their positions.\\
+The function also allows the room managed by OrbitControls to update its position, using the \textit{controls.update()} native method\cite{documentation:threejs}. \\
+We will then analyse all the animations present in our project, in order to explain how they work.\\
+As far as the rotation of celestial bodies is concerned, this is dealt with by the \textit{moveplanet()} function. This function calls for each body, the function for rotation and revolution motion around their orbit centre.
+
+\subsubsection{Rotation around own axis}
+The first animation implemented was the one about the rotation of bodies around their own axis. This animation is done through the \textit{rotationMovement()} function, as below:
+\begin{lstlisting}
+let theta = THREE.Math.degToRad(360) * (date.getTime() / (data[Id].rotationRate * 3600000)); // Cast rotationRate in milliseconds
+
+celestialObjects[Id].rotation.y = theta;
+if (Id == earthId) celestialObjects[earthCloudId].rotation.y = theta/2;
+if (data[Id].hasOwnProperty("ringId")) celestialObjects[data[Id].ringId].rotation.z = theta;
+\end{lstlisting}
+The theta angle for rotation therefore takes care both the speed of rotation and puts it together with the time variable to establish at what "time of day" the body is, normalizing everything.\\
+Once calculated how much the body must rotate (the theta angle), the rotation is then applied and if it has rings, the geometric transformation is also applied to them.
+
+\subsubsection{Revolution orbit}
 
 
 \subsection{User Interactions}
@@ -356,7 +399,7 @@ Also in the implementation of
 \bibitem{solarsystemrealpositon} \href{https://theskylive.com/3dsolarsystem}{Verify} the real-time position of solar system objects.
 \bibitem{planetpixelemporium} \href{http://planetpixelemporium.com/planets.html}{Planet pixel emporium}, website for planet textures.
 \bibitem{wikipedia} \href{https://www.wikipedia.org/}{Wikipedia} - for data and descriptions of the celestial objects.
-\bibitem{earthcloudsradiustexture} \href{https://github.com/jeromeetienne/threex.planets/blob/master/threex.planets.js}{Threex.planets.js} - for loading earth clouds texture and have a ring geometry with a radius texture.
+\bibitem{earthcloudsradiustexture:github} \href{https://github.com/jeromeetienne/threex.planets/blob/master/threex.planets.js}{Threex.planets.js} - for loading earth clouds texture and have a ring geometry with a radius texture.
 \bibitem{documentation:threejs} ThreeJS documentation: \href{https://threejs.org/docs/#api/en/scenes/Scene}{Scene}
 \href{https://threejs.org/docs/#api/en/cameras/PerspectiveCamera}{Perspective Camera}  \href{https://threejs.org/docs/#examples/en/controls/OrbitControls}{OrbitControls} \href{https://threejs.org/docs/#api/en/core/Raycaster}{Raycaster} \href{https://threejs.org/docs/#api/en/renderers/WebGLRenderer}{WebGLRenderer}.
 \href{https://threejs.org/docs/#api/en/loaders/TextureLoader}{Texture Loader}
@@ -374,6 +417,7 @@ Also in the implementation of
 \href{https://threejs.org/docs/#api/en/objects/Points}{Points}
 \href{https://threejs.org/docs/#api/en/geometries/TorusGeometry}{Torus Geometry}
 \href{https://threejs.org/docs/#api/en/materials/PointsMaterial}{Points Material}
+\href{https://threejs.org/docs/#api/en/geometries/RingGeometry}{Ring Geometry}
 \bibitem{PCSS:nvidia} \href{http://developer.download.nvidia.com/shaderlibrary/docs/shadow_PCSS.pdf}{Percentage-Closer Soft Shadows}, Randima Fernando, NVIDIA Corporation.
 \bibitem{solarcore:wikipedia}
 \href{https://en.wikipedia.org/wiki/Solar_core#Energy_conversion}{Solar core}, Wikipedia article.
