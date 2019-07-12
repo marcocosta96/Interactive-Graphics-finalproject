@@ -71,6 +71,7 @@ function showInfoPlanet(event) {
             display: "block",
             opacity: 0.0
         });
+        $("#container").css("cursor", "pointer");
 
         var canvasHalfWidth = renderer.domElement.offsetWidth / 2;
         var canvasHalfHeight = renderer.domElement.offsetHeight / 2;
@@ -112,6 +113,7 @@ function showInfoPlanet(event) {
         $("#tooltip").css({
             display: "none"
         });
+        $("#container").css("cursor", "default");
     }
 }
 

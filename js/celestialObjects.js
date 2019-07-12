@@ -275,18 +275,18 @@ function rotationMovement(Id) {
 function revolutionMovement(Id) {
     // Revolution angle
     let theta = (THREE.Math.degToRad(360) / (data[Id].revolutionRate * 86400000)) * date.getTime(); // theta = wt, cast revolutionRate in milliseconds
-	let phi = THREE.Math.degToRad(data[Id].orbitInclination);
-	let alpha = THREE.Math.degToRad(data[Id].initialAngle);
+	let alpha = THREE.Math.degToRad(data[Id].orbitInclination);
+	let phi = THREE.Math.degToRad(data[Id].initialAngle);
 
     let currentId = Id;
     if (data[Id].hasOwnProperty("groupId")) currentId = data[Id].groupId;
-    celestialObjects[currentId].position.x = -data[Id].distance * Math.cos(theta + alpha); // x = -R*Cos(wt) (minus for Anti-clockwise)
+    celestialObjects[currentId].position.x = -data[Id].distance * Math.cos(theta + phi); // x = -R*Cos(wt + phi) (minus for Anti-clockwise)
 	celestialObjects[currentId].position.y = 0; // y = 0
-    celestialObjects[currentId].position.z = data[Id].distance * Math.sin(theta + alpha); // z = R*Sin(wt)
+    celestialObjects[currentId].position.z = data[Id].distance * Math.sin(theta + phi); // z = R*Sin(wt + phi)
 
 	// Inclined orbit
 	if (inclinedOrbit) {
-		celestialObjects[currentId].position.x *= Math.cos(phi); // x = -R*Cos(wt)*Cos(phi)
-		celestialObjects[currentId].position.y = -data[Id].distance * Math.cos(theta + alpha) * Math.sin(phi); // y = -R*Cos(wt)*Sin(phi)
+		celestialObjects[currentId].position.x *= Math.cos(alpha); // x = -R*Cos(wt + phi)*Cos(alpha)
+		celestialObjects[currentId].position.y = -data[Id].distance * Math.cos(theta + phi) * Math.sin(alpha); // y = -R*Cos(wt + phi)*Sin(alpha)
 	}
 }
