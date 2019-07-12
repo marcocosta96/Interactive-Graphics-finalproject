@@ -55,8 +55,10 @@
 \maketitle
 
 
+
 \section{Introduction}
 For the final project of the course of Interactive Graphics we decided to make a simulator of our solar system, trying to reproduce it in the most faithful and realistic way possible, using of course assumptions and approximations to simplify its implementation.
+
 
 \subsection{Requirements}
 \begin{itemize}
@@ -67,17 +69,20 @@ For the final project of the course of Interactive Graphics we decided to make a
 	\item Animation
 \end{itemize}
 
+
 \subsection{Environment}
 The project is developed in WebGL (Web Graphics Library). It's a JavaScript API for rendering interactive 2D and 3D graphics within any compatible web browser without the use of plug-ins. It is fully integrated with other web standards, allowing GPU-accelerated usage of physics and image processing and effects as part of the web page canvas.
 \newline
 Click \href{https://get.webgl.org/}{here} to check if your browser supports WebGL.
 
+
 \subsection{Libraries not developed by the team}
 \begin{itemize}
-	\item \href{https://threejs.org/}{\textbf{Three Js} (rev. 107dev)}: a cross-browser JavaScript library and Application Programming Interface (API) used to create and display animated 3D computer graphics in a web browser using \textit{WebGL}.
+	\item \href{https://threejs.org/}{\textbf{Three.js} (rev. 107dev)}: a cross-browser JavaScript library and Application Programming Interface (API) used to create and display animated 3D computer graphics in a web browser using \textit{WebGL}.
 	\item \href{https://materializecss.com/}{\textbf{Materialize} (v. 1.0.0)}: a design language that combines the classic principles of successful design along with innovation and technology.
 	\item \href{https://jquery.com/}{\textbf{jQuery} (v. 3.4.1)}: it takes a lot of common tasks that require many lines of JavaScript code to accomplish, and wraps them into methods that you can call with a single line of code. It also simplifies a lot of the complicated things from \textit{JavaScript}, like \textit{AJAX} calls and \textit{DOM} manipulation.
 \end{itemize}
+
 
 \subsection{Assumptions and approximations}
 As is well known, the planets follow an elliptical orbit (a "flattened" circumference), and the sun occupies one of the two focuses. Rotating along this orbit, we have the 4 seasons (also due to the inclination of the axis). For simplicity of implementation and positioning of the various planets, we have approximated the orbit with a circumference, and the sun occupies  centre. \newline
@@ -85,12 +90,14 @@ As is well known, the planets follow an elliptical orbit (a "flattened" circumfe
 \par The last detail is the actual position of the planets. Probably they will not be located in the real position, because in our simulator this position depends on the date, and in JavaScript the function \textbf{Date.getTime()} returns the milliseconds passed from January 1, 1970 to the moment in which the function is called. In theory we should have the milliseconds passed from the birth of the solar system to today, or set a certain initial position so as to match the real position of each planet with that in the simulator. But this is very complex, so we preferred to concentrate on other things. It must be noted however that every planet makes a turn around the sun in the real time of revolution and makes a turn around its axis (inclined with respect to the equatorial plane) in the real time of rotation (for example the earth takes exactly one year to make the revolution around the sun and 24 hours to make a turn on itself).\cite{solarsystemrealpositon}\cite{earthcloudsradiustexture}
 
 
+
 \section{Usage}
-The graphic interface allows to client to interact with our projects. First of all there is a fast loader page meanwhile the browser loads all the data.\par
+The graphic interface allows to user to interact with our projects. First of all there is a fast loader page meanwhile the browser loads all the data.\par
 At the beginning camera is focused on Sun and the \textit{follow-planet} flag is enabled, then you can only move camera around the sun. In order to move in the solar system, you have to disable it through the main menu.\newline
 In meanwhile a background music starts in order to create a pleasant atmosphere and to take a good travel around the solar system. If you don't like it, you can disable through the specific button at bottom right of the window.\newline
 Since you disable the \textit{follow-planet}, now you can move.\newline
 \textbf{Have a good trip!}
+
 
 \subsection{Mouse Controls}
 The mouse is very important to fully enjoy this experience, so we explain the  available mouse controls below:
@@ -101,7 +108,8 @@ The mouse is very important to fully enjoy this experience, so we explain the  a
 	\item \textbf{Scroll Wheel}: As usual, the scroll wheel permits to zoom in or zoom out on camera's target.
 	\item \textbf{Move on the object}: Moving over the planets, a pop-up window appears where there are all planet's physical data.
 \end{itemize}
-All the commands are possible through the using of \textit{OrbitControls} of \textit{Three JS}.
+All the commands are possible through the using of \textit{OrbitControls} of \textit{Three.js}.
+
 
 \subsection{Menu Options}
 The menu offers to you a lot of options to custom the animation and the aspect of solar system. It can be opened or closed simply clicking on the relative button in the top right of the screen. So let to describe all the options:
@@ -128,18 +136,23 @@ The menu offers to you a lot of options to custom the animation and the aspect o
 	\item \textbf{Track}: Choose the background music.
 	\item \textbf{Volume}: Set the volume of track. (Default: 0.3)
 \end{itemize}
-
 \newpage
+
+
+
 \section{Implementation}
 In this section, let we how we implemented all the features in the project. We prefer to divide this section in subsection to make easier the lecture and understanding.
 
-\subsection{Three JS basic components}
-The first part is about the initialization of Three JS, in this case we create the scene and the other fundamental elements for a WebGL environment. We do this in the \textit{init} function.
+
+\subsection{Three.js basic components}
+The first part is about the initialization of Three.js, in this case we create the scene and the other fundamental elements for a WebGL environment. We do this in the \textit{init} function.
+
 \subsubsection{Scene}
-The first element for Three JS environment is the \textit{scene}\cite{documentation:threejs}. It is rendered and be simply instantiate using:
+The first element for Three.js environment is the \textit{scene}\cite{documentation:threejs}. It is rendered and be simply instantiate using:
 \begin{lstlisting}
 scene = new THREE.Scene();
 \end{lstlisting}
+
 \subsubsection{Camera and OrbitControls}
 The second step is the camera, it allows to watch the scene. In our case, we use a perspective camera, with a \textit{FOV} = 45\degree, \textit{near} = 0.1 and an adapting \textit{far} to make visible the far objects\cite{documentation:threejs}.
 \par Beside the camera, we use OrbitControls library that allows mouse interactions with the camera. The parameter passed to the function specify which area of the canvas is under control of \textit{OrbitControls}. We choose the container, in this way, when the menu is opened, menu area is ignored by the controller\cite{documentation:threejs}.
@@ -151,11 +164,13 @@ camera.lookAt(new THREE.Vector3(0, 0, 0));
 controls = new THREE.OrbitControls(camera, document.getElementById("container"));
 controls.autoRotateSpeed = 1;
 \end{lstlisting}
+
 \subsubsection{Raycaster}
 Raycaster is very important in our project, because we have to establish which object is "captured" by the mouse cursor for different goals as we explain later\cite{documentation:threejs}. It's sufficient an instruction:
 \begin{lstlisting}
 raycaster = new THREE.Raycaster();
 \end{lstlisting}
+
 \subsubsection{Renderer}
 We use the standard \textit{WebGLRenderer}\cite{documentation:threejs}, enabling the antialiasing filter and using Percentage-Closer Soft Shadows (PCSS) as shadow maps filter\cite{PCSS:nvidia}.
 \begin{lstlisting}
@@ -167,17 +182,20 @@ document.getElementById("container").appendChild(renderer.domElement);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 \end{lstlisting}
+
 \subsubsection{Texture Loader}
 Texture loader\cite{documentation:threejs} is used to load all textures to relative objects.
 \begin{lstlisting}
 textureLoader = new THREE.TextureLoader();
 \end{lstlisting}
 
+
 \subsection{Light}
 In our project, light is a fundamental element, all the objects in solar system receive the sunlight. We use two kind of light source: point light coming from the sun and an optional ambient light for a better view of the shaded parts.
+
 \subsubsection{Point Light}\label{subsec:pointlight}
 Point light represents the light Sun produces in its core using the energy released through the nuclear fusion of hydrogen atoms\cite{solarcore:wikipedia}.
-\par The implementation of a point light source requires the use of Three JS library that makes it easier\cite{documentation:threejs}. The code is contained in \textit{createSun()} function:
+\par The implementation of a point light source requires the use of Three.js library that makes it easier\cite{documentation:threejs}. The code is contained in \textit{createSun()} function:
 \begin{lstlisting}
 sunLight = new THREE.PointLight("rgb(255, 220, 180)", 1.5);
 sunLight.castShadow = true;
@@ -186,18 +204,20 @@ sunLight.shadow.mapSize.width = 2048;
 sunLight.shadow.mapSize.height = 2048;
 scene.add(sunLight);
 \end{lstlisting}
-First of all we set the colour of light and its intensity. In the next lines, instead, we put the shadow parameters (bias and map size of shadow). Finally we add the light to Three JS scene.
+First of all we set the colour of light and its intensity. In the next lines, instead, we put the shadow parameters (bias and map size of shadow). Finally we add the light to Three.js scene.
+
 \subsubsection{Ambient Light}
-We add the ambient light to show better the shadow areas. For this reason, you can turn off with relative switch and at the start it's off. As for the point light, also the ambient light is implemented using the specific Three JS function\cite{documentation:threejs}. The code is contained in \textit{init()} function:
+We add the ambient light to show better the shadow areas. For this reason, you can turn off with relative switch and at the start it's off. As for the point light, also the ambient light is implemented using the specific Three.js function\cite{documentation:threejs}. The code is contained in \textit{init()} function:
 \begin{lstlisting}
 scene.add(new THREE.AmbientLight(0x222222));
 ambientLight = new THREE.AmbientLight(0xaaaaaa);
 \end{lstlisting}
 Simply, we create the ambient light and add it to the scene. The second initialization is used to add it again to scene if you turn off (indeed the listener of relative switch in menu adds \textit{ambient light var} when it's on).
 
+
 \subsection{Music}
-Music is another very important element in our project, due to amplify the user experience. Also music can be managed through Three JS library.
-\par The first step is to introduce the audio listener which allows the playback of tracks. It needs that audio listener object is added to camera as you see below:
+Music is another very important element in our project, due to amplify the user experience. Also music can be managed through Three.js library.
+\par The first step is to introduce the audio listener which allows the playback of tracks. It needs that AudioListener\cite{documentation:threejs} object is added to camera as you see below:
 \begin{lstlisting}
 audioListener = new THREE.AudioListener();
 camera.add(audioListener);
@@ -220,7 +240,8 @@ for (let i = 0; i < tracks.length; i++) {
 	});
 }
 \end{lstlisting}
-For every track, it needs to build THREE.Audio object that permits to play music, using AudioListener. Then we bind the track with Audio object, setting volume and loop playing. Finally if it is the first track, we play it.
+For every track, it needs to build Audio\cite{documentation:threejs} object that permits to play music, using \textit{AudioListener}. Then we bind the track with Audio object, setting volume and loop playing. Finally if it is the first track, we play it.
+
 
 \subsection{Models}
 The models in our project are represented by the planets, Sun, Moon and other celestial objects as Asteroid Belt and planet rings. All this object are children of THREE Group Solar System.\\
@@ -247,10 +268,11 @@ celestialObjects[Id] = new THREE.Mesh(planetGeometry, planetMaterial);
 //...
 createOrbit(Id);
 \end{lstlisting}
-First of all, we need for a Geometry and Material objects to create a planet. The geometry we chosen is naturally a \textit{SphereGeometry} with as radius a proportion of its real radius. In particular we choose as Earth radius the value of 1, so to find all the other measure we have made the ratio (real planet radius)/(real Earth radius), to find "how many planet is in Earth". In this way we obtain an approximated scale.
-\par Regards to material object, we choose \textit{MeshPhongMaterial}, in which we load all the possible texture. In addiction of this, if it's available we load also \textit{bump, specular} and \textit{normal} texture, all taken in this website \cite{planetpixelemporium}. More are the available textures and more the planet is realistic.
+First of all, we need for a Geometry and Material objects to create a planet. The geometry we chosen is naturally a \textit{SphereGeometry}\cite{documentation:threejs} with as radius a proportion of its real radius. In particular we choose as Earth radius the value of 1, so to find all the other measure we have made the ratio (real planet radius)/(real Earth radius), to find "how many planet is in Earth". In this way we obtain an approximated scale.
+\par Regards to material object, we choose \textit{MeshPhongMaterial}\cite{documentation:threejs}, in which we load all the possible texture. In addiction of this, if it's available we load also \textit{bump, specular} and \textit{normal} texture, all taken in this website \cite{planetpixelemporium}. More are the available textures and more the planet is realistic.
 \par If the planet has got rings, (Saturn or Uranus), we also create the ring but especially a \textit{THREE Group} so that they make up a system.
 Finally we create its orbit trajectory through \textit{createOrbit} function.
+
 \subsubsection{Sun}
 In our implementation Sun can be associated to a planet, also if we wrote a specific function to build it (\textit{createSun()}). Indeed the building of it is very similar to a planet, the only elements that differentiate it is the light, which I have already explained in the previous \hyperref[subsec:pointlight]{section}, and its Corona that let we describe below:
 \begin{lstlisting}
@@ -265,13 +287,64 @@ celestialObjects[sunGlowId].name = "Sun Glow";
 celestialObjects[sunGlowId].scale.set(70, 70, 1.0);
 celestialObjects[sunId].add(celestialObjects[sunGlowId]); // This centers the glow at the sun.
 \end{lstlisting}
-In order to create an effect similar to an atmosphere, we used the Three JS \textit{Sprite} object. It only needs for Material, in particular for \textit{SpriteMaterial}. Thus, after scaling, we add it to sun object.
+In order to create an effect similar to an atmosphere, we used the Three.js \textit{Sprite}\cite{documentation:threejs} object. It only needs for Material, in particular for \textit{SpriteMaterial}\cite{documentation:threejs}. Thus, after scaling, we add it to sun object.
+
+\subsubsection{Orbit Trajectory}
+Another model in our project is the orbit trajectory of the planets and other celestial bodies. We decide to insert it to show them better to user movements of the bodies and to recognize easier which planet is, the implementation is in \textit{createOrbit()} function. 
+\par In order to implement this object, we take inspiration from a question posted in Stack Overflow\cite{trajectory:stackoverflow}:
+\begin{lstlisting}
+let orbitGeometry = new THREE.CircleGeometry(data[Id].distance, orbitSegments);
+orbitGeometry.vertices.shift(); // Remove center vertex
+let orbitMaterial = new THREE.LineBasicMaterial({
+	color: 0xffffff
+});
+orbits[Id] = new THREE.LineLoop(orbitGeometry, orbitMaterial);
+\end{lstlisting}
+In this case, we used \textit{CircleGeometry}\cite{documentation:threejs}, \textit{LineBasicMateria}\cite{documentation:threejs} and \textit{LineLoop}\cite{documentation:threejs} object. But the most interesting part is the instruction at \textbf{line 2} that delete the vertex at centre and so that close the circumference.
+
+\subsubsection{Asteroid Belt}
+In the implementation of the asteroid belt we have encountered many difficulties.\\
+In the first version, there was the use of very small spheres, using Sphere Three.js. This choice, however, involved a great use of resources given the large number of objects to be rendered. So we decided to opt for the \textit{Points}\cite{documentation:threejs} object of Three.js. In this way there is a great limiting of resources and the ability to insert a large number of bodies. 
+\par The next difficulty was in debugging an error in the code, so the question posted on Stack Overflow was very helpful\cite{asteroids:stackoverflow}. The cause is an existent issue opened in GitHub with \textit{morphAttributes} object, so simply it needs to assign to this object an empty array \{\}. Let we see the code:
+\begin{lstlisting}
+//...
+let torusAsteroid = new THREE.Mesh(new THREE.TorusGeometry(distance, maxOffsetY, planetSegments, planetSegments), new THREE.MeshBasicMaterial({
+	transparent: true,  // Make torus transparent
+	opacity: 0.0        // Make torus transparent
+}));
+//...
+for (let i = 0; i < asteroidCount; i++) {
+	// Create a particle with random position
+	let asteroidDistance = distance + THREE.Math.randFloat(minOffsetXZ, maxOffsetXZ);
+	let angle = THREE.Math.randFloat(0, THREE.Math.degToRad(360));
+	let coord = new THREE.Vector3();
+	
+	coord.x = Math.cos(angle) * asteroidDistance;
+	coord.y = THREE.Math.randFloat(minOffsetY, maxOffsetY);
+	coord.z = Math.sin(angle) * asteroidDistance;
+
+	// Insert asteroid
+	asteroidsGeometry.vertices.push(coord);
+}
+asteroidsGeometry.morphAttributes = {};     // Used to fix updateMorphAttribute bug
+celestialObjects[asteroidBeltId] = new THREE.Points(asteroidsGeometry, new THREE.PointsMaterial({ size: asteroidSize }));
+//...
+\end{lstlisting}
+In the first step, we implement a \textit{TorusGeometry}\cite{documentation:threejs} object that has the same size of asteroid belt, since in this way if the mouse is over it, \textit{Ray Caster} finds the asteroid belt. For this reason, the torus is invisible and has only this aim.
+\par In the second part, we create every asteroid with a random position such that it is inside the torus volume, adding it as a vertex in the geometry object. Then together the \textit{PointsMaterial}\cite{documentation:threejs}, we create the final object.
+
+\subsubsection{Rings of planet}
+Also in the implementation of 
+
 
 \subsection{Animation}
 
-\subsection{Client Interactions}
+
+\subsection{User Interactions}
+
 
 \subsection{HTML and CSS}
+
 
 
 \begin{thebibliography}{99}
@@ -284,10 +357,27 @@ In order to create an effect similar to an atmosphere, we used the Three JS \tex
 \href{https://threejs.org/docs/#api/en/loaders/TextureLoader}{Texture Loader}
 \href{https://threejs.org/docs/#api/en/lights/PointLight}{Point Light}
 \href{https://threejs.org/docs/#api/en/lights/AmbientLight}{Ambient Light}
+\href{https://threejs.org/docs/#api/en/audio/AudioListener}{Audio Listener}
+\href{https://threejs.org/docs/#api/en/audio/Audio}{Audio}
+\href{https://threejs.org/docs/#api/en/geometries/SphereGeometry}{Sphere Geometry}
+\href{https://threejs.org/docs/#api/en/materials/MeshPhongMaterial}{MeshPhongMaterial}
+\href{https://threejs.org/docs/#api/en/materials/SpriteMaterial}{Sprite Material}
+\href{https://threejs.org/docs/#api/en/objects/Sprite}{Sprite}
+\href{https://threejs.org/docs/#api/en/geometries/CircleGeometry}{Circle Geometry}
+\href{https://threejs.org/docs/#api/en/materials/LineBasicMaterial}{Line Basic Material}
+\href{https://threejs.org/docs/#api/en/objects/LineLoop}{Line Loop}
+\href{https://threejs.org/docs/#api/en/objects/Points}{Points}
+\href{https://threejs.org/docs/#api/en/geometries/TorusGeometry}{Torus Geometry}
+\href{https://threejs.org/docs/#api/en/materials/PointsMaterial}{Points Material}
 \bibitem{PCSS:nvidia} \href{http://developer.download.nvidia.com/shaderlibrary/docs/shadow_PCSS.pdf}{Percentage-Closer Soft Shadows}, Randima Fernando, NVIDIA Corporation.
 \bibitem{solarcore:wikipedia}
 \href{https://en.wikipedia.org/wiki/Solar_core#Energy_conversion}{Solar core}, Wikipedia article.
+\bibitem{trajectory:stackoverflow}
+\href{https://stackoverflow.com/questions/13756112/draw-a-circle-not-shaded-with-three-js}{Draw} a circle (not shaded) using Three.js.
+\bibitem{asteroids:stackoverflow}
+\href{https://stackoverflow.com/questions/56870759/typeerror-cant-convert-undefined-to-object-in-three-js-using-three-points/}{TypeError} Stack Overflow question.
 \end{thebibliography}
+
 
 
 %\appendix
