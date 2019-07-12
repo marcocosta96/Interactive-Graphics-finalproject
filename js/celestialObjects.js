@@ -192,7 +192,7 @@ function createPlanet(Id) {
 // Create ring
 function createRing(Id) {
     let ringGeometry = new THREE.BufferGeometry().fromGeometry(new _RingGeometry(data[Id].ringInnerDiameter, data[Id].ringOuterDiameter, data[Id].ringSegments));
-    let ringMaterial = new THREE.MeshLambertMaterial({
+    let ringMaterial = new THREE.MeshPhongMaterial({
         map: textureLoader.load(data[Id].ringColor), // Color texture
         alphaMap: textureLoader.load(data[Id].ringPattern), // Pattern texture
         side: THREE.DoubleSide,
