@@ -284,6 +284,13 @@ $("#sunLightSlider").on("input", function(event) {
     $("#sunLightText").html("Sun light intensity: " + intensity);
 });
 
+// Listener for modify ambient light intensity value
+$("#ambientLightSlider").on("input", function(event) {
+    let intensity = parseFloat(event.target.value);
+    ambientLight.intensity = intensity;
+    $("#ambientLightText").html("Ambient light intensity: " + intensity);
+});
+
 // Listener for modify background
 $("#backgroundSelect").on("change", function(event) {
     let background = $("#backgroundSelect").val();
