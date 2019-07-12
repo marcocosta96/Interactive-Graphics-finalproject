@@ -292,6 +292,7 @@ celestialObjects[sunId].add(celestialObjects[sunGlowId]); // This centers the gl
 \end{lstlisting}
 <<<<<<< HEAD
 In order to create an effect similar to an atmosphere, we used the Three.js \textit{Sprite}\cite{documentation:threejs} object. It only needs for Material, in particular for \textit{SpriteMaterial}\cite{documentation:threejs}. Thus, after scaling, we add it to sun object.
+\par \textbf{N.B.} The size of the sun is not exactly to scale like the rest of the celestial objects, as its actual size is about 110 times that of the earth. By creating the exact scale size the rest of the planets would have been tiny, so we decided to simply make it bigger than Jupiter.
 
 \subsubsection{Orbit Trajectory}
 Another model in our project is the orbit trajectory of the planets and other celestial bodies. We decide to insert it to show them better to user movements of the bodies and to recognize easier which planet is, the implementation is in \textit{createOrbit()} function. 
@@ -340,11 +341,6 @@ In the first step, we implement a \textit{TorusGeometry}\cite{documentation:thre
 \subsubsection{Rings of planet}
 Also in the implementation of 
 
-=======
-In order to create an effect similar to an atmosphere, we used the Three JS \textit{Sprite} object. It only needs for Material, in particular for \textit{SpriteMaterial}. Thus, after scaling, we add it to sun object.
-\newline
-\par N.B. The size of the sun is not exactly to scale like the rest of the celestial objects, as its actual size is about 110 times that of the earth. By creating the exact scale size the rest of the planets would have been tiny, so we decided to simply make it bigger than Jupiter.
->>>>>>> 90a3e1e0add5b4c5e5bd3326c80b9672637a2e1d
 
 \subsection{Animation}
 
