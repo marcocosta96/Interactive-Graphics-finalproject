@@ -113,7 +113,7 @@ The mouse is very important to fully enjoy this experience, so we explain the  a
 All the commands are possible through the using of \textit{OrbitControls} of \textit{Three.js}.
 
 
-\subsection{Menu Options}
+\subsection{Menu Options}\label{menuoptions:section}
 The menu offers to you a lot of options to custom the animation and the aspect of solar system. It can be opened or closed simply clicking on the relative button in the top right of the screen. So let to describe all the options:
 \begin{itemize}
 	\item \textbf{Play / Pause Animation}: Play or pause all animations of the solar system. (Default: Play)
@@ -192,7 +192,7 @@ textureLoader = new THREE.TextureLoader();
 \end{lstlisting}
 
 
-\subsection{Light}
+\subsection{Light}\label{light:section}
 In our project, light is a fundamental element, all the objects in solar system receive the sunlight. We use two kind of light source: point light coming from the sun and an optional ambient light for a better view of the shaded parts.
 
 \subsubsection{Point Light}\label{subsec:pointlight}
@@ -217,7 +217,7 @@ scene.add(ambientLight); // Just for few light
 Simply, we create the ambient light and add it to the scene. The \textit{ambientLightIntensity} var is used to is used to adjust the intensity of the ambient light via the dedicated slider (it is initially set so that the ambient light is off).
 
 
-\subsection{Music}
+\subsection{Music}\label{music:section}
 Music is another very important element in our project, due to amplify the user experience. Also music can be managed through Three.js library.
 \par The first step is to introduce the audio listener which allows the playback of tracks. It needs that AudioListener\cite{documentation:threejs} object is added to camera as you see below:
 \begin{lstlisting}
@@ -277,7 +277,7 @@ We had some difficulty loading the texture of the rings, as it was not loaded ra
 Finally we create its orbit trajectory through \textit{createOrbit} function.
 
 \subsubsection{Sun}
-In our implementation Sun can be associated to a planet, also if we wrote a specific function to build it (\textit{createSun()}). Indeed the building of it is very similar to a planet, the only elements that differentiate it is the light, which I have already explained in the previous \hyperref[subsec:pointlight]{section}, and its Corona that let we describe below:
+In our implementation Sun can be associated to a planet, also if we wrote a specific function to build it (\textit{createSun()}). Indeed the building of it is very similar to a planet, the only elements that differentiate it is the light, which I have already explained in the previous \hyperref[subsec:pointlight]{section 3.4.1}, and its Corona that let we describe below:
 \begin{lstlisting}
 let spriteMaterial = new THREE.SpriteMaterial({
 map: textureLoader.load(data[sunId].glow), // Glow texture
@@ -389,9 +389,301 @@ Once calculated how much the body must rotate (the theta angle), the rotation is
 
 
 \subsection{User Interactions}
+The user's interactions with our simulator is as important as our project, as it is a course in interactive graphics. So we gave the user the ability to modify both the graphic aspect and interact directly with the solar system.
+\par This is possible by using the various buttons on the main screen and thanks to the menu with which user can modify many aspects, as we have seen in previous \hyperref[menuoptions:section]{section 2.2}. Let's go and analyse them one by one:
+
+\subsubsection{Audio Setting}
+The first feature is the configuration of the audio. As already mentioned in \hyperref[music:section]{section 3.3}, there are several audio tracks but you can also change the volume, pause or play and finally change the audio track. All this is possible by means of listeners that act on the various html elements present.
+\paragraph{Play / Pause the audio} \mbox{}\\
+This is possible through the following listener:
+\begin{lstlisting}
+$("#music-button").on("click", function(event) {
+	if (sound.isPlaying) {
+		sound.pause();
+		$("#music-button").html("<i class='material-icons'>volume_up</i>");
+	}
+	else {
+		sound.play();
+		$("#music-button").html("<i class='material-icons'>volume_off</i>");
+	}
+});
+\end{lstlisting}
+This listener simply calls the method \textit{pause()} or \textit{play()} of Audio object and change the icon of HTML button.
+\paragraph{Volume up or down} \mbox{}\\
+Also in this case there is a dedicated listener for this:
+\begin{lstlisting}
+$("#volumeSlider").on("input", function(event) {
+	volume = parseFloat(event.target.value);
+	sound.setVolume(volume);
+	$("#volumeText").html("Volume: " + volume);
+});
+\end{lstlisting}
+It modifies the volume calling method \textit{setVolume()}, passing as parameter the slider value.
+\paragraph{Change track} \mbox{}
+\begin{lstlisting}
+$("#trackSelect").on("change", function(event) {
+	let track = $("#trackSelect").val();
+	sound.stop();
+	sound = sounds[track];
+	sound.setVolume(volume);
+	sound.play();
+});
+\end{lstlisting}
+The listener stops the current track, selects the new calling the object Audio linked to new track and plays it. 
+
+\subsubsection{Resizing the window}
+This feature is needed to resizing the canvas when you change the window dimension. 
+\begin{lstlisting}
+$(window).on("resize", function(){
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+});
+\end{lstlisting}
+It is made by a simple listener that set the new aspect ratio for camera and for render objects. In order to implement it, we have taken inspiration from here\cite{resizing:stackoverflow}.
+
+\subsubsection{Date and time changing} 
+Another important feature is about the changing of date and time. This allows to user to set a date and/or time and see the position of celestial body. This is made through the follow listeners:
+\begin{lstlisting}
+// Listener for modify current date
+$("#setDate").on("change", function(event) {
+	if (play) $("#playButton").click();
+	let newDate = $("#setDate").val();
+	let dateString = newDate + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+	date = new Date(dateString);
+	setDate();
+	for (let i = mercuryId; i <= moonId; i++) revolutionMovement(i);
+});
+
+// Listener for modify current time
+$("#setTime").on("change", function(event) {
+	if (play) $("#playButton").click();
+	let newTime = $("#setTime").val();
+	let dateString = getMonthName(date.getMonth()) + " " + date.getDate() + ", " + date.getFullYear() + " " + newTime + ":" + date.getSeconds();
+	date = new Date(dateString);
+	setDate();
+	for (let i = mercuryId; i <= moonId; i++) revolutionMovement(i);
+});
+\end{lstlisting}
+First of all, all the animations are paused, then a new date object is created with the value of the past date and time, then the \textit{setDate()} function is called, which changes the graphic panel, and finally the positions of the planets are recalculated using the \textit{revolutionMovement()} function.
+
+\subsubsection{Camera Setting}
+We have implemented a lot of feature about the camera, because in our project it has a main role.
+\paragraph{Changing far parameter}\mbox{}\\
+The first possibility is the changing of far parameter, due to the solar system can be very large. So the far value is very important because a too bit value can hide the farthest objects. It is implemented as a listener:
+\begin{lstlisting}
+// Listener for modify far value
+$("#farSlider").on("input", function(event) {
+	far = parseFloat(event.target.value);
+	camera.far = far;
+	camera.updateProjectionMatrix();
+	$("#farText").html("Far: " + far);
+});
+\end{lstlisting}
+It simply change far parameter of camera object, taking the value from HTML slider, then update the project matrix of camera, using the dedicated method. For user convenience, the value of \textit{far} is showed.
+\paragraph{Focusing planet}\mbox{}\\
+This is very important because substitutes the double click feature to focus a planet. It is done through an HTML selector:
+\begin{lstlisting}
+$("#cameraSelect").on("change", function(event) {
+	let planetId = $("#cameraSelect").val();
+	if (data[planetId].hasOwnProperty("groupId")) planetId = data[planetId].groupId;
+	followPlanetId = planetId;
+	followPlanet(followPlanetId);
+	goToObject(followPlanetId);
+});
+\end{lstlisting}
+So it changes the current \textit{followPlanetId}, enabling this feature, and then calls \textit{goToObject} function that move the camera to the target body.
+
+\paragraph{Follow planet}\mbox{}\\
+In this case, there is a possibility that the camera can follow the selected planet, it can be very useful.
+\begin{lstlisting}
+$("#followPlanetCheckbox").on("change", function(event) {
+	if (event.target.checked) cameraFollowsPlanet = true;
+	else cameraFollowsPlanet = false;
+});
+\end{lstlisting}
+It simply change a boolean variable, that is used in \textit{render} function. Indeed, if it is true, \textit{followPlanet()} function is called and it make literally the task.
+\paragraph{Rotation of camera around target object}\mbox{}\\
+This is another feature of camera and permits to orbit around the target object. This simply 
+\begin{lstlisting}
+// Listener for rotate/not rotate the camera on the target planet
+$("#rotateCameraCheckbox").on("change", function(event) {
+	if (event.target.checked) controls.autoRotate = true;
+	else controls.autoRotate = false;
+});
+\end{lstlisting}
+
+\subsubsection{Light setting}
+The light, already seen in \hyperref[light:section]{section 3.2}, can be setted through the dedicated slider and switches. Let we show the features.
+\paragraph{Sunlight} \mbox{}\\
+The sunlight checkbox permits to turn on or off it. It simply add or remove to scene the \textit{sunLight} Point Light object.
+\begin{lstlisting}
+// Listener for turn on/off sun light
+$("#sunLightCheckbox").on("change", function(event) {
+	if (event.target.checked) scene.add(sunLight);
+	else scene.remove(sunLight);
+});
+\end{lstlisting}
+Beside the checkbox there is also a slider to adjust the intensity of this light source, setting the \textit{intensity} parameter of \textit{sunLight} object:
+\begin{lstlisting}
+// Listener for modify sun light intensity value
+$("#sunLightSlider").on("input", function(event) {
+	let intensity = parseFloat(event.target.value);
+	sunLight.intensity = intensity;
+	$("#sunLightText").html("Sun light intensity: " + intensity);
+});
+\end{lstlisting}
+\paragraph{Ambient light}\mbox{}\\
+As point light, also the ambient light has the same function:
+\begin{lstlisting}
+// Listener for turn on/off ambient light
+$("#ambientLightCheckbox").on("change", function(event) {
+	if (event.target.checked) scene.add(ambientLight);
+	else scene.remove(ambientLight);
+});
+// Listener for modify ambient light intensity value
+$("#ambientLightSlider").on("input", function(event) {
+	let intensity = parseFloat(event.target.value);
+	ambientLight.intensity = intensity;
+	$("#ambientLightText").html("Ambient light intensity: " + intensity);
+});
+\end{lstlisting}
+
+\subsubsection{Animation setting}
+Animation settings are the most important focus of the available user interactions. They allow you to show the orbits of revolution and rotation of celestial objects. We have developed several features that can be modified, as shown below.
+\paragraph{Play / Pause Animation Button} \mbox{}\\
+This button permits to play or pause all the animation that are in our project. For this reason, it is the first element is present in the menu. If it pressed, it changes the \textit{play} boolean var and changes the icon, in addiction to clicking on rotation and revolution checbox: 
+\begin{lstlisting}
+// Listener for play/stop animation
+$("#playButton").on("click", function(event) {
+	if (play) {
+		play = false;
+		$("#playButton").html("<i class='material-icons left'>play_circle_filled</i>Play Animation");
+		if ($("#rotationCheckbox").is(":checked")) $("#rotationCheckbox").click();
+		if ($("#revolutionCheckbox").is(":checked")) $("#revolutionCheckbox").click();
+		$("#rotationCheckbox").attr("disabled", "true");
+		$("#revolutionCheckbox").attr("disabled", "true");
+	}
+	else {
+		play = true;
+		$("#playButton").html("<i class='material-icons left'>pause_circle_filled</i>Pause Animation");
+		$("#rotationCheckbox").removeAttr("disabled");
+		$("#revolutionCheckbox").removeAttr("disabled");
+		$("#rotationCheckbox").click();
+		$("#revolutionCheckbox").click();
+	}
+});
+\end{lstlisting}
+\paragraph{Rotation and revolution checkbox}\mbox{}\\
+On the contrary of play button, these checkboxes change the single possible motion. They change the single boolean variable used to enable the specific motion:
+\begin{lstlisting} 
+// Listener for play/stop rotation movement
+$("#rotationCheckbox").on("change", function(event) {
+	if (event.target.checked) playRotationMovement = true;
+	else playRotationMovement= false;
+});
+
+// Listener for play/stop revolution movement
+$("#revolutionCheckbox").on("change", function(event) {
+	if (event.target.checked) playRevolutionMovement = true;
+	else playRevolutionMovement= false;
+});
+\end{lstlisting}
+\paragraph{Speed factor}\mbox{}\\
+It used to determine the speed with which time passes. It is setted through a slider, as below:
+\begin{lstlisting} 
+// Listener for modify speedFactor value
+$("#speedSlider").on("input", function(event) {
+	speedFactor = event.target.value;
+	$("#speedText").html("Speed: " + speedFactor + "x");
+});
+\end{lstlisting}
+
+\subsection{Appearance Settings}
+These settings concern how the user can see our simulator and the positions of the various celestial bodies. These settings have only an aesthetic function and do not affect the movements and positions of objects.
+\paragraph{Orbit Setting}\mbox{}\\
+The orbit object is a trajectory (approximated circumference) of the planet movement. It can be show better the position of the planet and find it between the others.\\
+It's possible to show or hide the orbit and set the real inclination:
+\begin{lstlisting}
+// Listener for show/hide orbits
+$("#orbitVisibilityCheckbox").on("change", function(event) {
+	if (event.target.checked) for (let i = mercuryId; i <= moonId; i++) orbits[i].visible = true;
+	else for (let i = mercuryId; i <= moonId; i++) orbits[i].visible = false;
+});
+
+// Listener for incline/not incline orbits
+$("#orbitInclinationCheckbox").on("change", function(event) {
+	if (event.target.checked) {
+		inclinedOrbit = true;
+		for (let i = mercuryId; i <= moonId; i++) orbits[i].rotation.y = THREE.Math.degToRad(data[i].orbitInclination);
+	}
+	else {
+		inclinedOrbit = false;
+		for (let i = mercuryId; i <= moonId; i++) orbits[i].rotation.y = 0;
+	}
+});
+\end{lstlisting}
+\paragraph{Earth Clouds setting}\mbox{}\\
+With this checkbox, it is possible to show or hide the Earth clouds simply:
+\begin{lstlisting}
+// Listener for show/hide Earth clouds
+$("#earthCloudCheckbox").on("change", function(event) {
+	if (event.target.checked) celestialObjects[earthId].add(celestialObjects[earthCloudId]);
+	else celestialObjects[earthId].remove(celestialObjects[earthCloudId]);
+});
+\end{lstlisting}
+\paragraph{Asteroid Belt setting}\mbox{}\\
+As previous, it permits to show or hide the Asteroid Belt:
+\begin{lstlisting}
+// Listener for show/hide asteroid belt
+$("#asteroidBeltCheckbox").on("change", function(event) {
+	if (event.target.checked) celestialObjects[solarSystemId].add(celestialObjects[asteroidBeltId]);
+	else celestialObjects[solarSystemId].remove(celestialObjects[asteroidBeltId]);
+});
+\end{lstlisting}
+\paragraph{Asteroid Belt setting}\mbox{}\\
+This selector permits to change the background wallpaper used in the simulator. It changes the texture of the faces of the cube in which the simulator is enclosed:
+\begin{lstlisting}
+// Listener for modify background
+$("#backgroundSelect").on("change", function(event) {
+	let background = $("#backgroundSelect").val();
+	scene.background = backgrounds[background];
+});
+\end{lstlisting}
+
+\subsubsection{Mouse interactions}
+These features allow you to focus the camera of the scene on the object on which you interact with the mouse. These functionalities exploit the use of the \textit{ray caster} that allows to trace all the objects that are under the mouse. Both are based on the use of the same captureObject function illustrated below:
+\begin{lstlisting}
+function captureObject(point) {
+	// Normalize mouse coordinates
+	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+	
+	// Capture the clicked object
+	raycaster.setFromCamera(mouse, camera);
+	var intersects = raycaster.intersectObjects(scene.children, true);
+	
+	// Analize the result
+	for (let i = 0; i < intersects.length; i++)
+	if (intersects[i].object.name != "orbit" && intersects[i].object.name != "Sun Glow") {
+		if ($("#asteroidBeltCheckbox").is(":checked")) {
+			if (point) point.coord = intersects[i].point; // Funct called by showInfoPlanet
+			return intersects[i].object; // Found object that is not an orbit or sun glow
+		}
+		else {
+			if (intersects[i].object.name != "Asteroid Belt") {
+				if (point) point.coord = intersects[i].point; // Funct called by showInfoPlanet
+				return intersects[i].object; // Found object that is not an orbit, sun glow or asteroid belt
+			}
+		}
+	}
+	return null; // There are no element or only orbits
+}
+\end{lstlisting}
+First of all, it 
 
 
-\subsection{HTML and CSS}
+\subsection{HTML and CSS Frontend}
 
 
 
@@ -425,6 +717,8 @@ Once calculated how much the body must rotate (the theta angle), the rotation is
 \href{https://stackoverflow.com/questions/13756112/draw-a-circle-not-shaded-with-three-js}{Draw} a circle (not shaded) using Three.js.
 \bibitem{asteroids:stackoverflow}
 \href{https://stackoverflow.com/questions/56870759/typeerror-cant-convert-undefined-to-object-in-three-js-using-three-points/}{TypeError} Stack Overflow question.
+\bibitem{resizing:stackoverflow}
+\href{https://stackoverflow.com/questions/20290402/three-js-resizing-canvas}{Three.js} resizing canvas.
 \end{thebibliography}
 
 
