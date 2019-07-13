@@ -430,10 +430,25 @@ if (inclinedOrbit) {
 This animation is a bit more complex than the previous one, as it requires many more concepts of trigonometry and uniform circular motion.
 As you can see, we have three angles:
 \begin{itemize}
-	\item \textbf{theta}, that is the angle swept by the segment that connects the planet to the sun in a given instant of time (in the uniform circular motion would be the pulsation multiplied by the instant of time, $\theta = \omega\tau, \omega = 2\pi\textrm/{T} $)
-	\item \textbf{phi}, simply determines the initial position of each planet
-	\item \textbf{alpha}, it takes into account the inclination of the orbit
+	\item $\mathbf{\theta}$ (theta), that is the angle swept by the segment that connects the planet to the sun in a given instant of time (in the uniform circular motion would be the pulsation multiplied by the instant of time, $\theta = \omega\tau$, $\omega = \frac{2\pi}{\textrm{T}}$, \textrm{T} is the orbit rate)
+	\item $\mathbf{\phi}$ (phi), simply determines the initial position of each planet
+	\item $\mathbf{\alpha}$ (alpha), it takes into account the inclination of the orbit
 \end{itemize}
+After having determined such angles, it is necessary to determine the various components (x, y, z) taking into account the fact that the planets follow a uniform circular motion. For this reason the components will be:
+\begin{itemize}
+	\item $\mathbf{x = -R\cos(\theta + \phi)}$
+	\item $\mathbf{y = 0}$
+	\item $\mathbf{z = R\sin(\theta + \phi)}$
+\end{itemize}
+where \textbf{R} is the distance between the planet and the sun. \newline
+It's possible to notice that the component \textit{y} is zero, so the motion is simply on the plane \textit{x-z}.
+If instead we take into account the inclination of the orbits, the three components will be:
+\begin{itemize}
+	\item $\mathbf{x = -R\cos(\theta + \phi)\cos(\alpha)}$
+	\item $\mathbf{y = -R\cos(\theta + \phi)\sin(\alpha)}$
+	\item $\mathbf{z = R\sin(\theta + \phi)}$
+\end{itemize}
+N.B. the minus indicates the anti-clockwise revolution of the planets.
 
 \subsection{User Interactions}
 The user's interactions with our simulator is as important as our project, as it is a course in interactive graphics. So we gave the user the ability to modify both the graphic aspect and interact directly with the solar system.
