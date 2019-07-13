@@ -50,6 +50,7 @@ data[earthId] = {
     specular: "img/earthSpecularMap.jpg",
     cloud: "img/earthCloudMap.jpg",
     cloudTrans: "img/earthCloudMapTrans.jpg",
+    lights: "img/earthLightsMap.jpg",
     icon: "img/earth.png",
     bumpScale: 0.05
 };

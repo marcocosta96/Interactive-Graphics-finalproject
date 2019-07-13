@@ -258,6 +258,20 @@ $("#earthCloudCheckbox").on("change", function(event) {
     else celestialObjects[earthId].remove(celestialObjects[earthCloudId]);
 });
 
+// Listener for turn on/off Earth lights
+$("#earthLightsCheckbox").on("change", function(event) {
+    if (event.target.checked) celestialObjects[earthId].material = new THREE.MeshMatcapMaterial({
+        map: textureLoader.load(data[earthId].lights)
+    });
+    else celestialObjects[earthId].material = new THREE.MeshPhongMaterial({
+        map: textureLoader.load(data[earthId].color),
+        bumpMap: textureLoader.load(data[earthId].bump),
+        bumpScale: data[earthId].bumpScale,
+        specularMap: textureLoader.load(data[earthId].specular),
+        specular: new THREE.Color("grey")
+    });
+});
+
 // Listener for show/hide asteroid belt
 $("#asteroidBeltCheckbox").on("change", function(event) {
     if (event.target.checked) celestialObjects[solarSystemId].add(celestialObjects[asteroidBeltId]);
