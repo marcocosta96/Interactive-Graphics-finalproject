@@ -85,9 +85,9 @@ Click \href{https://get.webgl.org/}{here} to check if your browser supports WebG
 
 
 \subsection{Assumptions and approximations}
-As is well known, the planets follow an elliptical orbit (a "flattened" circumference), and the sun occupies one of the two focuses. Rotating along this orbit, we have the 4 seasons (also due to the inclination of the axis). For simplicity of implementation and positioning of the various planets, we have approximated the orbit with a circumference, and the sun occupies  centre. \newline
+As is well known, the planets follow an elliptical orbit (a "flattened" circumference), and the sun occupies one of the two focuses. For simplicity of implementation and positioning of the various planets, we have approximated the orbit with a circumference, and the sun occupies  centre. \newline
 \par Another important fact is that the orbit of all the planets varies continuously (for example, the orbit of the earth is not the same from one year to the next), this is because there is the gravitational influence of all the celestial bodies present in the universe (and in particular in the solar system, being closer). In the solar system, besides the sun, Jupiter has an important influence, being the biggest planet. In our simulator we do not take into account all this, the planets revolve around the sun with the same orbit (we can say that the sun is the only body that influences the gravitation of the planets). \newline
-\par The last detail is the actual position of the planets. Probably they will not be located in the real position, because in our simulator this position depends on the date, and in JavaScript the function \textbf{Date.getTime()} returns the milliseconds passed from January 1, 1970 to the moment in which the function is called. In theory we should have the milliseconds passed from the birth of the solar system to today, or set a certain initial position so as to match the real position of each planet with that in the simulator. 
+\par The last detail is the actual position of the planets. Probably they will not be located in the real position, because in our simulator this position depends on the date, and in JavaScript the function \textbf{Date.getTime()} returns the milliseconds passed from January 1, 1970 to the moment in which the function is called (for this reason by entering this date the planets would all be aligned, it is the time t$_0$ of the simulator). In theory we should set a certain initial position so as to match the real position of each planet with that in the simulator. 
 We decided to approximate the initial position by consulting an online simulator of the solar system\cite{solarsystemrealpositon}, setting the date to January 1, 1970. The position of each planet is determined by the angle formed by the straight line that connects each of the planets to the sun. Taking this into account, we have added an initial angle for each planet, obtained by comparing the position assumed by the various planets in our simulator and that of TheSkyLive. Obviously this angle is a simple approximation, because as said before the planets have an elliptical orbit, while in the simulator follow a circular orbit. The more time passes, the more the position of the planets in the simulator could be different from the real one. Looking at Pluto, it is possible to notice this easily, because this planet follows the most particular orbit.
 It must be noted however that every planet makes a turn around the sun in the real time of revolution and makes a turn around its axis (inclined with respect to the equatorial plane) in the real time of rotation (for example the earth takes exactly one year to make the revolution around the sun and 24 hours to make a turn on itself).
 
@@ -365,6 +365,28 @@ celestialObjects[earthCloudId].scale.set(1.02, 1.02, 1.02);
 //...
 \end{lstlisting}
 
+\subsection{Earth lights}
+Finally, we implemented the city lights. This is just to show how you would see the Earth at night with all the lights on, so we used the material \textit{THREE.MeshMatcapMaterial}, which allows you to see the texture regardless of the sunlight. Of course, this doesn't really happen.
+\begin{lstlisting}
+// Listener for turn on/off Earth lights
+$("#earthLightsCheckbox").on("change", function(event) {
+	if (event.target.checked) celestialObjects[earthId].material = new THREE.MeshMatcapMaterial({
+		map: textureLoader.load(data[earthId].lights)
+	});
+	else celestialObjects[earthId].material = new THREE.MeshPhongMaterial({
+		map: textureLoader.load(data[earthId].color),
+		bumpMap: textureLoader.load(data[earthId].bump),
+		bumpScale: data[earthId].bumpScale,
+		specularMap: textureLoader.load(data[earthId].specular),
+		specular: new THREE.Color("grey")map: textureLoader.load(data[earthId].color),
+		bumpMap: textureLoader.load(data[earthId].bump),
+		bumpScale: data[earthId].bumpScale,
+		specularMap: textureLoader.load(data[earthId].specular),
+		specul
+	});
+});
+\end{lstlisting}
+
 
 \subsection{Animation}
 The animation of our solar system is the most important part of our project. In fact, the movement of the planets and their orbits around the sun is the effect that most affects the user and that allows the best to simulate the position of the planets as time passes.
@@ -386,7 +408,32 @@ The theta angle for rotation therefore takes care both the speed of rotation and
 Once calculated how much the body must rotate (the theta angle), the rotation is then applied and if it has rings, the geometric transformation is also applied to them.
 
 \subsubsection{Revolution orbit}
+The other important animation of the planets (and the moon) is the revolution around the sun. This animation is done through the \textit{revolutionMovement()} function, as below:
+\begin{lstlisting}
+// Revolution angles
+let theta = (THREE.Math.degToRad(360) / (data[Id].revolutionRate * 86400000)) * date.getTime(); // theta = wt, cast revolutionRate in milliseconds
+let alpha = THREE.Math.degToRad(data[Id].orbitInclination); // Inclination
+let phi = THREE.Math.degToRad(data[Id].initialAngle); // Initial position
 
+let currentId = Id;
+if (data[Id].hasOwnProperty("groupId")) currentId = data[Id].groupId;
+celestialObjects[currentId].position.x = -data[Id].distance * Math.cos(theta + phi); // x = -R*Cos(wt + phi) (minus for Anti-clockwise)
+celestialObjects[currentId].position.y = 0; // y = 0
+celestialObjects[currentId].position.z = data[Id].distance * Math.sin(theta + phi); // z = R*Sin(wt + phi)
+
+// Inclined orbit
+if (inclinedOrbit) {
+	celestialObjects[currentId].position.x *= Math.cos(alpha); // x = -R*Cos(wt + phi)*Cos(alpha)
+	celestialObjects[currentId].position.y = -data[Id].distance * Math.cos(theta + phi) * Math.sin(alpha); // y = -R*Cos(wt + phi)*Sin(alpha)
+}
+\end{lstlisting}
+This animation is a bit more complex than the previous one, as it requires many more concepts of trigonometry and uniform circular motion.
+As you can see, we have three angles:
+\begin{itemize}
+	\item \textbf{theta}, that is the angle swept by the segment that connects the planet to the sun in a given instant of time (in the uniform circular motion would be the pulsation multiplied by the instant of time, $\theta = \omega\tau, \omega = 2\pi\textrm/{T} $)
+	\item \textbf{phi}, simply determines the initial position of each planet
+	\item \textbf{alpha}, it takes into account the inclination of the orbit
+\end{itemize}
 
 \subsection{User Interactions}
 The user's interactions with our simulator is as important as our project, as it is a course in interactive graphics. So we gave the user the ability to modify both the graphic aspect and interact directly with the solar system.
