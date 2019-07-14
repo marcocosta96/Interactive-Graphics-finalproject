@@ -824,6 +824,8 @@ So, after detected the object, function builds the panel and starts to add all t
 
 \subsection{HTML and CSS Frontend}
 We decide to build the frontend using HTML and CSS because of WebGL is a language, born for internet browser and then HTML is the ideal to make the user interface.
+\subsubsection{Libraries}
+First of all we need to load the needed libraries. This is done in the body, as loading takes place more quickly. Moreover, we load the css files in the head tag.
 \subsubsection{Loading Page}
 The first page that appears when user executes our project is the loading page. We decide to implement it to avoid to show a simply black page to him since sometimes application can take some seconds before of show it.\\
 In order to implement this page, we take inspiration from some example in the web\cite{loadingpage:web}.
@@ -834,8 +836,17 @@ $(window).on("load", function() {
 });
 \end{lstlisting}
 This function simply hide the loader element when event "load" is triggered.
+\subsubsection{Sidebar menu}
+One of the most important things in the HTML file is the sidebar menu, done with the help of the \textit{Materialize}\cite{materialize} library. All functions in the menu have been described above.
 
+\subsubsection{Tooltip}
+It's simply a div that allows you to view information about celestial objects when the mouse hovers them. To do this, it is initialized with the display attribute set to none. When the mouse hovers the object, that attribute is set to block to make it visible, and inside it is put the text to show. In the CSS file the style has been changed to make it consistent with the style used until now.
 
+\subsubsection{Date}
+We have inserted another div that allows you to view the current date and time. Initially they were user modifiable, but that was problematic. That's why we decided to make it only readable and included the possibility to change the date and time in the menu.
+
+\subsubsection{Container}
+At the end we have a simple div tag, whose function is to contain our solar system.
 
 \begin{thebibliography}{99}
 \bibitem{solarsystemrealpositon} \href{https://theskylive.com/3dsolarsystem}{Verify} the real-time position of solar system objects.
@@ -872,6 +883,7 @@ This function simply hide the loader element when event "load" is triggered.
 \href{https://stackoverflow.com/questions/20290402/three-js-resizing-canvas}{Three.js} resizing canvas.
 \bibitem{loadingpage:web}
 \href{http://www.diplod.it/2014/01/13/javascript-per-pagina-in-caricamento-loading-con-eleganza/}{Example} of loading page
+\bibitem{materialize} \href{https://materializecss.com/}{Materialize}
 \end{thebibliography}
 
 
