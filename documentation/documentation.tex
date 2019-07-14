@@ -714,7 +714,7 @@ $("#backgroundSelect").on("change", function(event) {
 \end{lstlisting}
 
 \subsubsection{Mouse interactions}
-These features allow you to focus the camera of the scene on the object on which you interact with the mouse. These functionalities exploit the use of the \textit{ray caster} that allows to trace all the objects that are under the mouse. Both are based on the use of the same \textit{captureObject} function that takes as input eventually the object in which save the mouse coordinates. Here illustrated below:
+These features allow you to focus the camera of the scene on the object on which you interact with the mouse. These functionalities exploit the use of the \textit{ray caster}\cite{documentation:threejs} that allows to trace all the objects that are under the mouse. Both are based on the use of the same \textit{captureObject} function that takes as input eventually the object in which save the mouse coordinates. Here illustrated below:
 \begin{lstlisting}
 function captureObject(point) {
 	// Normalize mouse coordinates
@@ -743,7 +743,7 @@ function captureObject(point) {
 }
 \end{lstlisting}
 \par In the first step, we convert the pixel coordinates of mouse event in universal coordinate. These are coordinates where the we have in x-axis and in y-axis values between [-1,1], because the mouse events trigger a coordinate represented by the pixel position and we are not interested in it.\\
-So, after obtaining the coordinates, we call the raycaster such that it takes objects from camera and scene using the mouse position.\\
+So, after obtaining the coordinates, we call the \textit{ray caster} such that it takes objects from camera and scene using the mouse position.\\
 The result is an array of the intersected objects. Purpose is to visit the array to look for the first useful celestial object. To do this, however, we ignore the sun glow and the trajectories of the orbits that we are not interested in. Also, if the asteroid band has been deactivated, then we ignore that too. Finally we return the first useful object found.\\
 The found object is used in the next features.
 \paragraph{Double click feature}\mbox{}\\
@@ -823,6 +823,17 @@ So, after detected the object, function builds the panel and starts to add all t
 
 
 \subsection{HTML and CSS Frontend}
+We decide to build the frontend using HTML and CSS because of WebGL is a language, born for internet browser and then HTML is the ideal to make the user interface.
+\subsubsection{Loading Page}
+The first page that appears when user executes our project is the loading page. We decide to implement it to avoid to show a simply black page to him since sometimes application can take some seconds before of show it.\\
+In order to implement this page, we take inspiration from some example in the web\cite{loadingpage:web}.
+\begin{lstlisting}
+$(window).on("load", function() {
+	$("#loading").css("display", "none"); // Hide chargement
+	render(); // Render starts when window has been loaded
+});
+\end{lstlisting}
+This function simply hide the loader element when event "load" is triggered.
 
 
 
@@ -849,6 +860,7 @@ So, after detected the object, function builds the panel and starts to add all t
 \href{https://threejs.org/docs/#api/en/geometries/TorusGeometry}{Torus Geometry}
 \href{https://threejs.org/docs/#api/en/materials/PointsMaterial}{Points Material}
 \href{https://threejs.org/docs/#api/en/geometries/RingGeometry}{Ring Geometry}
+\href{https://threejs.org/docs/#api/en/core/Raycaster}{Raycaster}
 \bibitem{PCSS:nvidia} \href{http://developer.download.nvidia.com/shaderlibrary/docs/shadow_PCSS.pdf}{Percentage-Closer Soft Shadows}, Randima Fernando, NVIDIA Corporation.
 \bibitem{solarcore:wikipedia}
 \href{https://en.wikipedia.org/wiki/Solar_core#Energy_conversion}{Solar core}, Wikipedia article.
@@ -858,17 +870,10 @@ So, after detected the object, function builds the panel and starts to add all t
 \href{https://stackoverflow.com/questions/56870759/typeerror-cant-convert-undefined-to-object-in-three-js-using-three-points/}{TypeError} Stack Overflow question.
 \bibitem{resizing:stackoverflow}
 \href{https://stackoverflow.com/questions/20290402/three-js-resizing-canvas}{Three.js} resizing canvas.
+\bibitem{loadingpage:web}
+\href{http://www.diplod.it/2014/01/13/javascript-per-pagina-in-caricamento-loading-con-eleganza/}{Example} of loading page
 \end{thebibliography}
 
 
-
-%\appendix
-%\appendixpage
-%\addappheadtotoc
-%\section{Sources}
-%\begin{itemize}
-%	\item 
-%	
-%\end{itemize}
 
 \end{document}
