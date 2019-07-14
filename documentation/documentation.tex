@@ -714,7 +714,7 @@ $("#backgroundSelect").on("change", function(event) {
 \end{lstlisting}
 
 \subsubsection{Mouse interactions}
-These features allow you to focus the camera of the scene on the object on which you interact with the mouse. These functionalities exploit the use of the \textit{ray caster} that allows to trace all the objects that are under the mouse. Both are based on the use of the same captureObject function illustrated below:
+These features allow you to focus the camera of the scene on the object on which you interact with the mouse. These functionalities exploit the use of the \textit{ray caster} that allows to trace all the objects that are under the mouse. Both are based on the use of the same \textit{captureObject} function that takes as input eventually the object in which save the mouse coordinates. Here illustrated below:
 \begin{lstlisting}
 function captureObject(point) {
 	// Normalize mouse coordinates
@@ -742,7 +742,84 @@ function captureObject(point) {
 	return null; // There are no element or only orbits
 }
 \end{lstlisting}
-First of all, it 
+\par In the first step, we convert the pixel coordinates of mouse event in universal coordinate. These are coordinates where the we have in x-axis and in y-axis values between [-1,1], because the mouse events trigger a coordinate represented by the pixel position and we are not interested in it.\\
+So, after obtaining the coordinates, we call the raycaster such that it takes objects from camera and scene using the mouse position.\\
+The result is an array of the intersected objects. Purpose is to visit the array to look for the first useful celestial object. To do this, however, we ignore the sun glow and the trajectories of the orbits that we are not interested in. Also, if the asteroid band has been deactivated, then we ignore that too. Finally we return the first useful object found.\\
+The found object is used in the next features.
+\paragraph{Double click feature}\mbox{}\\
+This feature consists in targeting the celestial object on which the user has double-clicked. In order to detect the target object we use the previous function, then it returns the found target and we work with it.\\
+Here the function that performs this task:
+\begin{lstlisting}
+function dblclickPlanet(event) {
+	// Capture the object
+	var targetElement = captureObject(null); // Null if it's not object or it's orbit or sun glow
+	
+	// Focus camera on it
+	if (targetElement && targetElement.name != celestialObjects[asteroidBeltId].name && targetElement.name != celestialObjects[moonId].name) {
+		followPlanetId = targetElement.myId;
+		if (data[followPlanetId].hasOwnProperty("groupId")) followPlanetId = data[followPlanetId].groupId;
+		followPlanet(followPlanetId);
+		goToObject(followPlanetId);
+		$("#cameraSelect").val(targetElement.myId);
+		$("#cameraSelect").formSelect();
+	}
+}
+\end{lstlisting}
+In the first step we call the previous function passing as parameter \textit{null} because we are not interested on the mouse coordinates.\\
+Then if the target is not null and is not asteroid belt, the function calls \textit{followPlanet} that set the object as new target and \textit{goToObject}, instead, moves the camera near the object. Finally change the current value of selector in the menu.
+\paragraph{Mouse on an object}\mbox{}\\
+This feature is triggered when the mouse cursor is on a planet or other objects. The scope is the showing of an information panel containing some physical feature of the planet highlighted. It is realized with the dedicated function:
+\begin{lstlisting}
+function showInfoPlanet(event) {
+	// Capture the object
+	var point = {coord:null};
+	var targetElement = captureObject(point); // Null if it's not object or it's orbit or sun glow
+	
+	// Show tooltip
+	if (targetElement) {
+		$("#tooltip").css({
+			display: "block",
+			opacity: 0.0
+		});
+		tooltipping = true;
+		var canvasHalfWidth = renderer.domElement.offsetWidth / 2;
+		var canvasHalfHeight = renderer.domElement.offsetHeight / 2;
+		
+		var tooltipPosition = point.coord.clone().project(camera);
+		tooltipPosition.x = (tooltipPosition.x * canvasHalfWidth) + canvasHalfWidth + renderer.domElement.offsetLeft;
+		tooltipPosition.y = -(tooltipPosition.y * canvasHalfHeight) + canvasHalfHeight + renderer.domElement.offsetTop;
+		
+		var tootipWidth = $("#tooltip")[0].offsetWidth;
+		var tootipHeight = $("#tooltip")[0].offsetHeight;
+		
+		$("#tooltip").css({
+			left: `${tooltipPosition.x - tootipWidth/2}px`,
+			top: `${tooltipPosition.y - tootipHeight - 70}px`
+		});
+		
+		let currentId = targetElement.myId;
+		
+		$("#tooltip").html("<div style='float:left;padding-top:10px;padding-left:10px;'><img src='" + data[currentId].icon + "' width=50></div> <h4 style='size:20pt;'>" + targetElement.name + "</h4>");
+		if(data[currentId].hasOwnProperty("rotationRate")) $("#tooltip").append("</br>Rotation: " + data[currentId].rotationRate.toFixed(2) + " hours");
+		
+		//...and other features
+		
+		setTimeout(function() {
+			$("#tooltip").css({
+				opacity: 1.0
+			});
+		}, 25);
+	}
+	else {
+		$("#tooltip").css({
+			display: "none"
+		});
+		tooltipping = false;
+	}
+}
+\end{lstlisting}
+On the contrary of the previous paragraph, in this case we call the function passing as parameter an object that we use to save the coordinate of the mouse cursor, because we use this coordinate to build the panel near to it.\\
+So, after detected the object, function builds the panel and starts to add all the available information. Finally we set a timeout to appear the panel.
 
 
 \subsection{HTML and CSS Frontend}
